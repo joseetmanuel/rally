@@ -1,0 +1,53 @@
+<div class="page-container mat-elevation-z2">
+  <div class="header-actions">
+    <h2>Cursos Impartidos (Sesiones)</h2>
+    <button mat-flat-button color="primary" (click)="openCaptureDialog()">
+      <mat-icon>add</mat-icon> Nueva Sesión
+    </button>
+  </div>
+
+  <table mat-table [dataSource]="sessions" class="full-width-table">
+    
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef> Título del curso </th>
+      <td mat-cell *matCellDef="let element"> {{element.title || 'N/A'}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="certification">
+      <th mat-header-cell *matHeaderCellDef> Certificación relacionada </th>
+      <td mat-cell *matCellDef="let element"> {{element.certification ? element.certification.vendor + ' - ' + element.certification.name : 'ID: ' + element.certification_id}} </td>
+    </ng-container>
+    
+    <ng-container matColumnDef="instructor">
+      <th mat-header-cell *matHeaderCellDef> Instructor </th>
+      <td mat-cell *matCellDef="let element"> {{element.instructor?.full_name || 'ID: ' + element.instructor_consultant_id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef> Fecha </th>
+      <td mat-cell *matCellDef="let element"> {{element.session_date}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef class="action-column"> Acciones </th>
+      <td mat-cell *matCellDef="let element" class="action-column">
+        <button mat-icon-button color="accent" title="Lista de Asistencia" (click)="openAttendancesDialog(element)">
+          <mat-icon>checklist</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" title="Editar" (click)="openCaptureDialog(element)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" title="Eliminar" (click)="deleteSession(element)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <div *ngIf="sessions.length === 0" class="empty-state">
+    No hay sesiones de cursos registradas.
+  </div>
+</div>

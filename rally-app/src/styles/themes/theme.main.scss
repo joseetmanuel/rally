@@ -1,0 +1,132 @@
+// __<<ngM2ThemingMigrationEscapedComment0>>__
+@use "@angular/material" as mat;
+@use "colors" as color;
+@include mat.elevation-classes();
+@include mat.app-background();
+// GENERADOR DE PALETA
+// http://mcg.mbitson.com/
+
+$palette-primary-color: (
+  // 50: #ececec,
+  // 100: #ced0cf,
+  // 200: #aeb0af,
+  // 300: #8e908e,
+  // 400: #757976,
+  // 500: #5d615e,
+  // 600: #555956,
+  // 700: #4b4f4c,
+  // 800: #414542,
+  // 900: #303331,
+  // A100: #91f6b2,
+  // A200: #62f292,
+  // A400: #21ff6b,
+  // A700: #08ff5a,
+  // contrast: (
+  //   50: #000000,
+  //   100: #000000,
+  //   200: #000000,
+  //   300: #000000,
+  //   400: #ffffff,
+  //   500: #ffffff,
+  //   600: #ffffff,
+  //   700: #ffffff,
+  //   800: #ffffff,
+  //   900: #ffffff,
+  //   A100: #000000,
+  //   A200: #000000,
+  //   A400: #000000,
+  //   A700: #000000,
+  // ),
+  50: #e2e6e8,
+  100: #b8c2c7,
+  200: #8899a1,
+  300: #58707b,
+  400: #35515f,
+  500: #006990,
+  600: #0f2d3d,
+  700: #0c2634,
+  800: #0a1f2c,
+  900: #05131e,
+  A100: #5cadff,
+  A200: #2993ff,
+  A400: #0079f5,
+  A700: #006cdb,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #ffffff,
+    400: #ffffff,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #ffffff,
+    A400: #ffffff,
+    A700: #ffffff,
+  )
+);
+
+$palette-accent-color: (
+  50: #fef0e5,
+  100: #fcd9be,
+  200: #fac092,
+  300: #f8a666,
+  400: #f79346,
+  500: #f06316,
+  600: #f47821,
+  700: #f26d1b,
+  800: #f06316,
+  900: #ee500d,
+  A100: #ffffff,
+  A200: #ffece5,
+  A400: #ffc6b3,
+  A700: #ffb399,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #ffffff,
+    400: #ffffff,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #ffffff,
+  ),
+);
+
+// PALETA DE COLORES
+$palette-primary: mat.m2-define-palette($palette-primary-color);
+$palette-accent: mat.m2-define-palette($palette-accent-color);
+
+$my-typography: mat.m2-define-typography-config(
+  $font-family: "Monserrat",
+);
+$my-typography: mat.m2-define-typography-config();
+
+$theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: $palette-primary,
+      accent: $palette-accent,
+    ),
+    typography: $my-typography,
+  )
+);
+
+@include mat.all-component-themes($theme);
+
+.dot {
+  height: 18px;
+  width: 18px;
+  vertical-align: middle;
+  border-radius: 50%;
+  display: inline-block;
+}

@@ -1,0 +1,6 @@
+.dialog-panel-sidenav {
+	margin: auto;
+	& .mat-mdc-dialog-surface {
+		border-radius: 0 !important;
+	}
+}

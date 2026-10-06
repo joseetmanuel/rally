@@ -1,0 +1,16 @@
+.stepper-wrapper .mat-horizontal-stepper-wrapper {
+	display: grid !important;
+	grid-template-rows: auto 1fr !important;
+	height: 100% !important;
+	& .mat-horizontal-content-container {
+		overflow-y: auto;
+	}
+
+	&
+		.mat-horizontal-stepper-content:not(
+			.mat-horizontal-stepper-content-inactive
+		) {
+		height: 100%;
+		position: relative;
+	}
+}

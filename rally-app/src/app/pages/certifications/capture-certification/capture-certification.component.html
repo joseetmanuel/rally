@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Editar' : 'Nueva' }} Certificación</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="capture-form">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Proveedor</mat-label>
+      <input matInput formControlName="vendor" placeholder="Ej. AWS" required>
+      <mat-error *ngIf="form.get('vendor')?.hasError('required')">El proveedor es obligatorio</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre de la certificación</mat-label>
+      <input matInput formControlName="name" placeholder="Ej. AWS Certified Solutions Architect" required>
+      <mat-error *ngIf="form.get('name')?.hasError('required')">El nombre es obligatorio</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tipo de certificación</mat-label>
+      <mat-select formControlName="certification_type_id" required>
+        <mat-option *ngFor="let type of certificationTypes" [value]="type.id">
+          {{ type.code }} ({{ type.points_base }} pts)
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('certification_type_id')?.hasError('required')">El tipo es obligatorio</mat-error>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">
+    Guardar
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,9 @@
+{
+	"apiACGUrl": "APIACGURL",
+	"apiUrl": "APIURL",
+	"idleTimeout": "IDLETIMEOUT",
+	"idleTime": "IDLETIME",
+	"systemId": "SYSID",
+	"production": "PRDFLAG",
+	"version": "APPVERSION"
+}

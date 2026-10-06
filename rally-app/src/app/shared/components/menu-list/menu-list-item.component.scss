@@ -1,0 +1,29 @@
+// @import '../theme';
+@import '../../../../styles/base/colors';
+
+:host {
+	display: flex;
+	flex-direction: column;
+	outline: none;
+	width: 100%;
+
+	.mat-list-item.active {
+		background-color: mat-color($fucsia-color, 50);
+	}
+
+	&:hover,
+	&:focus {
+		> .mat-list-item:not(.expanded) {
+			background-color: mat-color($fucsia-color, 100) !important;
+		}
+	}
+}
+
+.mat-list-item {
+	padding: 18px;
+	display: flex;
+	width: auto;
+}
+.expand-icon {
+	float: inline-end;
+}

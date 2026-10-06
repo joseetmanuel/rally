@@ -1,0 +1,20 @@
+.panel {
+	display: flex;
+	width: 100%;
+	height: 500px;
+	justify-content: center;
+	align-items: center;
+}
+
+.panel_child {
+	margin: 0px auto;
+	width: 500px;
+	text-align: center;
+	position: absolute;
+}
+
+h3 {
+	font-family: 'SpockPro', sans-serif;
+	letter-spacing: 10px;
+	text-transform: uppercase;
+}

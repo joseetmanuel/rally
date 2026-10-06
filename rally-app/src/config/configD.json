@@ -1,0 +1,9 @@
+{
+    "apiACGUrl": "",
+    "apiUrl": "",
+    "idleTimeout": 5,
+    "idleTime": 3000000,
+    "systemId": 1,
+    "production": false,
+    "version": "1.0.0"
+}

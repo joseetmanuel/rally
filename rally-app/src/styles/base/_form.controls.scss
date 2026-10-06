@@ -1,0 +1,83 @@
+@use 'colors' as color;
+
+// STYLE DEFAULT THEME
+.mat-mdc-form-field {
+	width: 100%;
+	& mat-icon {
+		color: color.$primary-color;
+	}
+}
+
+.form-field-sm.mat-mdc-form-field {
+	& .mat-mdc-form-field-infix {
+		min-height: 31.5px !important;
+		padding: 0;
+	}
+	& .mat-mdc-select-value-text,
+	.mat-mdc-input-element {
+		font-size: 12px;
+	}
+	& .mat-mdc-select-value {
+		padding-top: 2px;
+	}
+	& .mat-mdc-form-field-subscript-wrapper {
+		display: none;
+	}
+	& button {
+		padding: 0;
+		margin-right: 0.5rem;
+		width: 1.2rem;
+		height: 1.2rem;
+		& svg {
+			width: 1.2rem;
+			height: 1.2rem;
+		}
+	}
+}
+
+// STYLE DARK
+.form-control__black {
+	& .mdc-text-field--filled {
+		background-color: rgb(34, 34, 34);
+	}
+
+	& input {
+		color: white !important;
+	}
+
+	& input::placeholder,
+	& mat-label {
+		color: rgb(177, 175, 175) !important;
+	}
+}
+
+.form-field-custom {
+	width: 200px;
+
+	& .mat-mdc-text-field-wrapper {
+		height: 60px !important;
+	}
+}
+
+// CONTROLS BOOSTRAP
+.form-control:focus {
+	color: #495057;
+	background-color: #fff;
+	border-color: rgba(color.$primary-color, 0.5);
+	box-shadow: 0 0 0 0.2rem rgba(color.$primary-color, 0.25);
+}
+
+.form-check-input:checked {
+	background-color: color.$primary-color;
+	border-color: rgba(color.$primary-color, 0.5);
+}
+
+.form-check-input:focus {
+	border-color: rgba(color.$primary-color, 0.5);
+	outline: 0;
+	box-shadow: 0 0 0 0.2rem rgba(color.$primary-color, 0.25);
+}
+
+app-title-modal {
+	width: 100%;
+}

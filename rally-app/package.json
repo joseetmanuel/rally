@@ -1,0 +1,109 @@
+{
+  "name": "ent-artifact-angular",
+  "version": "2.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --configuration=production --output-hashing media --aot --optimization true --base-href /acg-frontend/ ",
+    "watch": "ng build --watch --configuration development",
+    "test": "jest --coverage",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --runInBand",
+    "lint": "ng lint",
+    "prepare": "husky install",
+    "format": "prettier --write \"./src/**/*.{ts,json,html}\"",
+    "sonar": "sonar-scanner",
+    "sonar-scanner": "^3.1.0"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^20.2.3",
+    "@angular/cdk": "^20.2.1",
+    "@angular/common": "^20.2.3",
+    "@angular/compiler": "^20.2.3",
+    "@angular/core": "^20.2.3",
+    "@angular/forms": "^20.2.3",
+    "@angular/material": "^20.2.1",
+    "@angular/platform-browser": "^20.2.3",
+    "@angular/platform-browser-dynamic": "^20.2.3",
+    "@angular/router": "^20.2.3",
+    "@ng-idle/keepalive": "^16.0.0",
+    "bootstrap": "^5.3.8",
+    "bourbon": "^7.3.0",
+    "jest-sonar-reporter": "^2.0.0",
+    "ngx-spinner": "^19.0.0",
+    "ngx-toastr": "^19.0.0",
+    "npm": "^10.8.1",
+    "rxjs": "^7.8.2",
+    "sonar-scanner": "^3.1.0",
+    "sweetalert2": "^11.22.5",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular-eslint/builder": "19.2.1",
+    "@angular-eslint/eslint-plugin": "19.2.1",
+    "@angular-eslint/eslint-plugin-template": "19.2.1",
+    "@angular-eslint/schematics": "19.2.1",
+    "@angular-eslint/template-parser": "19.2.1",
+    "@angular/build": "^20.2.1",
+    "@angular/cli": "^20.2.1",
+    "@angular/compiler-cli": "^20.2.3",
+    "@types/jasmine": "^5.1.4",
+    "@types/jest": "^30.0.0",
+    "@typescript-eslint/eslint-plugin": "7.11.0",
+    "@typescript-eslint/parser": "7.11.0",
+    "angular-eslint": "^19.2.1",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "husky": "^8.0.0",
+    "jest": "^30.1.2",
+    "jest-jasmine2": "^29.7.0",
+    "jest-preset-angular": "^14.4.2",
+    "prettier": "^3.6.2",
+    "pretty-quick": "^4.0.0",
+    "typescript": "^5.9.2",
+    "xlsx-js-style": "^1.2.0"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^@constants(.*)$": "<rootDir>/src/app/core/constants$1",
+      "^@guards(.*)$": "<rootDir>/src/app/core/guards$1",
+      "^@directives(.*)$": "<rootDir>/src/app/shared/directives$1",
+      "^@interceptors(.*)$": "<rootDir>/src/app/core/interceptors$1",
+      "^@mappers(.*)$": "<rootDir>/src/app/core/mappers$1",
+      "^@models(.*)$": "<rootDir>/src/app/core/models$1",
+      "^@services(.*)$": "<rootDir>/src/app/core/services$1",
+      "^@utils(.*)$": "<rootDir>/src/app/core/utils$1",
+      "^@pages(.*)$": "<rootDir>/src/app/pages$1",
+      "^@auth(.*)$": "<rootDir>/src/app/pages/auth$1",
+      "^@home(.*)$": "<rootDir>/src/app/pages/home$1",
+      "^@shared(.*)$": "<rootDir>/src/app/shared$1",
+      "^@assets(.*)$": "<rootDir>/src/assets$1",
+      "^@env(.*)$": "<rootDir>/src/environments$1"
+    },
+    "preset": "jest-preset-angular",
+    "globalSetup": "jest-preset-angular/global-setup",
+    "testResultsProcessor": "jest-sonar-reporter",
+    "collectCoverage": true,
+    "setupFilesAfterEnv": [
+      "<rootDir>/setupJest.ts"
+    ],
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/dist/",
+      "<rootDir>/src/test.ts",
+      "<rootDir>/src/main.ts"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "<rootDir>/tsconfig.spec.json",
+        "stringifyContentPathRegex": "\\.html$"
+      }
+    }
+  }
+}

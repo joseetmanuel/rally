@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Editar' : 'Nuevo' }} Tipo de Certificación</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="capture-form">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Código</mat-label>
+      <input matInput formControlName="code" placeholder="Ej. FUNDACIONAL" required>
+      <mat-error *ngIf="form.get('code')?.hasError('required')">El código es obligatorio</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Puntos por certificarse</mat-label>
+      <input matInput formControlName="points_base" type="number" min="0" required>
+      <mat-error *ngIf="form.get('points_base')?.invalid">Requerido, no puede ser negativo</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Puntos por impartir un curso</mat-label>
+      <input matInput formControlName="points_for_course" type="number" min="0" required>
+      <mat-error *ngIf="form.get('points_for_course')?.invalid">Requerido, no puede ser negativo</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Bono para el expositor</mat-label>
+      <input matInput formControlName="points_for_instructor" type="number" min="0" required>
+      <mat-error *ngIf="form.get('points_for_instructor')?.invalid">Requerido, no puede ser negativo</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Bono para el alumno</mat-label>
+      <input matInput formControlName="points_for_student" type="number" min="0" required>
+      <mat-error *ngIf="form.get('points_for_student')?.invalid">Requerido, no puede ser negativo</mat-error>
+    </mat-form-field>
+
+      </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">
+    Guardar
+  </button>
+</mat-dialog-actions>

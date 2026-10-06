@@ -1,0 +1,93 @@
+{
+    "data":{
+        "elements": [
+          {
+            "sectionId": 1156,
+            "systemId": 200,
+            "name": "Compañias",
+            "rute": "/app/companies",
+            "order": 1,
+            "inMenu": 1,
+            "sectionFatherId": null,
+            "typeSectionId": 2,
+            "status": 1,
+            "createDate": "2024-11-26 16:40:33.333289",
+            "lastUpdate": null,
+            "sonSections": [
+              {
+                "inMenu": 0,
+                "status": 1,
+                "name": "Tienda Virtual",
+                "sectionFatherId": 1156,
+                "systemId": 1,
+                "typeSectionId": 5,
+                "rute": "applyVirtual",
+                "order": 1,
+                "sectionId": 1163,
+                "createDate": "2024-11-26 16:43:41.691440",
+                "lastUpdate": null,
+                "sonSections": []
+              }
+            ]
+          },
+          {
+            "sectionId": 1161,
+            "systemId": 200,
+            "name": "Marcas",
+            "rute": "/app/brands",
+            "order": 2,
+            "inMenu": 1,
+            "sectionFatherId": null,
+            "typeSectionId": 2,
+            "status": 1,
+            "createDate": "2024-11-26 16:42:45.328836",
+            "lastUpdate": null,
+            "sonSections": []
+          },
+          {
+            "sectionId": 1162,
+            "systemId": 200,
+            "name": "Productos",
+            "rute": "/app/products",
+            "order": 3,
+            "inMenu": 1,
+            "sectionFatherId": null,
+            "typeSectionId": 2,
+            "status": 1,
+            "createDate": "2024-11-26 16:43:06.190411",
+            "lastUpdate": null,
+            "sonSections": [
+              {
+                "inMenu": 1,
+                "status": 1,
+                "name": "Productos",
+                "sectionFatherId": 1162,
+                "systemId": 200,
+                "typeSectionId": 3,
+                "rute": "/app/products",
+                "order": 1,
+                "sectionId": 1163,
+                "createDate": "2024-11-26 16:43:41.691440",
+                "lastUpdate": null,
+                "sonSections": []
+              }
+            ]
+          },
+          {
+            "sectionId": 1161,
+            "systemId": 200,
+            "name": "Componentes",
+            "rute": "/app/components",
+            "order": 2,
+            "inMenu": 1,
+            "sectionFatherId": null,
+            "typeSectionId": 2,
+            "status": 1,
+            "createDate": "2024-11-26 16:42:45.328836",
+            "lastUpdate": null,
+            "sonSections": []
+          }
+        ],
+        "message": "Datos obtenidos"
+    }
+}

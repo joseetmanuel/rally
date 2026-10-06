@@ -1,0 +1,46 @@
+@if (breadcrumbs.length > 1) {
+  <div>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb px-4">
+        @for (
+          breadcrumb of breadcrumbs;
+          track breadcrumb.url;
+          let last = $last;
+          let first = $first
+        ) {
+          <ng-container>
+            @if (first && !last) {
+              <!-- Hay más de una ruta, se muestra ícono -->
+              <li class="no-underline" [class.active]="last">
+                <a [routerLink]="breadcrumb.url"
+                  ><mat-icon class="icon"> home </mat-icon></a
+                >
+              </li>
+            }
+
+            @if (!last && !first && !breadcrumb.preventRedirect) {
+              <!-- No es el primero ni el último, se muestra texto en gris -->
+              <li class="breadcrumb-item" [class.active]="last">
+                <a [routerLink]="breadcrumb.url">{{ breadcrumb.label }}</a>
+              </li>
+            }
+
+            @if (!last && !first && breadcrumb.preventRedirect) {
+              <li class="breadcrumb-item breadcrumb-item--disabled">
+                <a>{{ breadcrumb.label }}</a>
+              </li>
+            }
+
+            <!-- NOTA: No se muestra en dashboard de inicio, para mostrarlo cambiar IF siguiente...  -->
+            <!-- Es el último elemento, se muestra en rosa -->
+            @if (!first && last) {
+              <li class="breadcrumb-item active" [class.active]="last">
+                {{ breadcrumb.label }}
+              </li>
+            }
+          </ng-container>
+        }
+      </ol>
+    </nav>
+  </div>
+}

@@ -1,0 +1,52 @@
+<h2 mat-dialog-title>Nuevo Punto Extra</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="capture-form">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Consultor</mat-label>
+      <mat-select formControlName="consultant_id" required>
+        <mat-option *ngFor="let cons of consultants" [value]="cons.id">
+          {{ cons.full_name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('consultant_id')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Motivo</mat-label>
+      <mat-select formControlName="extra_point_reason_type_id" required>
+        <mat-option *ngFor="let reason of reasonTypes" [value]="reason.id">
+          {{ reason.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('extra_point_reason_type_id')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Puntos</mat-label>
+      <input matInput type="number" min="0" formControlName="points" required>
+      <mat-error *ngIf="form.get('points')?.hasError('required')">Requerido</mat-error>
+      <mat-error *ngIf="form.get('points')?.hasError('min')">Debe ser mayor o igual a 0</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Fecha</mat-label>
+      <input matInput type="date" formControlName="awarded_at" required>
+      <mat-error *ngIf="form.get('awarded_at')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notas (Opcional)</mat-label>
+      <textarea matInput formControlName="notes" rows="2"></textarea>
+    </mat-form-field>
+
+    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">
+    Guardar
+  </button>
+</mat-dialog-actions>

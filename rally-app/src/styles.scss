@@ -1,0 +1,64 @@
+/* You can add global styles to this file, and also import other style files */
+@use 'colors' as color;
+@import '../node_modules/bootstrap/scss/functions';
+@import '../node_modules/bootstrap/scss/variables';
+@import '../node_modules/bootstrap/scss/bootstrap';
+@import './styles/base/_form.controls';
+@import './styles/base/_table.scss';
+@import './styles/base/_stepper.scss';
+@import './styles/base/_dialog.scss';
+
+.pointer {
+	cursor: pointer;
+}
+
+$theme-colors: (
+	'primary': color.$primary-color,
+	'secondary': color.$accent-color
+);
+
+html,
+body {
+	height: 100%;
+	// padding-bottom: 105px;
+	overflow: hidden;
+}
+
+@font-face {
+	font-family: 'SpockPro';
+	src: url('./styles/fonts/Spock_Pro_UltraLight.otf') format('opentype');
+}
+
+.right {
+	min-height: 80px;
+	padding-top: 15px;
+	text-align: right;
+}
+
+.title {
+	font-size: 120px;
+	font-family: 'SpockPro', sans-serif;
+	margin: 0px;
+	padding: 0px;
+}
+
+.subtitle {
+	font-family: 'SpockPro', sans-serif;
+	letter-spacing: 1px;
+	font-size: 20px;
+	font-weight: 500;
+	color: rgb(148, 148, 148);
+}
+
+.mat-mdc-dialog-content {
+	max-height: 100% !important;
+	padding: 2% !important;
+}
+
+.container-secction {
+	padding: 10px 15px 10px 15px;
+}
+
+.actions {
+	float: right;
+}

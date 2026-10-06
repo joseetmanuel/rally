@@ -1,0 +1,23 @@
+<a
+  mat-list-item
+  [ngStyle]="{ 'padding-left': depth * 12 + 'px' }"
+  routerLink="."
+  (click)="onItemSelected(data)"
+  class="menu-list-item"
+>
+  {{ item.name }}
+  @if (data.children && data.children.length) {
+    <span class="expand-icon">
+      <span fxFlex></span>
+      <mat-icon [@indicatorRotate]="expanded ? 'expanded' : 'collapsed'">
+        expand_more
+      </mat-icon>
+    </span>
+  }
+</a>
+
+@if (expanded) {
+  @for (child of data.children; track child.id) {
+    <app-menu-list-item [item]="child" [depth]="depth + 1"></app-menu-list-item>
+  }
+}

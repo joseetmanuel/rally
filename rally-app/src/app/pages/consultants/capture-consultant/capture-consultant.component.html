@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Editar' : 'Nuevo' }} Consultor</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="capture-form">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre completo</mat-label>
+      <input matInput formControlName="full_name" placeholder="Ej. Ana García" required>
+      <mat-error *ngIf="form.get('full_name')?.hasError('required')">El nombre es obligatorio</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tipo de participante</mat-label>
+      <mat-select formControlName="participant_type" required>
+        <mat-option *ngFor="let t of participantTypes" [value]="t">{{ t }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="form.get('participant_type')?.value === 'EXTERNO'">
+      <mat-label>Consultora</mat-label>
+      <input matInput formControlName="consulting_firm_name">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Número de equipo</mat-label>
+      <input matInput formControlName="team_number" type="number" min="1" required>
+      <mat-error *ngIf="form.get('team_number')?.invalid">Debe ser mayor a 0</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Correo Electrónico (Opcional)</mat-label>
+      <input matInput formControlName="email" type="email" placeholder="Ej. ana@mail.com">
+      <mat-error *ngIf="form.get('email')?.hasError('email')">Debe ser un correo válido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Contacto Teams (Opcional)</mat-label>
+      <input matInput formControlName="teams_contact">
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">
+    Guardar
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,9 @@
+node_modules
+.angular
+.angular/*
+./.angular/cache
+./coverage
+./coverage/*
+./package-lock.json
+test-report.xml
+

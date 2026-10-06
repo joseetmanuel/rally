@@ -1,0 +1,332 @@
+/* Fondo principal blanco */
+.backwrap {
+  background-image: url("../../../../assets/imgs/background.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  overflow: hidden;
+  display: flex;
+}
+
+/* --- version de login --- */
+.app-version {
+  color: white;
+  align-self: flex-end;
+  text-align: center;
+  padding: 1%;
+  margin-right: 2vh;
+  display: flex;
+  position: absolute end;
+  font-size: 2vh;
+}
+
+/* --- FORMAS FLOTANTES --- */
+.back-shapes {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+}
+
+.floating {
+  position: absolute;
+  animation: floating 12s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+.floating.circle {
+  width: 40px;
+  height: 40px;
+  background: black;
+  border-radius: 50%;
+}
+
+.floating.square {
+  width: 35px;
+  height: 35px;
+  background: black;
+}
+
+.floating.triangle {
+  width: 0;
+  height: 0;
+  border-left: 18px solid transparent;
+  border-right: 18px solid transparent;
+  border-bottom: 30px solid black;
+}
+
+.floating.cross {
+  width: 35px;
+  height: 35px;
+  position: relative;
+}
+.floating.cross::before,
+.floating.cross::after {
+  content: "";
+  position: absolute;
+  background: black;
+}
+.floating.cross::before {
+  width: 100%;
+  height: 6px;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+.floating.cross::after {
+  height: 100%;
+  width: 6px;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+@keyframes floating {
+  0% {
+    transform: translateY(0) rotate(-45deg);
+  }
+  50% {
+    transform: translateY(110vh) rotate(45deg);
+  }
+  100% {
+    transform: translateY(0) rotate(-45deg);
+  }
+}
+
+/* --- letras FLOTANTES --- */
+.back-letters {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.back-letters img {
+  opacity: 0.2;
+  position: absolute;
+  width: 1.5%;
+}
+
+.floating-letters {
+  position: absolute;
+  animation-name: floating-slow;
+  -webkit-animation-name: floating-slow;
+  animation-duration: 5s;
+  -webkit-animation-duration: 5s;
+  animation-iteration-count: infinite;
+  -webkit-animation-iteration-count: infinite;
+}
+
+.floating-letters.letter1 {
+  display: inline-block;
+  width: 39px;
+  height: 39px;
+  background-image: url("../../../../assets/imgs/A.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  opacity: 0.5;
+}
+.floating-letters.letter2 {
+  display: inline-block;
+  width: 35px;
+  height: 35px;
+  background-image: url("../../../../assets/imgs/G.png");
+
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  opacity: 0.5;
+}
+.floating-letters.letter3 {
+  display: inline-block;
+  width: 35px;
+  height: 35px;
+  background-image: url("../../../../assets/imgs/A.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  opacity: 0.5;
+}
+.floating-letters.letter4 {
+  display: inline-block;
+  width: 35px;
+  height: 35px;
+  background-image: url("../../../../assets/imgs/C.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  opacity: 0.5;
+}
+
+@keyframes floating-slow {
+  0% {
+    transform: translateY(0%) rotate(-55deg);
+  }
+  50% {
+    transform: translateY(300%) rotate(55deg);
+  }
+  100% {
+    transform: translateY(0%) rotate(-55deg);
+  }
+}
+
+@-webkit-keyframes floating-slow {
+  0% {
+    -webkit-transform: translateY(0%);
+  }
+  50% {
+    -webkit-transform: translateY(300%);
+  }
+  100% {
+    -webkit-transform: translateY(0%);
+  }
+}
+
+/* --- ESTRELLAS FUGACES --- */
+.stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.star {
+  position: absolute;
+  top: var(--top-offset, 0);
+  left: 0;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, black, transparent);
+  opacity: 0.6;
+  animation: fall 6s linear infinite;
+}
+
+@keyframes fall {
+  to {
+    transform: translate3d(120vw, 100vh, 0);
+    opacity: 0;
+  }
+}
+
+/* --- LLUVIA --- */
+.rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.drop {
+  position: absolute;
+  top: -20px;
+  width: 2px;
+  height: 20px;
+  background: black;
+  opacity: 0.4;
+  animation: rain-fall 2.5s linear infinite;
+}
+
+@keyframes rain-fall {
+  to {
+    transform: translateY(110vh);
+  }
+}
+
+/* --- NIEVE --- */
+.snow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.snowflake {
+  position: absolute;
+  top: -20px;
+  color: black;
+  font-size: 22px;
+  opacity: 0.7;
+  animation: snow-fall 12s linear infinite;
+}
+
+@keyframes snow-fall {
+  to {
+    transform: translateY(110vh) rotate(360deg);
+  }
+}
+
+/* --- BURBUJAS --- */
+.bubbles {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -30px;
+  width: 20px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  animation: bubble-rise 10s linear infinite;
+}
+
+@keyframes bubble-rise {
+  to {
+    transform: translateY(-110vh) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* --- CONFETI --- */
+.confetti {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 14px;
+  background: black;
+  opacity: 0.6;
+  animation: confetti-fall 8s linear infinite;
+}
+
+@keyframes confetti-fall {
+  to {
+    transform: translateY(110vh) rotate(360deg);
+  }
+}
+
+.background-white {
+  background: white;
+}

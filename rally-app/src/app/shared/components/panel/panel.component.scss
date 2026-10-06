@@ -1,0 +1,55 @@
+@use 'colors' as color;
+
+.panel {
+	background-color: #6b9bc9;
+	background-color: color.$gray-color;
+	background-position: top;
+	background-repeat: no-repeat;
+	background-size: cover;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	// padding: 0.5rem 1rem;
+}
+
+.panel-item {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	// flex-basis: 20%;
+	justify-content: center;
+	color: white;
+	padding: 5px;
+
+	& .icon {
+		// font-size: 2rem;
+		width: 2rem;
+		// height: 2rem;
+		opacity: 0.7;
+	}
+
+	& .header {
+		display: flex;
+		// flex-direction: column;
+		flex-direction: row;
+		justify-content: center;
+		color: white;
+		// padding-left: 0.5rem;
+	}
+
+	& .title {
+		font-size: 12px;
+		line-height: 16px;
+		color: white;
+		margin-right: 10px;
+	}
+
+	& span {
+		font-weight: 500;
+		color: white;
+		font-size: 10px;
+		margin-right: 5px;
+	}
+}

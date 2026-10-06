@@ -1,0 +1,1 @@
+C:\sonar-scanner-4.8.0.2856-windows\bin\sonar-scanner.bat

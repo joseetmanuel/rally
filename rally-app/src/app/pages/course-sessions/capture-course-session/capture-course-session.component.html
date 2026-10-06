@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Editar' : 'Nueva' }} Sesión de Curso</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="capture-form">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Título del curso (Opcional)</mat-label>
+      <input matInput formControlName="title" placeholder="Ej. Taller de AWS Avanzado">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Certificación relacionada</mat-label>
+      <mat-select formControlName="certification_id" required>
+        <mat-option *ngFor="let cert of certifications" [value]="cert.id">
+          {{ cert.vendor }} - {{ cert.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('certification_id')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Consultor (Instructor)</mat-label>
+      <mat-select formControlName="instructor_consultant_id" required>
+        <mat-option *ngFor="let cons of consultants" [value]="cons.id">
+          {{ cons.full_name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('instructor_consultant_id')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Fecha de la sesión</mat-label>
+      <input matInput type="date" formControlName="session_date" required>
+      <mat-error *ngIf="form.get('session_date')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notas (Opcional)</mat-label>
+      <textarea matInput formControlName="notes" rows="2"></textarea>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">
+    Guardar
+  </button>
+</mat-dialog-actions>

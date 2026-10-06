@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>Asignar Certificación a {{consultant.full_name}}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="capture-form">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Certificación obtenida</mat-label>
+      <mat-select formControlName="certification_id" required>
+        <mat-option *ngFor="let cert of certifications" [value]="cert.id">
+          {{ cert.vendor }} - {{ cert.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('certification_id')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Fecha de obtención</mat-label>
+      <input matInput type="date" formControlName="obtained_at" required>
+      <mat-error *ngIf="form.get('obtained_at')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+
+    <div class="checkbox-group">
+      <mat-checkbox formControlName="paid_with_own_resources" color="primary">
+        ¿Pagada con recursos propios?
+      </mat-checkbox>
+    </div>
+
+    <!-- Mostrar campos de reembolso solo si se pagó con recursos propios -->
+    <ng-container *ngIf="form.get('paid_with_own_resources')?.value">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Monto a reembolsar ($)</mat-label>
+        <input matInput type="number" formControlName="reimbursement_amount">
+      </mat-form-field>
+
+      <div class="checkbox-group">
+        <mat-checkbox formControlName="reimbursement_registered" color="primary">
+          ¿Reembolso ya registrado en el sistema?
+        </mat-checkbox>
+      </div>
+    </ng-container>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notas (Opcional)</mat-label>
+      <textarea matInput formControlName="notes" rows="2"></textarea>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">
+    Guardar
+  </button>
+</mat-dialog-actions>

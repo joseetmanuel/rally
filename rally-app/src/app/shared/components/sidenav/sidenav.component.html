@@ -1,0 +1,35 @@
+<mat-sidenav-container class="app">
+  <mat-sidenav #appDrawer mode="over" opened="false" class="sidebar">
+    <nav class="sidebar-nav">
+      <ul>
+        @for (item of menu.items; track item.name) {
+          <li>
+            <a routerLink="." (click)="onItemSelected(item)">
+              <i></i>
+              <span>{{ item.name }}</span>
+            </a>
+            @if (item.children && item.children.length > 0) {
+              <ul class="nav-flyout">
+                @for (child of item.children; track child.name) {
+                  @if (child.inMenu === 1) {
+                    <li>
+                      <a routerLink="." (click)="onItemSelected(child)">
+                        <i class="ion-ios-color-filter-outline"></i>
+                        {{ child.name }}
+                      </a>
+                    </li>
+                  }
+                }
+              </ul>
+            }
+          </li>
+        }
+      </ul>
+    </nav>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <app-toolbar></app-toolbar>
+    <app-breadcrumb></app-breadcrumb>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

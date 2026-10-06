@@ -1,0 +1,463 @@
+// Material 3: tokens de color (tonales) derivados del azul de marca #006990.
+// Todo el componente consume variables --rk-* para que el tema sea fácil de ajustar.
+:host {
+  display: block;
+  --rk-primary: #006990;
+  --rk-on-primary: #ffffff;
+  --rk-primary-container: #c7e7ff;
+  --rk-on-primary-container: #001e2e;
+  --rk-surface: #f6fafe;
+  --rk-surface-container: #eaeff3;
+  --rk-surface-container-high: #e0e5e9;
+  --rk-on-surface: #171c1f;
+  --rk-on-surface-variant: #40484d;
+  --rk-outline-variant: #c0c7cd;
+
+  // Medallas (valor semántico: oro, plata, bronce)
+  --rk-gold: #e0a800;
+  --rk-gold-container: #ffe9a8;
+  --rk-silver: #8a959c;
+  --rk-silver-container: #e3e8ec;
+  --rk-bronze: #b5651d;
+  --rk-bronze-container: #f6d9bf;
+
+  // Segmentos del puntaje (paleta de marca)
+  --rk-seg-cert: #006990;
+  --rk-seg-given: #00ae9e;
+  --rk-seg-student: #652d89;
+  --rk-seg-instructor: #b1005c;
+  --rk-seg-extra: #f58025;
+
+  --rk-ease: cubic-bezier(0.2, 0, 0, 1);
+  --rk-ease-decel: cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+
+.ranking {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 16px 16px 48px;
+  color: var(--rk-on-surface);
+}
+
+// ---------------------------------------------------------------- Hero
+.hero {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 16px 24px;
+  padding: 24px 28px;
+  border-radius: 28px;
+  color: var(--rk-on-primary);
+  background:
+    radial-gradient(circle at 92% 0%, rgba(0, 174, 158, 0.55), transparent 45%),
+    linear-gradient(135deg, #004b68 0%, var(--rk-primary) 100%);
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      line-height: 2.5rem;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 2px 0 0;
+      font-size: 0.95rem;
+      opacity: 0.88;
+    }
+  }
+
+  &__trophy {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    font-size: 36px;
+    line-height: 56px;
+    text-align: center;
+    border-radius: 50%;
+    color: #ffe9a8;
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  &__refresh {
+    --mdc-filled-button-container-color: rgba(255, 255, 255, 0.18);
+    --mdc-filled-button-label-text-color: #fff;
+    border-radius: 999px;
+  }
+}
+
+.kpis {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+
+  .kpi {
+    min-width: 92px;
+    padding: 10px 16px;
+    border-radius: 16px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.14);
+
+    dt {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      opacity: 0.85;
+    }
+
+    dd {
+      margin: 2px 0 0;
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+  }
+}
+
+// ---------------------------------------------------------------- Estados
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+  padding: 48px 24px;
+  text-align: center;
+  border-radius: 28px;
+  background: var(--rk-surface-container);
+  color: var(--rk-on-surface-variant);
+
+  mat-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 56px;
+    color: var(--rk-primary);
+  }
+
+  &--error mat-icon {
+    color: #ba1a1a;
+  }
+}
+
+// ---------------------------------------------------------------- Podio
+.podium {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: end;
+  gap: 16px;
+  margin: 32px 0 8px;
+  padding: 0;
+  list-style: none;
+
+  &__place {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: rise 520ms var(--rk-ease-decel) both;
+
+    &--2 { animation-delay: 80ms; }
+    &--3 { animation-delay: 160ms; }
+    &--1 { animation-delay: 0ms; }
+  }
+
+  &__medal mat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 36px;
+    margin-bottom: -6px;
+  }
+
+  &__name {
+    margin: 12px 0 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+
+  &__points {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin: 4px 0 0;
+  }
+
+  &__points-value {
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__points-unit {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--rk-on-surface-variant);
+  }
+
+  &__stats {
+    margin: 6px 0 12px;
+    font-size: 0.8rem;
+    color: var(--rk-on-surface-variant);
+  }
+
+  &__block {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    padding-top: 10px;
+    border-radius: 24px 24px 0 0;
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  // Alturas del podio y color de medalla por lugar
+  &__place--1 .podium__block { height: 150px; background: linear-gradient(180deg, var(--rk-gold-container), #ffd45e); }
+  &__place--2 .podium__block { height: 110px; background: linear-gradient(180deg, var(--rk-silver-container), #c4ccd2); }
+  &__place--3 .podium__block { height: 84px;  background: linear-gradient(180deg, var(--rk-bronze-container), #e7b98b); }
+
+  &__place--1 .podium__medal mat-icon { color: var(--rk-gold); }
+  &__place--2 .podium__medal mat-icon { color: var(--rk-silver); }
+  &__place--3 .podium__medal mat-icon { color: var(--rk-bronze); }
+
+  &__place--1 .avatar { box-shadow: 0 0 0 4px var(--rk-gold); }
+  &__place--2 .avatar { box-shadow: 0 0 0 4px var(--rk-silver); }
+  &__place--3 .avatar { box-shadow: 0 0 0 4px var(--rk-bronze); }
+
+  &__place--1 .podium__points-value { color: #8a6500; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ---------------------------------------------------------------- Avatar
+.avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--rk-on-primary-container);
+  background: var(--rk-primary-container);
+
+  &--lg {
+    width: 72px;
+    height: 72px;
+    margin-top: 8px;
+    font-size: 1.5rem;
+  }
+}
+
+// ---------------------------------------------------------------- Listado
+.board {
+  margin-top: 24px;
+  padding: 20px 20px 8px;
+  border-radius: 28px;
+  background: var(--rk-surface-container);
+
+  &__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+  }
+
+  &__empty {
+    padding: 24px 8px;
+    text-align: center;
+    color: var(--rk-on-surface-variant);
+  }
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--rk-surface);
+  border: 1px solid var(--rk-outline-variant);
+  color: var(--rk-on-surface-variant);
+  transition: border-color 200ms var(--rk-ease), box-shadow 200ms var(--rk-ease);
+
+  &:focus-within {
+    border-color: var(--rk-primary);
+    box-shadow: 0 0 0 2px var(--rk-primary);
+  }
+
+  input {
+    border: 0;
+    outline: 0;
+    width: 180px;
+    font: inherit;
+    color: var(--rk-on-surface);
+    background: transparent;
+  }
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 12px 0 4px;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+  color: var(--rk-on-surface-variant);
+
+  li { display: flex; align-items: center; gap: 6px; }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+}
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 40px 44px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 4px;
+  border-top: 1px solid var(--rk-outline-variant);
+  transition: background-color 200ms var(--rk-ease);
+
+  &:first-child { border-top: 0; }
+  &:hover { background: var(--rk-surface-container-high); border-radius: 16px; }
+
+  &__position {
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--rk-on-surface-variant);
+    font-variant-numeric: tabular-nums;
+
+    &--top { color: var(--rk-primary); }
+  }
+
+  &__main { min-width: 0; }
+
+  &__name {
+    margin: 0 0 6px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__stats {
+    display: flex;
+    gap: 16px;
+    margin: 0;
+
+    div { text-align: center; }
+    dt { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--rk-on-surface-variant); }
+    dd { margin: 0; font-weight: 600; }
+  }
+
+  &__points {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 4px;
+    min-width: 84px;
+    margin: 0;
+
+    strong {
+      font-size: 1.7rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--rk-primary);
+    }
+
+    span { font-size: 0.8rem; color: var(--rk-on-surface-variant); }
+  }
+}
+
+// Barra de puntaje: el largo es el puntaje relativo al líder, los colores son su composición
+.bar {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--rk-surface);
+  overflow: hidden;
+
+  &__fill {
+    display: flex;
+    height: 100%;
+    border-radius: 999px;
+    overflow: hidden;
+    transition: width 600ms var(--rk-ease-decel);
+  }
+
+  &__seg { display: block; height: 100%; }
+}
+
+// ---------------------------------------------------------------- Responsive
+@media (max-width: 839px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 20px;
+
+    &__refresh { justify-self: start; }
+  }
+
+  .kpis .kpi { flex: 1; min-width: 0; }
+
+  .row {
+    grid-template-columns: 32px 40px minmax(0, 1fr) auto;
+    gap: 12px;
+
+    &__stats { display: none; }
+  }
+}
+
+@media (max-width: 599px) {
+  .podium {
+    gap: 8px;
+
+    &__name { font-size: 0.9rem; }
+    &__points-value { font-size: 1.8rem; }
+    &__stats { display: none; }
+    &__place--1 .podium__block { height: 110px; }
+    &__place--2 .podium__block { height: 80px; }
+    &__place--3 .podium__block { height: 60px; }
+  }
+
+  .avatar--lg { width: 56px; height: 56px; font-size: 1.2rem; }
+  .search { flex: 1 1 100%; }
+  .search input { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .podium__place { animation: none; }
+  .bar__fill { transition: none; }
+}

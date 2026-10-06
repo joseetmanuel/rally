@@ -1,0 +1,56 @@
+<div class="page-container mat-elevation-z2">
+  <div class="header-actions">
+    <h2>Consultores</h2>
+    <button mat-flat-button color="primary" (click)="openCaptureDialog()">
+      <mat-icon>add</mat-icon> Nuevo Consultor
+    </button>
+  </div>
+
+  <table mat-table [dataSource]="consultants" class="full-width-table">
+    
+    <ng-container matColumnDef="full_name">
+      <th mat-header-cell *matHeaderCellDef> Nombre </th>
+      <td mat-cell *matCellDef="let element"> {{element.full_name}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="participant_type">
+      <th mat-header-cell *matHeaderCellDef> Tipo </th>
+      <td mat-cell *matCellDef="let element">
+        {{element.participant_type}}
+        <span *ngIf="element.consulting_firm_name"> ({{element.consulting_firm_name}})</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="team_number">
+      <th mat-header-cell *matHeaderCellDef> Equipo </th>
+      <td mat-cell *matCellDef="let element"> {{element.team_number}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef> Email </th>
+      <td mat-cell *matCellDef="let element"> {{element.email || 'N/A'}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef class="action-column"> Acciones </th>
+      <td mat-cell *matCellDef="let element" class="action-column">
+        <button mat-icon-button color="accent" title="Ver Certificaciones" (click)="openCertificationsDialog(element)">
+          <mat-icon>workspace_premium</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" title="Editar" (click)="openCaptureDialog(element)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" title="Eliminar" (click)="deleteConsultant(element)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <div *ngIf="consultants.length === 0" class="empty-state">
+    No hay consultores registrados.
+  </div>
+</div>

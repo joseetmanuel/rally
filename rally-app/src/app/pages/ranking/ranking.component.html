@@ -1,0 +1,129 @@
+<section class="ranking" aria-labelledby="ranking-title">
+
+  <!-- Encabezado: título + indicadores clave -->
+  <header class="hero">
+    <div class="hero__title">
+      <mat-icon class="hero__trophy" aria-hidden="true">emoji_events</mat-icon>
+      <div>
+        <h1 id="ranking-title">Ranking del Rally</h1>
+        <p>Quién lidera en certificaciones, cursos y contribuciones</p>
+      </div>
+    </div>
+
+    <dl class="kpis">
+      <div class="kpi">
+        <dt>Participantes</dt>
+        <dd>{{ ranking.length }}</dd>
+      </div>
+      <div class="kpi">
+        <dt>Certificaciones</dt>
+        <dd>{{ totalCertifications }}</dd>
+      </div>
+      <div class="kpi">
+        <dt>Puntos en juego</dt>
+        <dd>{{ totalPoints }}</dd>
+      </div>
+    </dl>
+
+    <button mat-flat-button class="hero__refresh" (click)="load()" [disabled]="loading">
+      <mat-icon>refresh</mat-icon> Actualizar
+    </button>
+  </header>
+
+  @if (loading) {
+    <div class="state" role="status">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Calculando el ranking…</p>
+    </div>
+  } @else if (error) {
+    <div class="state state--error" role="alert">
+      <mat-icon>cloud_off</mat-icon>
+      <p>No se pudo cargar el ranking. Verifica que el servidor esté activo.</p>
+      <button mat-flat-button (click)="load()">Reintentar</button>
+    </div>
+  } @else if (ranking.length === 0) {
+    <div class="state">
+      <mat-icon>groups</mat-icon>
+      <p>Aún no hay consultores registrados. Da de alta a los participantes para iniciar el Rally.</p>
+    </div>
+  } @else {
+
+    <!-- Podio -->
+    @if (!search) {
+      <ol class="podium" aria-label="Los tres primeros lugares">
+        @for (entry of podium; track entry.consultant_id) {
+          <li class="podium__place podium__place--{{ entry.position }}">
+            <div class="podium__medal" aria-hidden="true">
+              <mat-icon>{{ entry.position === 1 ? 'emoji_events' : 'military_tech' }}</mat-icon>
+            </div>
+            <div class="avatar avatar--lg">{{ initials(entry.full_name) }}</div>
+            <h2 class="podium__name">{{ entry.full_name }}</h2>
+            <p class="podium__points">
+              <span class="podium__points-value">{{ entry.total_points }}</span>
+              <span class="podium__points-unit">pts</span>
+            </p>
+            <p class="podium__stats">
+              {{ entry.certifications }} cert. · {{ entry.courses_given }} dados · {{ entry.courses_taken }} tomados
+            </p>
+            <div class="podium__block" [attr.aria-label]="'Lugar ' + entry.position">
+              <span>{{ entry.position }}</span>
+            </div>
+          </li>
+        }
+      </ol>
+    }
+
+    <!-- Listado completo -->
+    <div class="board">
+      <div class="board__toolbar">
+        <h2>{{ search ? 'Resultados' : 'Resto de la clasificación' }}</h2>
+        <label class="search">
+          <mat-icon aria-hidden="true">search</mat-icon>
+          <input type="search" placeholder="Buscar consultor" [value]="search" (input)="onSearch($event)"
+                 aria-label="Buscar consultor por nombre">
+        </label>
+      </div>
+
+      <ul class="legend" aria-label="Qué significa cada color">
+        @for (s of segments; track s.key) {
+          <li><span class="legend__dot" [style.background]="s.color"></span>{{ s.label }}</li>
+        }
+      </ul>
+
+      @if (rows.length === 0) {
+        <p class="board__empty">
+          {{ search ? 'Ningún consultor coincide con la búsqueda.' : 'Todos los participantes están en el podio.' }}
+        </p>
+      } @else {
+        <ol class="rows">
+          @for (entry of rows; track entry.consultant_id) {
+            <li class="row">
+              <span class="row__position" [class.row__position--top]="entry.position <= 3">{{ entry.position }}</span>
+              <div class="avatar">{{ initials(entry.full_name) }}</div>
+
+              <div class="row__main">
+                <p class="row__name">{{ entry.full_name }}</p>
+                <div class="bar" role="img" [attr.aria-label]="breakdownSummary(entry)" [title]="breakdownSummary(entry)">
+                  <div class="bar__fill" [style.width.%]="barWidth(entry)">
+                    @for (s of segments; track s.key) {
+                      <span class="bar__seg" [style.background]="s.color"
+                            [style.width.%]="segmentWidth(entry, s.key)"></span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <dl class="row__stats">
+                <div><dt>Cert.</dt><dd>{{ entry.certifications }}</dd></div>
+                <div><dt>Dados</dt><dd>{{ entry.courses_given }}</dd></div>
+                <div><dt>Tomados</dt><dd>{{ entry.courses_taken }}</dd></div>
+              </dl>
+
+              <p class="row__points"><strong>{{ entry.total_points }}</strong><span>pts</span></p>
+            </li>
+          }
+        </ol>
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,11 @@
+<div class="panel">
+  @for (item of panels(); track item.icon) {
+    <div class="panel-item">
+      <mat-icon class="icon">{{ item.icon }}</mat-icon>
+      <div class="header">
+        <span>{{ item.text }}: </span>
+        <p class="title">{{ item.label }}</p>
+      </div>
+    </div>
+  }
+</div>

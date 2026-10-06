@@ -1,0 +1,67 @@
+@use "colors" as color;
+
+.breadcrumb {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  background-color: #fcfcfc;
+  margin: 0;
+  font-size: 14px;
+}
+
+.breadcrumb-item {
+  padding: 2px 10px;
+  background-color: #fcfcfc;
+  border-radius: 2px;
+  height: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  a {
+    text-decoration: none;
+    color: #616060;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+    &:hover {
+      color: var(--color);
+      border-bottom-color: color.$primary-color;
+    }
+  }
+}
+
+.breadcrumb-item--disabled {
+  a {
+    pointer-events: none;
+  }
+}
+
+.no-underline {
+  text-decoration: none;
+  color: #a2a2a2;
+  padding: 2px 10px;
+  background-color: #f2f2f2;
+  border-radius: 2px;
+  height: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  .icon {
+    transform: scale(0.8);
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative;
+    bottom: -2.5px;
+    color: #a2a2a2;
+    transition: all 0.3s ease;
+    &:hover {
+      color: black;
+    }
+  }
+}
+
+.active {
+  color: lighten(color.$accent-color, 10%) !important;
+}

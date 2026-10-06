@@ -1,0 +1,53 @@
+<mat-toolbar color="primary">
+  <button
+    mat-icon-button
+    class="example-icon sidenav-icon"
+    aria-label="Example icon-button with menu icon"
+    (click)="toggleRightSidenav()"
+  >
+    <mat-icon matSuffix>menu</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    class="example-icon"
+    aria-label="Example icon-button with menu icon"
+    (click)="goHome()"
+  >
+    <mat-icon>home</mat-icon>
+  </button>
+  <span class="subtitle subt-toolbar">Rally - Sistema para Rally de certificaciones</span>
+  <div id="container">
+    <ul id="menu">
+      @for (item of menu.items; track item.name) {
+        <li>
+          @if (item.children && item.children.length > 0) {
+            <a>{{ item.name }}</a>
+          } @else {
+            <a [routerLink]="item.route">{{ item.name }}</a>
+          }
+          @if (item.children && item.children.length > 0) {
+            <ul>
+              @for (item2 of item.children; track item2.name) {
+                <li>
+                  <a [routerLink]="item2.route">{{ item2.name }}</a>
+                </li>
+              }
+            </ul>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+  <span class="example-spacer"></span>
+  <div>
+    <button mat-button [matMenuTriggerFor]="beforeMenu" matBadgeColor="warn">
+      <mat-icon>person</mat-icon>
+      <span class="username">{{ user }}</span>
+    </button>
+    <mat-menu #beforeMenu="matMenu" xPosition="before">
+      <button mat-menu-item (click)="closeSession()">
+        <mat-icon>login</mat-icon>Cerrar Sesión
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>
