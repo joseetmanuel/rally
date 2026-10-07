@@ -5,7 +5,7 @@ from models.extra_point_reason_type import ExtraPointReasonType
 from models.team import Team
 from models.consulting_firm import ConsultingFirm
 
-TEAMS = ['Elastic', 'LC/GR', 'Call', 'SI+', 'NBM', 'Gerente', 'Satelites', 'Equipo Cross']
+TEAMS = ['Elastic', 'LC/GR', 'Call', 'SI+', 'NBM', 'Gerente', 'Equipo Cross']
 CONSULTING_FIRMS = ['Antal', 'Corus', 'Wayssen', 'Qualtop', 'MaterSys', 'Inetum', 'POSITIVO S+']
 
 def seed_catalogs():
