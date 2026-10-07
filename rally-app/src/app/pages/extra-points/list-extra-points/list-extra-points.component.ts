@@ -34,13 +34,7 @@ export class ListExtraPointsComponent implements OnInit {
    * Opciones del filtro: las personas que aparecen en los puntos cargados. Se obtienen de aquí y no del
    * catálogo de consultores porque ese catálogo es sólo para el administrador (esta pantalla es pública).
    */
-  get consultants(): { id: number; full_name: string }[] {
-    const people = new Map<number, string>();
-    for (const point of this.extraPoints) {
-      people.set(point.consultant_id, point.consultant?.full_name ?? `ID: ${point.consultant_id}`);
-    }
-    return [...people].map(([id, full_name]) => ({ id, full_name })).sort((a, b) => a.full_name.localeCompare(b.full_name, 'es'));
-  }
+  consultants: { id: number; full_name: string }[] = [];
   selectedConsultantId: number | null = null;
   get displayedColumns(): string[] {
     return this.admin.isAdmin()
@@ -61,10 +55,20 @@ export class ListExtraPointsComponent implements OnInit {
     this.extraPointService.getExtraPoints().subscribe({
       next: (data) => {
         this.extraPoints = data;
+        this.consultants = this.buildConsultantOptions(data);
         this.applyFilter();
       },
       error: (err) => console.error('Error loading extra points', err)
     });
+  }
+
+  /** Se calcula una sola vez por carga: un getter crearía objetos nuevos en cada ciclo y el ngFor recrearía las opciones sin parar */
+  private buildConsultantOptions(points: ConsultantExtraPoint[]): { id: number; full_name: string }[] {
+    const people = new Map<number, string>();
+    for (const point of points) {
+      people.set(point.consultant_id, point.consultant?.full_name ?? `ID: ${point.consultant_id}`);
+    }
+    return [...people].map(([id, full_name]) => ({ id, full_name })).sort((a, b) => a.full_name.localeCompare(b.full_name, 'es'));
   }
 
   onFilterChange(consultantId: number | null): void {

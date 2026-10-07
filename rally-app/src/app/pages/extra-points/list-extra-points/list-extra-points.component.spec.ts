@@ -56,6 +56,13 @@ describe('ListExtraPointsComponent', () => {
     expect(text).toContain('ID: 2');
   });
 
+  it('keeps the filter options stable between change detections (regression: a getter froze the page)', () => {
+    const first = component.consultants;
+    fixture.detectChanges();
+    expect(component.consultants).toBe(first);
+    expect(first.map((c) => c.full_name)).toEqual(['Ana', 'ID: 2']);
+  });
+
   it('should filter by consultant on the client', () => {
     component.onFilterChange(1);
     fixture.detectChanges();
