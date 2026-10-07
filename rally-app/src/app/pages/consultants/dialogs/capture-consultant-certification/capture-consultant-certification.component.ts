@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, ReactiveFormsModule, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +12,19 @@ import { CertificationService } from '../../../../core/services/certifications/c
 import { ConsultantCertification } from '../../../../core/models/consultant-certifications/consultant-certification';
 import { Consultant } from '../../../../core/models/consultants/consultant';
 import { Certification } from '../../../../core/models/certifications/certification';
+
+/** Fecha local de hoy como AAAA-MM-DD (el formato del input type=date) */
+export function todayIso(): string {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/** Una certificación no puede haberse obtenido en el futuro */
+export function notFutureDate(control: AbstractControl): ValidationErrors | null {
+  const value = control.value as string;
+  return value && value > todayIso() ? { future: true } : null;
+}
 
 @Component({
   selector: 'app-capture-consultant-certification',
@@ -31,6 +44,8 @@ import { Certification } from '../../../../core/models/certifications/certificat
 })
 export class CaptureConsultantCertificationComponent implements OnInit {
   form: FormGroup;
+  maxDate = todayIso();
+  errorMessage = '';
   certifications: Certification[] = [];
   
   private fb = inject(FormBuilder);
@@ -43,7 +58,7 @@ export class CaptureConsultantCertificationComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       certification_id: [null, Validators.required],
-      obtained_at: ['', Validators.required],
+      obtained_at: ['', [Validators.required, notFutureDate]],
       reimbursement_amount: [0, Validators.min(0)],
       paid_with_own_resources: [false],
       reimbursement_registered: [false],
@@ -70,9 +85,13 @@ export class CaptureConsultantCertificationComponent implements OnInit {
       consultant_id: this.consultant.id
     };
 
+    this.errorMessage = '';
     this.consultantCertService.createConsultantCertification(certData).subscribe({
       next: () => this.dialogRef.close(true),
-      error: (err) => console.error('Error assigning certification', err)
+      error: (err) => {
+        this.errorMessage = err?.error?.error || 'No se pudo asignar la certificación';
+        console.error('Error assigning certification', err);
+      }
     });
   }
 

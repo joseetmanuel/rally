@@ -14,8 +14,9 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Fecha de obtención</mat-label>
-      <input matInput type="date" formControlName="obtained_at" required>
+      <input matInput type="date" formControlName="obtained_at" [max]="maxDate" required>
       <mat-error *ngIf="form.get('obtained_at')?.hasError('required')">Requerido</mat-error>
+      <mat-error *ngIf="form.get('obtained_at')?.hasError('future')">No puede ser una fecha futura</mat-error>
     </mat-form-field>
 
     <div class="checkbox-group">
@@ -43,6 +44,7 @@
       <textarea matInput formControlName="notes" rows="2"></textarea>
     </mat-form-field>
 
+    <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">

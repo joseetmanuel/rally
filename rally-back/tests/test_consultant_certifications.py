@@ -57,3 +57,47 @@ def test_get_consultant_certifications(client):
     data = response.get_json()
     assert isinstance(data, list)
     assert len(data) >= 1
+
+
+# ---- Fechas: una certificación no puede haberse obtenido en el futuro ----
+import uuid
+from datetime import date as _date, timedelta
+
+
+def _setup_cert(client):
+    u = uuid.uuid4().hex[:8]
+    consultant_id = client.post('/api/consultants', json={
+        "full_name": f"Fecha {u}", "participant_type": "INTERNO", "team_id": api_team_id(client)
+    }).get_json()['id']
+    type_id = client.post('/api/certification-types', json={"code": f"TF{u}", "points_base": 10}).get_json()['id']
+    cert_id = client.post('/api/certifications', json={
+        "vendor": "V", "name": f"Cert {u}", "certification_type_id": type_id}).get_json()['id']
+    return consultant_id, cert_id
+
+
+def test_future_obtained_date_is_rejected(client):
+    consultant_id, cert_id = _setup_cert(client)
+    tomorrow = (_date.today() + timedelta(days=1)).isoformat()
+    response = client.post('/api/consultant-certifications', json={
+        "consultant_id": consultant_id, "certification_id": cert_id, "obtained_at": tomorrow})
+    assert response.status_code == 400
+    assert "future" in response.get_json()['error']
+    # y no quedó registrada
+    assert [c for c in client.get('/api/consultant-certifications').get_json() if c['consultant_id'] == consultant_id] == []
+
+
+def test_today_and_past_dates_are_accepted(client):
+    consultant_id, cert_id = _setup_cert(client)
+    today = _date.today().isoformat()
+    assert client.post('/api/consultant-certifications', json={
+        "consultant_id": consultant_id, "certification_id": cert_id, "obtained_at": today}).status_code == 201
+
+
+def test_cannot_move_an_existing_certification_to_the_future(client):
+    consultant_id, cert_id = _setup_cert(client)
+    record = client.post('/api/consultant-certifications', json={
+        "consultant_id": consultant_id, "certification_id": cert_id, "obtained_at": "2026-01-15"}).get_json()
+    tomorrow = (_date.today() + timedelta(days=1)).isoformat()
+    response = client.put(f"/api/consultant-certifications/{record['id']}", json={"obtained_at": tomorrow})
+    assert response.status_code == 400
+    assert client.get(f"/api/consultant-certifications/{record['id']}").get_json()['obtained_at'] == "2026-01-15"

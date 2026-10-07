@@ -65,4 +65,45 @@ describe('CaptureConsultantCertificationComponent', () => {
     component.onCancel();
     expect(dialogRef.close).toHaveBeenCalledWith(false);
   });
+
+  const localIso = (offsetDays: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + offsetDays);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  };
+
+  it('rejects an obtained date in the future', async () => {
+    await setup();
+    component.form.patchValue({ certification_id: 1, obtained_at: localIso(1) });
+    expect(component.form.get('obtained_at')?.hasError('future')).toBe(true);
+    expect(component.form.invalid).toBe(true);
+    component.onSubmit();
+    expect(mainService.createConsultantCertification).not.toHaveBeenCalled();
+  });
+
+  it('accepts today and past dates', async () => {
+    await setup();
+    component.form.patchValue({ certification_id: 1, obtained_at: localIso(0) });
+    expect(component.form.valid).toBe(true);
+    component.form.patchValue({ obtained_at: localIso(-30) });
+    expect(component.form.valid).toBe(true);
+  });
+
+  it('does not allow picking a future date in the input', async () => {
+    await setup();
+    expect(component.maxDate).toBe(localIso(0));
+    expect(fixture.nativeElement.querySelector('input[type=date]').max).toBe(localIso(0));
+  });
+
+  it('shows the backend error and keeps the dialog open', async () => {
+    mainService.createConsultantCertification.mockReturnValueOnce(
+      throwError(() => ({ error: { error: 'obtained_at cannot be in the future' } })));
+    jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    await setup();
+    component.form.patchValue({ certification_id: 1, obtained_at: localIso(-1) });
+    component.onSubmit();
+    expect(component.errorMessage).toBe('obtained_at cannot be in the future');
+    expect(dialogRef.close).not.toHaveBeenCalledWith(true);
+  });
 });
