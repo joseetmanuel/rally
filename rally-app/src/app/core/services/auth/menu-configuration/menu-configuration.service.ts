@@ -45,22 +45,6 @@ export class MenuConfigurationService {
                                 children: []
                         },
                         {
-                                id: 3,
-                                name: 'Tipos Cert.',
-                                icon: 'category',
-                                route: 'certification-types',
-                                inMenu: 1,
-                                children: []
-                        },
-                        {
-                                id: 4,
-                                name: 'Certificaciones',
-                                icon: 'workspace_premium',
-                                route: 'certifications',
-                                inMenu: 1,
-                                children: []
-                        },
-                        {
                                 id: 5,
                                 name: 'Cursos',
                                 icon: 'school',
@@ -75,6 +59,47 @@ export class MenuConfigurationService {
                                 route: 'extra-points',
                                 inMenu: 1,
                                 children: []
+                        },
+                        {
+                                id: 10,
+                                name: 'Catálogos',
+                                icon: 'library_books',
+                                route: '',
+                                inMenu: 1,
+                                children: [
+                                        {
+                                                id: 8,
+                                                name: 'Equipos',
+                                                icon: 'groups',
+                                                route: 'teams',
+                                                inMenu: 1,
+                                                children: []
+                                        },
+                                        {
+                                                id: 9,
+                                                name: 'Consultoras',
+                                                icon: 'business',
+                                                route: 'consulting-firms',
+                                                inMenu: 1,
+                                                children: []
+                                        },
+                                        {
+                                                id: 3,
+                                                name: 'Tipos de certificación',
+                                                icon: 'category',
+                                                route: 'certification-types',
+                                                inMenu: 1,
+                                                children: []
+                                        },
+                                        {
+                                                id: 4,
+                                                name: 'Certificaciones',
+                                                icon: 'workspace_premium',
+                                                route: 'certifications',
+                                                inMenu: 1,
+                                                children: []
+                                        }
+                                ]
                         }
                 ] as unknown as Section[]);
         }

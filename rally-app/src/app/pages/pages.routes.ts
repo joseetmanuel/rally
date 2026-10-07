@@ -7,6 +7,8 @@ import { ROUTES_CERTIFICATION_TYPES } from './certification-types/certification-
 import { ROUTES_COURSE_SESSIONS } from './course-sessions/course-sessions.routes';
 import { ROUTES_EXTRA_POINTS } from './extra-points/extra-points.routes';
 import { ROUTES_RANKING } from './ranking/ranking.routes';
+import { ROUTES_TEAMS } from './teams/teams.routes';
+import { ROUTES_CONSULTING_FIRMS } from './consulting-firms/consulting-firms.routes';
 
 export const ROUTES: Routes = [
 	{
@@ -42,6 +44,16 @@ export const ROUTES: Routes = [
 				path: 'course-sessions',
 				data: { breadcrumb: 'Cursos Impartidos' },
 				loadChildren: () => ROUTES_COURSE_SESSIONS
+			},
+			{
+				path: 'teams',
+				data: { breadcrumb: 'Equipos' },
+				loadChildren: () => ROUTES_TEAMS
+			},
+			{
+				path: 'consulting-firms',
+				data: { breadcrumb: 'Consultoras' },
+				loadChildren: () => ROUTES_CONSULTING_FIRMS
 			},
 			{
 				path: 'extra-points',

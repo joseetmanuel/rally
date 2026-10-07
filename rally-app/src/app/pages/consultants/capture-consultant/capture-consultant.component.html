@@ -17,13 +17,18 @@
 
     <mat-form-field appearance="outline" class="full-width" *ngIf="form.get('participant_type')?.value === 'EXTERNO'">
       <mat-label>Consultora</mat-label>
-      <input matInput formControlName="consulting_firm_name">
+      <mat-select formControlName="consulting_firm_id">
+        <mat-option [value]="null">Sin consultora</mat-option>
+        <mat-option *ngFor="let firm of consultingFirms" [value]="firm.id">{{ firm.name }}</mat-option>
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Número de equipo</mat-label>
-      <input matInput formControlName="team_number" type="number" min="1" required>
-      <mat-error *ngIf="form.get('team_number')?.invalid">Debe ser mayor a 0</mat-error>
+      <mat-label>Equipo</mat-label>
+      <mat-select formControlName="team_id" required>
+        <mat-option *ngFor="let team of teams" [value]="team.id">{{ team.name }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('team_id')?.hasError('required')">El equipo es obligatorio</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
@@ -37,6 +42,7 @@
       <input matInput formControlName="teams_contact">
     </mat-form-field>
 
+    <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">

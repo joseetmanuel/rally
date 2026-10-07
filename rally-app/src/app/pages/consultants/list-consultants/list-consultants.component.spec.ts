@@ -8,7 +8,7 @@ import { ConfirmationService } from '@services/confirmation/confirmation.service
 describe('ListConsultantsComponent', () => {
   let fixture: ComponentFixture<ListConsultantsComponent>;
   let component: ListConsultantsComponent;
-  const items: any[] = [{"id": 1, "full_name": "Ana", "participant_type": "INTERNO", "team_number": 1, "email": "a@x.com"}, {"id": 2, "full_name": "Luis", "participant_type": "EXTERNO", "team_number": 2, "consulting_firm_name": "Firma"}];
+  const items: any[] = [{"id": 1, "full_name": "Ana", "participant_type": "INTERNO", "team_id": 1, "email": "a@x.com", "team": {"id": 1, "name": "Elastic"}}, {"id": 2, "full_name": "Luis", "participant_type": "EXTERNO", "team_id": 2, "team": {"id": 2, "name": "Call"}, "consulting_firm_id": 3, "consulting_firm": {"id": 3, "name": "Antal"}}];
   const service = { getConsultants: jest.fn(), deleteConsultant: jest.fn() };
   const confirmation = { openDeleteConfirmation: jest.fn() };
 

@@ -2,6 +2,11 @@ from app import create_app
 from database import db
 from models.certification_type import CertificationType
 from models.extra_point_reason_type import ExtraPointReasonType
+from models.team import Team
+from models.consulting_firm import ConsultingFirm
+
+TEAMS = ['Elastic', 'LC/GR', 'Call', 'SI+', 'NBM', 'Gerente', 'Satelites', 'N/A']
+CONSULTING_FIRMS = ['Antal', 'Corus', 'Wayssen', 'Qualtop', 'MaterSys', 'Inetum', 'POSITIVO S+']
 
 def seed_catalogs():
     app = create_app()
@@ -83,6 +88,13 @@ def seed_catalogs():
             else:
                 reason = ExtraPointReasonType(**data)
                 db.session.add(reason)
+
+        # 3. Equipos y consultoras (sólo se insertan los que faltan; no se tocan los existentes)
+        print("Seeding Teams and ConsultingFirms...")
+        for model, names in ((Team, TEAMS), (ConsultingFirm, CONSULTING_FIRMS)):
+            for name in names:
+                if not model.query.filter_by(name=name).first():
+                    db.session.add(model(name=name))
 
         db.session.commit()
         print("Seed completed successfully!")

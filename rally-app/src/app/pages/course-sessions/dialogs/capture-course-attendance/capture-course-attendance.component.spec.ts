@@ -12,9 +12,9 @@ describe('CaptureCourseAttendanceComponent', () => {
   const dialogRef = { close: jest.fn() };
   const session = { id: 9, certification_id: 1, instructor_consultant_id: 1, session_date: '2026-10-01' };
   const consultants = [
-    { id: 1, full_name: 'Instructor', participant_type: 'INTERNO', team_number: 1 },
-    { id: 2, full_name: 'Ya registrado', participant_type: 'INTERNO', team_number: 1 },
-    { id: 3, full_name: 'Disponible', participant_type: 'INTERNO', team_number: 1 }
+    { id: 1, full_name: 'Instructor', participant_type: 'INTERNO', team_id: 1 },
+    { id: 2, full_name: 'Ya registrado', participant_type: 'INTERNO', team_id: 1 },
+    { id: 3, full_name: 'Disponible', participant_type: 'INTERNO', team_id: 1 }
   ];
   const attendanceService = {
     getCourseAttendances: jest.fn(),

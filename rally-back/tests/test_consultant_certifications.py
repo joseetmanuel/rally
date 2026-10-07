@@ -1,4 +1,5 @@
 import pytest
+from tests.helpers import api_team_id
 from datetime import date
 
 def test_create_consultant_certification(client):
@@ -6,7 +7,7 @@ def test_create_consultant_certification(client):
     consultant_payload = {
         "full_name": "Consultant Cert",
         "participant_type": "INTERNO",
-        "team_number": 1,
+        "team_id": api_team_id(client),
         "email": "cert@example.com",
         "teams_contact": "cert"
     }

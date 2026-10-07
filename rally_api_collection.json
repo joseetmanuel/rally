@@ -187,7 +187,7 @@
                         "description": "",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"full_name\": \"John Doe\",\n    \"participant_type\": \"INTERNO\",\n    \"team_number\": 1,\n    \"consulting_firm_name\": \"My Firm\",\n    \"email\": \"john.doe@example.com\",\n    \"teams_contact\": \"jdoe\"\n}"
+                            "raw": "{\n    \"full_name\": \"John Doe\",\n    \"participant_type\": \"INTERNO\",\n    \"email\": \"john.doe@example.com\",\n    \"teams_contact\": \"jdoe\",\n    \"team_id\": 1\n}"
                         }
                     },
                     "response": []
@@ -217,7 +217,7 @@
                         "description": "",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"full_name\": \"John Updated\",\n    \"team_number\": 2\n}"
+                            "raw": "{\n    \"full_name\": \"John Updated\",\n    \"team_id\": 2\n}"
                         }
                     },
                     "response": []

@@ -6,6 +6,8 @@ from database import db
 from routes import register_routes
 
 # Importar modelos para que Flask-Migrate los detecte
+import models.team
+import models.consulting_firm
 import models.consultant
 import models.certification_type
 import models.certification

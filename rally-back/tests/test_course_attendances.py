@@ -5,12 +5,13 @@ from models.certification_type import CertificationType
 from models.certification import Certification
 from models.course_session import CourseSession
 from database import db
+from tests.helpers import default_team_id
 
 def setup_data(app):
     with app.app_context():
         unique_suffix = str(uuid.uuid4())[:8]
-        inst = Consultant(full_name=f"Instructor {unique_suffix}", participant_type="INTERNO", team_number=1, email=f"inst{unique_suffix}@test.com")
-        assistant = Consultant(full_name=f"Assistant {unique_suffix}", participant_type="INTERNO", team_number=2, email=f"ast{unique_suffix}@test.com")
+        inst = Consultant(full_name=f"Instructor {unique_suffix}", participant_type="INTERNO", team_id=default_team_id(), email=f"inst{unique_suffix}@test.com")
+        assistant = Consultant(full_name=f"Assistant {unique_suffix}", participant_type="INTERNO", team_id=default_team_id(), email=f"ast{unique_suffix}@test.com")
         ct = CertificationType(code=f"TypeAtt{unique_suffix}", points_base=50)
         db.session.add_all([inst, assistant, ct])
         db.session.commit()

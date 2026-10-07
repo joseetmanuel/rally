@@ -17,13 +17,13 @@
       <th mat-header-cell *matHeaderCellDef> Tipo </th>
       <td mat-cell *matCellDef="let element">
         {{element.participant_type}}
-        <span *ngIf="element.consulting_firm_name"> ({{element.consulting_firm_name}})</span>
+        <span *ngIf="element.consulting_firm"> ({{element.consulting_firm.name}})</span>
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="team_number">
+    <ng-container matColumnDef="team">
       <th mat-header-cell *matHeaderCellDef> Equipo </th>
-      <td mat-cell *matCellDef="let element"> {{element.team_number}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.team?.name || 'N/A'}} </td>
     </ng-container>
 
     <ng-container matColumnDef="email">

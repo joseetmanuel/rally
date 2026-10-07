@@ -20,7 +20,7 @@ describe('CaptureCourseSessionComponent', () => {
         { provide: MatDialogRef, useValue: dialogRef },
         { provide: MAT_DIALOG_DATA, useValue: data },
         { provide: CourseSessionService, useValue: mainService },
-        { provide: ConsultantService, useValue: { getConsultants: jest.fn().mockReturnValue(of([{"id": 2, "full_name": "Ana", "participant_type": "INTERNO", "team_number": 1}])) } },
+        { provide: ConsultantService, useValue: { getConsultants: jest.fn().mockReturnValue(of([{"id": 2, "full_name": "Ana", "participant_type": "INTERNO", "team_id": 1}])) } },
         { provide: CertificationService, useValue: { getCertifications: jest.fn().mockReturnValue(of([{"id": 1, "vendor": "AWS", "name": "SAA", "certification_type_id": 1}])) } },
       ]
     }).compileComponents();

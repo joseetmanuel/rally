@@ -19,7 +19,7 @@ import { ListConsultantCertificationsComponent } from '../dialogs/list-consultan
 })
 export class ListConsultantsComponent implements OnInit {
   consultants: Consultant[] = [];
-  displayedColumns: string[] = ['full_name', 'participant_type', 'team_number', 'email', 'actions'];
+  displayedColumns: string[] = ['full_name', 'participant_type', 'team', 'email', 'actions'];
   
   private consultantService = inject(ConsultantService);
   private dialog = inject(MatDialog);

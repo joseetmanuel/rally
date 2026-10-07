@@ -19,7 +19,7 @@ describe('ListConsultantCertificationsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ListConsultantCertificationsComponent, NoopAnimationsModule],
       providers: [
-      { provide: MAT_DIALOG_DATA, useValue: {"id": 5, "full_name": "Ana", "participant_type": "INTERNO", "team_number": 1} },
+      { provide: MAT_DIALOG_DATA, useValue: {"id": 5, "full_name": "Ana", "participant_type": "INTERNO", "team_id": 1} },
       { provide: MatDialogRef, useValue: { close: jest.fn() } },
         { provide: ConsultantCertificationService, useValue: service },
         { provide: ConfirmationService, useValue: confirmation }

@@ -1,9 +1,23 @@
 from flask import Blueprint, jsonify, request
 from database import db
 from models.consultant import Consultant
+from models.team import Team
+from models.consulting_firm import ConsultingFirm
 from sqlalchemy.exc import IntegrityError
 
 consultants_bp = Blueprint('consultants', __name__)
+
+
+def validate_catalogs(participant_type, team_id, firm_id):
+    """Devuelve un mensaje de error si el equipo o la consultora no son válidos."""
+    if not team_id or not db.session.get(Team, team_id):
+        return "team_id is required and must exist"
+    if firm_id is not None:
+        if participant_type != 'EXTERNO':
+            return "consulting_firm_id only applies to EXTERNO participants"
+        if not db.session.get(ConsultingFirm, firm_id):
+            return "consulting_firm_id does not exist"
+    return None
 
 @consultants_bp.route('/consultants', methods=['GET'])
 def get_consultants():
@@ -24,15 +38,16 @@ def create_consultant():
         return jsonify({"error": "full_name is required"}), 400
     if data.get('participant_type') not in ['INTERNO', 'EXTERNO']:
         return jsonify({"error": "participant_type must be INTERNO or EXTERNO"}), 400
-    if not data.get('team_number') or int(data.get('team_number')) <= 0:
-        return jsonify({"error": "team_number must be > 0"}), 400
+    error = validate_catalogs(data.get('participant_type'), data.get('team_id'), data.get('consulting_firm_id'))
+    if error:
+        return jsonify({"error": error}), 400
 
     try:
         new_consultant = Consultant(
             full_name=data.get('full_name'),
             participant_type=data.get('participant_type'),
-            team_number=data.get('team_number'),
-            consulting_firm_name=data.get('consulting_firm_name'),
+            team_id=data.get('team_id'),
+            consulting_firm_id=data.get('consulting_firm_id'),
             email=data.get('email'),
             teams_contact=data.get('teams_contact')
         )
@@ -53,14 +68,19 @@ def update_consultant(id):
 
     if 'participant_type' in data and data.get('participant_type') not in ['INTERNO', 'EXTERNO']:
         return jsonify({"error": "participant_type must be INTERNO or EXTERNO"}), 400
-    if 'team_number' in data and (not data.get('team_number') or int(data.get('team_number')) <= 0):
-        return jsonify({"error": "team_number must be > 0"}), 400
+    # Se valida con el estado resultante (lo enviado + lo que ya tenía el consultor)
+    error = validate_catalogs(
+        data.get('participant_type', consultant.participant_type),
+        data.get('team_id', consultant.team_id),
+        data.get('consulting_firm_id', consultant.consulting_firm_id))
+    if error:
+        return jsonify({"error": error}), 400
 
     try:
         if 'full_name' in data: consultant.full_name = data.get('full_name')
         if 'participant_type' in data: consultant.participant_type = data.get('participant_type')
-        if 'team_number' in data: consultant.team_number = data.get('team_number')
-        if 'consulting_firm_name' in data: consultant.consulting_firm_name = data.get('consulting_firm_name')
+        if 'team_id' in data: consultant.team_id = data.get('team_id')
+        if 'consulting_firm_id' in data: consultant.consulting_firm_id = data.get('consulting_firm_id')
         if 'email' in data: consultant.email = data.get('email')
         if 'teams_contact' in data: consultant.teams_contact = data.get('teams_contact')
         

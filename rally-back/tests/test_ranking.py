@@ -2,6 +2,7 @@ import uuid
 from datetime import date, datetime
 
 from database import db
+from tests.helpers import default_team_id
 from models.certification import Certification
 from models.certification_type import CertificationType
 from models.consultant import Consultant
@@ -19,7 +20,7 @@ def build_scenario(app):
 
         def consultant(label, n):
             c = Consultant(full_name=f"{label} {u}", participant_type="INTERNO",
-                           team_number=1, email=f"{label.lower()}{n}{u}@test.com")
+                           team_id=default_team_id(), email=f"{label.lower()}{n}{u}@test.com")
             db.session.add(c)
             return c
 
@@ -119,7 +120,7 @@ def test_ranking_row_shape(client, app):
 def test_ranking_without_activity_has_zero_points(client, app):
     with app.app_context():
         u = uuid.uuid4().hex[:8]
-        c = Consultant(full_name=f"Idle {u}", participant_type="INTERNO", team_number=1, email=f"idle{u}@test.com")
+        c = Consultant(full_name=f"Idle {u}", participant_type="INTERNO", team_id=default_team_id(), email=f"idle{u}@test.com")
         db.session.add(c)
         db.session.commit()
         cid = c.id

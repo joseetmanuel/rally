@@ -17,11 +17,24 @@ describe('MenuConfigurationService', () => {
     expect(service.validatePermissions).toBe(false);
   });
 
-  it('exposes one menu entry per MVP screen', (done) => {
-    service.getMenu().subscribe((menu) => {
-      expect(menu.map((m: any) => m.route)).toEqual([
-        'home', 'ranking', 'consultants', 'certification-types', 'certifications', 'course-sessions', 'extra-points'
+  it('keeps the top level short and groups the catalogs in a submenu', (done) => {
+    service.getMenu().subscribe((menu: any[]) => {
+      expect(menu.map((m) => m.name)).toEqual(['Inicio', 'Ranking', 'Consultores', 'Cursos', 'Puntos Extra', 'Catálogos']);
+      const catalogs = menu.find((m) => m.name === 'Catálogos');
+      expect(catalogs.children.map((c: any) => c.route)).toEqual([
+        'teams', 'consulting-firms', 'certification-types', 'certifications'
       ]);
+      done();
+    });
+  });
+
+  it('exposes a route for every MVP screen', (done) => {
+    service.getMenu().subscribe((menu: any[]) => {
+      const routes = menu.flatMap((m) => [m.route, ...m.children.map((c: any) => c.route)]).filter(Boolean);
+      expect(routes.sort()).toEqual([
+        'certification-types', 'certifications', 'consultants', 'consulting-firms', 'course-sessions',
+        'extra-points', 'home', 'ranking', 'teams'
+      ].sort());
       done();
     });
   });

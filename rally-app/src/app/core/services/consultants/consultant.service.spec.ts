@@ -8,7 +8,7 @@ describe('ConsultantService', () => {
   let service: ConsultantService;
   let http: HttpTestingController;
   const url = `${environment.api_url}/consultants`;
-  const sample: any = {"id": 1, "full_name": "Ana", "participant_type": "INTERNO", "team_number": 1};
+  const sample: any = {"id": 1, "full_name": "Ana", "participant_type": "INTERNO", "team_id": 1};
 
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });

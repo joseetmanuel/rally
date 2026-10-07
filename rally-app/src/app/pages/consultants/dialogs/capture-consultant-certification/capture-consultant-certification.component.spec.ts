@@ -12,7 +12,7 @@ describe('CaptureConsultantCertificationComponent', () => {
   const dialogRef = { close: jest.fn() };
   const mainService = { createConsultantCertification: jest.fn().mockReturnValue(of({})) };
 
-  async function setup(data: any = { id: 5, full_name: 'Ana', participant_type: 'INTERNO', team_number: 1 }) {
+  async function setup(data: any = { id: 5, full_name: 'Ana', participant_type: 'INTERNO', team_id: 1 }) {
     await TestBed.configureTestingModule({
       imports: [CaptureConsultantCertificationComponent, NoopAnimationsModule],
       providers: [

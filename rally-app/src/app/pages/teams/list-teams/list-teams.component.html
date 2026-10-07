@@ -1,0 +1,37 @@
+<div class="page-container mat-elevation-z2">
+  <div class="header-actions">
+    <h2>Equipos</h2>
+    <button mat-flat-button color="primary" (click)="openCaptureDialog()">
+      <mat-icon>add</mat-icon> Nuevo Equipo
+    </button>
+  </div>
+
+  <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <table mat-table [dataSource]="teams" class="full-width-table">
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Nombre </th>
+      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef class="action-column"> Acciones </th>
+      <td mat-cell *matCellDef="let element" class="action-column">
+        <button mat-icon-button color="primary" (click)="openCaptureDialog(element)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteTeam(element)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <div *ngIf="teams.length === 0" class="empty-state">
+    No hay equipos registrados.
+  </div>
+</div>
