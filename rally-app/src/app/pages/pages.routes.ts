@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { PagesComponent } from './pages.component';
-import { HomeComponent } from './home/home.component';
 import { ROUTES_CONSULTANTS } from './consultants/consultants.routes';
 import { ROUTES_CERTIFICATIONS } from './certifications/certifications.routes';
 import { ROUTES_CERTIFICATION_TYPES } from './certification-types/certification-types.routes';
@@ -17,13 +16,15 @@ export const ROUTES: Routes = [
 		data: { breadcrumb: 'Inicio' },
 		children: [
 			{
+				// El ranking es la página de inicio
 				path: 'home',
-				component: HomeComponent
+				data: { breadcrumb: 'Inicio' },
+				loadChildren: () => ROUTES_RANKING
 			},
 			{
 				path: 'ranking',
-				data: { breadcrumb: 'Ranking' },
-				loadChildren: () => ROUTES_RANKING
+				redirectTo: 'home',
+				pathMatch: 'full'
 			},
 			{
 				path: 'consultants',
@@ -63,11 +64,11 @@ export const ROUTES: Routes = [
 			{
 				path: '',
 				pathMatch: 'full',
-				redirectTo: 'ranking'
+				redirectTo: 'home'
 			},
 			{
 				path: '**',
-				redirectTo: 'ranking'
+				redirectTo: 'home'
 			}
 		]
 	}

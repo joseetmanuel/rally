@@ -10,6 +10,7 @@ export interface RankingEntry {
   position: number;
   consultant_id: number;
   full_name: string;
+  team: string | null;
   certifications: number;
   courses_given: number;
   courses_taken: number;

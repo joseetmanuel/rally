@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RankingService } from '../../core/services/ranking/ranking.service';
+import { RankingPdfService } from '../../core/services/ranking/ranking-pdf.service';
 import { RankingEntry } from '../../core/models/ranking/ranking-entry';
 
 export interface BreakdownSegment {
@@ -32,10 +33,13 @@ export class RankingComponent implements OnInit {
   ranking: RankingEntry[] = [];
   loading = true;
   error = false;
+  exporting = false;
+  exportError = false;
   search = '';
   readonly segments = BREAKDOWN_SEGMENTS;
 
   private rankingService = inject(RankingService);
+  private pdfService = inject(RankingPdfService);
 
   ngOnInit(): void {
     this.load();
@@ -57,19 +61,40 @@ export class RankingComponent implements OnInit {
     });
   }
 
+  /** Descarga todo el ranking (sin aplicar el filtro de búsqueda) como PDF */
+  async exportPdf(): Promise<void> {
+    if (this.exporting || this.ranking.length === 0) return;
+    this.exporting = true;
+    this.exportError = false;
+    try {
+      await this.pdfService.export(this.ranking);
+    } catch (err) {
+      console.error('Error exporting ranking to PDF', err);
+      this.exportError = true;
+    } finally {
+      this.exporting = false;
+    }
+  }
+
+  /** Mientras nadie tenga puntos no hay podio que premiar */
+  get hasPoints(): boolean {
+    return this.ranking.some((e) => e.total_points > 0);
+  }
+
   /** Podio en orden visual: 2º, 1º, 3º (el primero al centro y más alto) */
   get podium(): RankingEntry[] {
+    if (!this.hasPoints) return [];
     const [first, second, third] = this.ranking;
     return [second, first, third].filter((e): e is RankingEntry => !!e);
   }
 
-  /** Filas del listado: todos a partir del 4º, o todos si se está buscando */
+  /** Filas del listado: todos a partir del 4º; todos si se busca o si aún no hay podio */
   get rows(): RankingEntry[] {
     const term = this.search.trim().toLowerCase();
     if (term) {
       return this.ranking.filter((e) => e.full_name.toLowerCase().includes(term));
     }
-    return this.ranking.slice(3);
+    return this.hasPoints ? this.ranking.slice(3) : this.ranking;
   }
 
   get maxPoints(): number {

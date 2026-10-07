@@ -19,7 +19,7 @@ describe('MenuConfigurationService', () => {
 
   it('keeps the top level short and groups the catalogs in a submenu', (done) => {
     service.getMenu().subscribe((menu: any[]) => {
-      expect(menu.map((m) => m.name)).toEqual(['Inicio', 'Ranking', 'Consultores', 'Cursos', 'Puntos Extra', 'Catálogos']);
+      expect(menu.map((m) => m.name)).toEqual(['Inicio', 'Consultores', 'Cursos', 'Puntos Extra', 'Catálogos']);
       const catalogs = menu.find((m) => m.name === 'Catálogos');
       expect(catalogs.children.map((c: any) => c.route)).toEqual([
         'teams', 'consulting-firms', 'certification-types', 'certifications'
@@ -33,7 +33,7 @@ describe('MenuConfigurationService', () => {
       const routes = menu.flatMap((m) => [m.route, ...m.children.map((c: any) => c.route)]).filter(Boolean);
       expect(routes.sort()).toEqual([
         'certification-types', 'certifications', 'consultants', 'consulting-firms', 'course-sessions',
-        'extra-points', 'home', 'ranking', 'teams'
+        'extra-points', 'home', 'teams'
       ].sort());
       done();
     });

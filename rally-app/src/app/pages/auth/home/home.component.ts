@@ -13,6 +13,6 @@ export class AuthHomeComponent {
   constructor(private router: Router) {}
 
   goToHome() {
-    this.router.navigate(['/app/ranking']);
+    this.router.navigate(['/app/home']);
   }
 }

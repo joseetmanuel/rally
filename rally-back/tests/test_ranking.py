@@ -110,10 +110,11 @@ def test_ranking_order_and_tiebreak(client, app):
 def test_ranking_row_shape(client, app):
     ids = build_scenario(app)
     _, rows = get_rows(client, ids)
-    expected = {'position', 'consultant_id', 'full_name', 'certifications', 'courses_given',
+    expected = {'position', 'consultant_id', 'full_name', 'team', 'certifications', 'courses_given',
                 'courses_taken', 'total_points', 'last_certification_date', 'breakdown'}
     assert expected <= set(rows['a'])
     assert rows['a']['last_certification_date'] == '2026-02-01'
+    assert rows['a']['team'] == 'Equipo Test'
     assert rows['c']['last_certification_date'] is None
 
 

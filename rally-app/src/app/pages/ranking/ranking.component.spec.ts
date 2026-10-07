@@ -3,6 +3,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
 import { RankingComponent } from './ranking.component';
 import { RankingService } from '../../core/services/ranking/ranking.service';
+import { RankingPdfService } from '../../core/services/ranking/ranking-pdf.service';
 import { RankingEntry } from '../../core/models/ranking/ranking-entry';
 
 function entry(position: number, name: string, total: number, extra: Partial<RankingEntry> = {}): RankingEntry {
@@ -10,6 +11,7 @@ function entry(position: number, name: string, total: number, extra: Partial<Ran
     position,
     consultant_id: position,
     full_name: name,
+    team: 'LC/GR',
     certifications: 0,
     courses_given: 0,
     courses_taken: 0,
@@ -32,12 +34,16 @@ describe('RankingComponent', () => {
   let fixture: ComponentFixture<RankingComponent>;
   let component: RankingComponent;
   const service = { getRanking: jest.fn() };
+  const pdf = { export: jest.fn() };
 
   async function setup(result: any = of(DATA)) {
     service.getRanking.mockReturnValue(result);
     await TestBed.configureTestingModule({
       imports: [RankingComponent, NoopAnimationsModule],
-      providers: [{ provide: RankingService, useValue: service }]
+      providers: [
+        { provide: RankingService, useValue: service },
+        { provide: RankingPdfService, useValue: pdf }
+      ]
     }).compileComponents();
     fixture = TestBed.createComponent(RankingComponent);
     component = fixture.componentInstance;
@@ -46,7 +52,10 @@ describe('RankingComponent', () => {
 
   const el = () => fixture.nativeElement as HTMLElement;
 
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    pdf.export.mockResolvedValue('ranking-rally.pdf');
+  });
 
   it('should create and load the ranking on init', async () => {
     await setup();
@@ -138,5 +147,82 @@ describe('RankingComponent', () => {
     fixture.detectChanges();
     expect(component.error).toBe(false);
     expect(component.ranking.length).toBe(5);
+  });
+
+  describe('without any points yet', () => {
+    const ZEROS = [entry(1, 'Ana García', 0), entry(2, 'Luis Pérez', 0), entry(3, 'Carlos Ruiz', 0), entry(4, 'María Soto', 0)];
+
+    it('does not award medals and lists everyone with an explanation', async () => {
+      await setup(of(ZEROS));
+      expect(component.hasPoints).toBe(false);
+      expect(component.podium).toEqual([]);
+      expect(el().querySelector('.podium')).toBeNull();
+      expect(el().querySelectorAll('.row').length).toBe(4);
+      expect(el().querySelector('.notice')?.textContent).toContain('Aún nadie suma puntos');
+      expect(el().querySelector('.board__toolbar h2')?.textContent).toContain('Clasificación');
+    });
+
+    it('brings the podium back as soon as someone scores', async () => {
+      await setup(of([entry(1, 'Ana García', 5), ...ZEROS.slice(1)]));
+      expect(component.hasPoints).toBe(true);
+      expect(component.podium.length).toBe(3);
+      expect(el().querySelector('.notice')).toBeNull();
+    });
+  });
+
+  describe('PDF export', () => {
+    const pdfButton = () => el().querySelector('button[aria-label*="PDF"]') as HTMLButtonElement;
+
+    it('shows a visible export button in the header', async () => {
+      await setup();
+      expect(pdfButton()).toBeTruthy();
+      expect(pdfButton().disabled).toBe(false);
+    });
+
+    it('exports the whole ranking, not just what the search shows', async () => {
+      await setup();
+      component.onSearch({ target: { value: 'ana' } } as unknown as Event);
+      await component.exportPdf();
+      expect(pdf.export).toHaveBeenCalledWith(DATA);
+    });
+
+    it('exports when the button is clicked', async () => {
+      await setup();
+      pdfButton().click();
+      expect(pdf.export).toHaveBeenCalledTimes(1);
+    });
+
+    it('is disabled while there is nothing to export', async () => {
+      await setup(of([]));
+      expect(pdfButton().disabled).toBe(true);
+      await component.exportPdf();
+      expect(pdf.export).not.toHaveBeenCalled();
+    });
+
+    it('shows a generating state and ignores repeated clicks', async () => {
+      await setup();
+      let finish!: (v: string) => void;
+      pdf.export.mockReturnValue(new Promise<string>((resolve) => (finish = resolve)));
+      const first = component.exportPdf();
+      expect(component.exporting).toBe(true);
+      fixture.detectChanges();
+      expect(pdfButton().textContent).toContain('Generando');
+      await component.exportPdf();
+      expect(pdf.export).toHaveBeenCalledTimes(1);
+      finish('ok');
+      await first;
+      expect(component.exporting).toBe(false);
+    });
+
+    it('reports a failure without leaving the button locked', async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      await setup();
+      pdf.export.mockRejectedValue(new Error('boom'));
+      await component.exportPdf();
+      fixture.detectChanges();
+      expect(component.exporting).toBe(false);
+      expect(component.exportError).toBe(true);
+      expect(el().querySelector('.export-error')?.textContent).toContain('No se pudo generar el PDF');
+    });
   });
 });

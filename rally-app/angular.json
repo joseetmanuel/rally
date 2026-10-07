@@ -51,6 +51,14 @@
                 ]
               }
             },
+            "allowedCommonJsDependencies": [
+              "canvg",
+              "core-js",
+              "html2canvas",
+              "raf",
+              "rgbcolor",
+              "sweetalert2"
+            ],
             "scripts": [],
             "browser": "src/main.ts"
           },

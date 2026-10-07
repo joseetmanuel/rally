@@ -25,10 +25,21 @@
       </div>
     </dl>
 
-    <button mat-flat-button class="hero__refresh" (click)="load()" [disabled]="loading">
-      <mat-icon>refresh</mat-icon> Actualizar
-    </button>
+    <div class="hero__actions">
+      <button mat-flat-button class="hero__button" (click)="exportPdf()"
+              [disabled]="loading || exporting || ranking.length === 0"
+              aria-label="Exportar el ranking completo a PDF">
+        <mat-icon>picture_as_pdf</mat-icon> {{ exporting ? 'Generando…' : 'Exportar PDF' }}
+      </button>
+      <button mat-flat-button class="hero__button hero__button--ghost" (click)="load()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon> Actualizar
+      </button>
+    </div>
   </header>
+
+  @if (exportError) {
+    <p class="export-error" role="alert">No se pudo generar el PDF. Intenta de nuevo.</p>
+  }
 
   @if (loading) {
     <div class="state" role="status">
@@ -48,8 +59,15 @@
     </div>
   } @else {
 
+    @if (!hasPoints) {
+      <p class="notice" role="status">
+        <mat-icon aria-hidden="true">info</mat-icon>
+        Aún nadie suma puntos. El podio aparecerá cuando se registre la primera certificación, curso o punto extra.
+      </p>
+    }
+
     <!-- Podio -->
-    @if (!search) {
+    @if (!search && podium.length > 0) {
       <ol class="podium" aria-label="Los tres primeros lugares">
         @for (entry of podium; track entry.consultant_id) {
           <li class="podium__place podium__place--{{ entry.position }}">
@@ -76,7 +94,7 @@
     <!-- Listado completo -->
     <div class="board">
       <div class="board__toolbar">
-        <h2>{{ search ? 'Resultados' : 'Resto de la clasificación' }}</h2>
+        <h2>{{ search ? 'Resultados' : (podium.length ? 'Resto de la clasificación' : 'Clasificación') }}</h2>
         <label class="search">
           <mat-icon aria-hidden="true">search</mat-icon>
           <input type="search" placeholder="Buscar consultor" [value]="search" (input)="onSearch($event)"

@@ -29,14 +29,6 @@ export class MenuConfigurationService {
                                 children: []
                         },
                         {
-                                id: 7,
-                                name: 'Ranking',
-                                icon: 'emoji_events',
-                                route: 'ranking',
-                                inMenu: 1,
-                                children: []
-                        },
-                        {
                                 id: 2,
                                 name: 'Consultores',
                                 icon: 'people',

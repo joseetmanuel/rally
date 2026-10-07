@@ -19,6 +19,7 @@ class RankingService:
             c.id: {
                 'consultant_id': c.id,
                 'full_name': c.full_name,
+                'team': c.team.name if c.team else None,
                 'certifications': 0,
                 'courses_given': 0,
                 'courses_taken': 0,
