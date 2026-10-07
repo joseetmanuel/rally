@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
+import { RallyRulesService } from '../../../core/services/rally-rules/rally-rules.service';
 import { CourseSessionService } from '../../../core/services/course-sessions/course-session.service';
 import { ConsultantService } from '../../../core/services/consultants/consultant.service';
 import { CertificationService } from '../../../core/services/certifications/certification.service';
@@ -36,6 +37,10 @@ export class CaptureCourseSessionComponent implements OnInit {
   consultants: Consultant[] = [];
   certifications: Certification[] = [];
   
+  private rules = inject(RallyRulesService);
+  readonly minDate = this.rules.start();
+  readonly maxDate = this.rules.cutoff();
+  readonly rangeText = this.rules.rangeText();
   private fb = inject(FormBuilder);
   private sessionService = inject(CourseSessionService);
   private consultantService = inject(ConsultantService);
@@ -48,7 +53,7 @@ export class CaptureCourseSessionComponent implements OnInit {
     this.form = this.fb.group({
       certification_id: [null, [Validators.required]],
       instructor_consultant_id: [null, [Validators.required]],
-      session_date: ['', [Validators.required]],
+      session_date: ['', [Validators.required, this.rules.dateValidator()]],
       title: ['', [Validators.maxLength(255)]],
       notes: ['']
     });

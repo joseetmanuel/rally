@@ -1,6 +1,7 @@
 import logging
 import os
 import secrets
+from datetime import date
 from urllib.parse import quote, quote_plus
 from dotenv import load_dotenv
 
@@ -31,6 +32,10 @@ def build_database_uri(user, password, host, port, name):
 
 
 class Config:
+    # Calendario del Rally 2026 (bases): sólo cuentan los hechos entre el inicio y el corte de puntos
+    RALLY_START = date.fromisoformat((os.getenv('RALLY_START') or '2026-01-01').strip())
+    RALLY_CUTOFF = date.fromisoformat((os.getenv('RALLY_CUTOFF') or '2026-12-15').strip())
+
     # Carpeta con el frontend compilado. Si existe, el backend lo sirve (un solo servicio en Cloud Run).
     STATIC_DIR = os.getenv('STATIC_DIR', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static'))
 

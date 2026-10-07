@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+import rules
 from database import db
 from models.consultant_extra_point import ConsultantExtraPoint
 from models.consultant import Consultant
@@ -48,6 +49,9 @@ def create_consultant_extra_point():
 
     try:
         awarded_at = datetime.fromisoformat(awarded_at_str)
+        error = rules.window_error(awarded_at.date(), 'awarded_at')
+        if error:
+            return jsonify({"error": error}), 400
         new_point = ConsultantExtraPoint(
             consultant_id=consultant_id,
             extra_point_reason_type_id=reason_id,
@@ -83,7 +87,11 @@ def update_consultant_extra_point(id):
             point.extra_point_reason_type_id = data.get('extra_point_reason_type_id')
 
         if 'awarded_at' in data:
-            point.awarded_at = datetime.fromisoformat(data.get('awarded_at'))
+            new_awarded_at = datetime.fromisoformat(data.get('awarded_at'))
+            error = rules.window_error(new_awarded_at.date(), 'awarded_at')
+            if error:
+                return jsonify({"error": error}), 400
+            point.awarded_at = new_awarded_at
 
         if 'points' in data:
             points = data.get('points')

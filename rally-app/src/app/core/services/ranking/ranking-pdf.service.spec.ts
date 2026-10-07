@@ -90,6 +90,11 @@ describe('RankingPdfService', () => {
     expect(content).toContain('completamente opcional');
   });
 
+  it('prints the points cutoff in the header', async () => {
+    const content = (await service.build(DATA)).output();
+    expect(content).toContain('Corte de puntos: 15 dic 2026');
+  });
+
   it('prints the movements in the PDF', async () => {
     const content = (await service.build(DATA)).output();
     expect(content).toContain('Certificación: PCAP');

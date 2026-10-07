@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+import rules
 from database import db
 from models.course_session import CourseSession
 from models.certification import Certification
@@ -36,6 +37,9 @@ def create_course_session():
 
     try:
         session_date = datetime.strptime(session_date_str, '%Y-%m-%d').date()
+        error = rules.window_error(session_date, 'session_date')
+        if error:
+            return jsonify({"error": error}), 400
         new_session = CourseSession(
             certification_id=cert_id,
             instructor_consultant_id=instructor_id,
@@ -69,7 +73,11 @@ def update_course_session(id):
             session.instructor_consultant_id = data.get('instructor_consultant_id')
 
         if 'session_date' in data:
-            session.session_date = datetime.strptime(data.get('session_date'), '%Y-%m-%d').date()
+            new_date = datetime.strptime(data.get('session_date'), '%Y-%m-%d').date()
+            error = rules.window_error(new_date, 'session_date')
+            if error:
+                return jsonify({"error": error}), 400
+            session.session_date = new_date
 
         if 'title' in data: session.title = data.get('title')
         if 'notes' in data: session.notes = data.get('notes')

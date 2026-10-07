@@ -172,6 +172,22 @@ describe('RankingComponent', () => {
     });
   });
 
+  describe('points cutoff', () => {
+    it('shows the cutoff date of the rally in the header', async () => {
+      await setup();
+      expect(el().querySelector('.hero__cutoff')?.textContent).toContain('Corte de puntos: 15 dic 2026');
+      expect(el().querySelector('.hero__cutoff--closed')).toBeNull();
+    });
+
+    it('says the rally is closed once the cutoff has passed', async () => {
+      await setup();
+      component.rules['_rules'].set({ start: '2026-01-01', cutoff: '2026-12-15', closed: true });
+      fixture.detectChanges();
+      expect(component.cutoffText).toBe('Rally cerrado el 15 dic 2026');
+      expect(el().querySelector('.hero__cutoff--closed')?.textContent).toContain('Rally cerrado el 15 dic 2026');
+    });
+  });
+
   describe('link to the statement', () => {
     it('opens the statement of a participant from the list rows', async () => {
       await setup();

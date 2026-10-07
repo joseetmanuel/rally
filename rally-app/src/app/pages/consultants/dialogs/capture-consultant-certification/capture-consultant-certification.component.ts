@@ -1,30 +1,18 @@
 import { Component, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AbstractControl, ReactiveFormsModule, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { RallyRulesService } from '../../../../core/services/rally-rules/rally-rules.service';
 import { ConsultantCertificationService } from '../../../../core/services/consultant-certifications/consultant-certification.service';
 import { CertificationService } from '../../../../core/services/certifications/certification.service';
 import { ConsultantCertification } from '../../../../core/models/consultant-certifications/consultant-certification';
 import { Consultant } from '../../../../core/models/consultants/consultant';
 import { Certification } from '../../../../core/models/certifications/certification';
-
-/** Fecha local de hoy como AAAA-MM-DD (el formato del input type=date) */
-export function todayIso(): string {
-  const d = new Date();
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-}
-
-/** Una certificación no puede haberse obtenido en el futuro */
-export function notFutureDate(control: AbstractControl): ValidationErrors | null {
-  const value = control.value as string;
-  return value && value > todayIso() ? { future: true } : null;
-}
 
 @Component({
   selector: 'app-capture-consultant-certification',
@@ -44,7 +32,11 @@ export function notFutureDate(control: AbstractControl): ValidationErrors | null
 })
 export class CaptureConsultantCertificationComponent implements OnInit {
   form: FormGroup;
-  maxDate = todayIso();
+  private rules = inject(RallyRulesService);
+  /** La certificación ya ocurrió: no antes del inicio del Rally, ni después de hoy ni del corte de puntos */
+  readonly minDate = this.rules.start();
+  readonly maxDate = this.rules.latestForPastEvents();
+  readonly rangeText = this.rules.rangeText();
   errorMessage = '';
   certifications: Certification[] = [];
   
@@ -58,7 +50,7 @@ export class CaptureConsultantCertificationComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       certification_id: [null, Validators.required],
-      obtained_at: ['', [Validators.required, notFutureDate]],
+      obtained_at: ['', [Validators.required, this.rules.dateValidator(true)]],
       reimbursement_amount: [0, Validators.min(0)],
       paid_with_own_resources: [false],
       reimbursement_registered: [false],

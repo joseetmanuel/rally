@@ -85,6 +85,21 @@
     background: rgba(255, 255, 255, 0.16);
   }
 
+  &__cutoff {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0 0 !important;
+    padding: 3px 12px 3px 8px;
+    border-radius: 999px;
+    font-size: 0.8rem !important;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.16);
+
+    mat-icon { width: 18px; height: 18px; font-size: 18px; }
+    &--closed { background: #ffe9a8; color: #3d2d00; opacity: 1 !important; }
+  }
+
   &__actions {
     display: flex;
     flex-direction: column;

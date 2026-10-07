@@ -38,7 +38,7 @@ def test_create_consultant_certification(client):
     payload = {
         "consultant_id": consultant_id,
         "certification_id": certification_id,
-        "obtained_at": "2023-10-01",
+        "obtained_at": "2026-03-01",
         "reimbursement_amount": "150.00",
         "paid_with_own_resources": True,
         "notes": "Good"
@@ -48,7 +48,7 @@ def test_create_consultant_certification(client):
     data = response.get_json()
     assert data['consultant_id'] == consultant_id
     assert data['certification_id'] == certification_id
-    assert data['obtained_at'] == "2023-10-01"
+    assert data['obtained_at'] == "2026-03-01"
     assert float(data['reimbursement_amount']) == 150.0
 
 def test_get_consultant_certifications(client):

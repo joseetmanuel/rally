@@ -3,6 +3,7 @@ from models.consultant_certification import ConsultantCertification
 from models.consultant_extra_point import ConsultantExtraPoint
 from models.course_attendance import CourseAttendance
 from models.course_session import CourseSession
+import rules
 
 # Orden de los movimientos que ocurren el mismo día
 KIND_ORDER = ['certification', 'course_given', 'student_bonus', 'instructor_bonus', 'extra']
@@ -21,6 +22,9 @@ class RankingService:
 
     puntaje_total = certificaciones + cursos impartidos + bono alumno
                     + bono expositor + puntos extra
+
+    Sólo cuentan los hechos dentro del calendario del Rally (inicio y corte de puntos, ver `rules`): una
+    certificación, curso o punto extra fuera de esas fechas no suma ni aparece en el estado de cuenta.
 
     Todo el puntaje sale de una única lista de movimientos (`ledger`) por consultor. El ranking
     suma esos movimientos y el estado de cuenta los muestra, por lo que ambos siempre coinciden.
@@ -54,6 +58,8 @@ class RankingService:
         # Regla 1: una certificación cuenta una sola vez por consultor (se toma la fecha más antigua)
         obtained = {}  # (consultant_id, certification_id) -> (fecha, certificación)
         for cc in ConsultantCertification.query.all():
+            if not rules.in_window(cc.obtained_at):
+                continue
             key = (cc.consultant_id, cc.certification_id)
             if key not in obtained or cc.obtained_at < obtained[key][0]:
                 obtained[key] = (cc.obtained_at, cc.certification)
@@ -77,6 +83,8 @@ class RankingService:
         # Regla 3: el expositor recibe puntos por cada curso que imparte
         sessions_by_id = {}
         for session in CourseSession.query.all():
+            if not rules.in_window(session.session_date):
+                continue
             sessions_by_id[session.id] = session
             s = stats[session.instructor_consultant_id]
             s['courses_given'] += 1
@@ -90,8 +98,10 @@ class RankingService:
         # Regla 4: bonos si el alumno se certifica después de haber tomado el curso
         qualifying = {}  # (alumno, certificación) -> sesiones tomadas antes de certificarse
         for att in attendances:
+            session = sessions_by_id.get(att.course_session_id)
+            if session is None:  # el curso quedó fuera del calendario del Rally
+                continue
             stats[att.consultant_id]['courses_taken'] += 1
-            session = sessions_by_id[att.course_session_id]
             key = (att.consultant_id, session.certification_id)
             if key in obtained and session.session_date < obtained[key][0]:
                 qualifying.setdefault(key, []).append(session)
@@ -111,6 +121,8 @@ class RankingService:
 
         # Regla 5: puntos extra
         for extra in ConsultantExtraPoint.query.all():
+            if not rules.in_window(extra.awarded_at.date()):
+                continue
             reason = extra.reason_type.name if extra.reason_type else 'Puntos extra'
             add(extra.consultant_id, extra.awarded_at.date(), 'extra', extra.points,
                 reason, extra.notes or '')

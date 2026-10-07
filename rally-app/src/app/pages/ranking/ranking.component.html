@@ -7,6 +7,9 @@
       <div>
         <h1 id="ranking-title">Ranking del Rally</h1>
         <p>Quién lidera en certificaciones, cursos y contribuciones</p>
+        <p class="hero__cutoff" [class.hero__cutoff--closed]="rules.closed()">
+          <mat-icon aria-hidden="true">{{ rules.closed() ? 'lock_clock' : 'event' }}</mat-icon>{{ cutoffText }}
+        </p>
       </div>
     </div>
 

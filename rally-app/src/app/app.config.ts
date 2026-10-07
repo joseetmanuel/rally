@@ -11,6 +11,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { spinnerInterceptor } from '@interceptors/spinner-interceptor';
 import { adminAuthInterceptor } from '@interceptors/admin-auth-interceptor';
 import { AdminSessionService } from '@services/admin-session/admin-session.service';
+import { RallyRulesService } from '@services/rally-rules/rally-rules.service';
 
 const appInitializerFn = (appConfig: AppConfigService) => {
   return () => {
@@ -31,6 +32,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([adminAuthInterceptor, spinnerInterceptor])),
     // Recupera la sesión de administrador de esta pestaña (si la hay) al arrancar
     provideAppInitializer(() => inject(AdminSessionService).restore()),
+    // Calendario del Rally (inicio y corte de puntos) desde el servidor; sin respuesta se usan las fechas de las bases
+    provideAppInitializer(() => inject(RallyRulesService).load()),
     provideAnimationsAsync(),
   ],
 };

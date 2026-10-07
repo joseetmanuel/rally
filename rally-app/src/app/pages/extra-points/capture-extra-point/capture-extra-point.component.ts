@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
+import { RallyRulesService } from '../../../core/services/rally-rules/rally-rules.service';
 import { ConsultantExtraPointService } from '../../../core/services/consultant-extra-points/consultant-extra-point.service';
 import { ConsultantService } from '../../../core/services/consultants/consultant.service';
 import { ExtraPointReasonTypeService } from '../../../core/services/extra-point-reason-types/extra-point-reason-type.service';
@@ -36,6 +37,10 @@ export class CaptureExtraPointComponent implements OnInit {
   reasonTypes: ExtraPointReasonType[] = [];
   errorMessage = '';
 
+  private rules = inject(RallyRulesService);
+  readonly minDate = this.rules.start();
+  readonly maxDate = this.rules.cutoff();
+  readonly rangeText = this.rules.rangeText();
   private fb = inject(FormBuilder);
   private extraPointService = inject(ConsultantExtraPointService);
   private consultantService = inject(ConsultantService);
@@ -47,7 +52,7 @@ export class CaptureExtraPointComponent implements OnInit {
       consultant_id: [null, [Validators.required]],
       extra_point_reason_type_id: [null, [Validators.required]],
       points: [null, [Validators.required, Validators.min(0)]],
-      awarded_at: [this.today(), [Validators.required]],
+      awarded_at: [this.today(), [Validators.required, this.rules.dateValidator()]],
       notes: ['']
     });
   }

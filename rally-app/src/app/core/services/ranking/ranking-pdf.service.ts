@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import type { jsPDF } from 'jspdf';
 import type { RowInput } from 'jspdf-autotable';
 import { RankingEntry } from '../../models/ranking/ranking-entry';
 import { KIND_LABELS } from '../../models/statement/statement';
-import { shortDate } from '../../utils/dates';
+import { mediumDate, shortDate } from '../../utils/dates';
+import { RallyRulesService } from '../rally-rules/rally-rules.service';
 import { RALLY_DISCLAIMER } from '../../constants/Disclaimer';
 
 type Rgb = [number, number, number];
@@ -30,6 +31,8 @@ export interface PdfBody {
   providedIn: 'root'
 })
 export class RankingPdfService {
+  private rules = inject(RallyRulesService);
+
   /** Nombre del archivo: ranking-rally-AAAA-MM-DD.pdf (fecha local) */
   fileName(date: Date = new Date()): string {
     const pad = (n: number) => String(n).padStart(2, '0');
@@ -113,6 +116,7 @@ export class RankingPdfService {
     doc.setTextColor(64, 72, 77);
     doc.setFontSize(10);
     doc.text(this.summary(entries), 14, 42);
+    doc.text(`Corte de puntos: ${mediumDate(this.rules.cutoff())}`, pageWidth - 14, 42, { align: 'right' });
 
     const { body, mainRows } = this.bodyRows(entries);
     autoTable(doc, {

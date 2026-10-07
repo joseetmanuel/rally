@@ -5,6 +5,7 @@ from models.consultant import Consultant
 from models.certification import Certification
 from sqlalchemy.exc import IntegrityError
 from datetime import date, datetime
+import rules
 
 consultant_certifications_bp = Blueprint('consultant_certifications', __name__)
 
@@ -38,6 +39,9 @@ def create_consultant_certification():
         obtained_at = datetime.strptime(obtained_at_str, '%Y-%m-%d').date()
         if obtained_at > date.today():
             return jsonify({"error": "obtained_at cannot be in the future"}), 400
+        error = rules.window_error(obtained_at, 'obtained_at')
+        if error:
+            return jsonify({"error": error}), 400
 
         # Reimbursement amount check
         amount = data.get('reimbursement_amount', 0)
@@ -86,6 +90,9 @@ def update_consultant_certification(id):
             obtained_at = datetime.strptime(data.get('obtained_at'), '%Y-%m-%d').date()
             if obtained_at > date.today():
                 return jsonify({"error": "obtained_at cannot be in the future"}), 400
+            error = rules.window_error(obtained_at, 'obtained_at')
+            if error:
+                return jsonify({"error": error}), 400
             record.obtained_at = obtained_at
 
         if 'reimbursement_amount' in data:

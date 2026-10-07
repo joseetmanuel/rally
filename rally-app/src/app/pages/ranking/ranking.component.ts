@@ -9,6 +9,8 @@ import { RankingService } from '../../core/services/ranking/ranking.service';
 import { RankingPdfService } from '../../core/services/ranking/ranking-pdf.service';
 import { RankingEntry } from '../../core/models/ranking/ranking-entry';
 import { initials as toInitials } from '../../core/utils/initials';
+import { RallyRulesService } from '../../core/services/rally-rules/rally-rules.service';
+import { mediumDate } from '../../core/utils/dates';
 
 export interface BreakdownSegment {
   key: keyof RankingEntry['breakdown'];
@@ -43,6 +45,7 @@ export class RankingComponent implements OnInit {
 
   private rankingService = inject(RankingService);
   private pdfService = inject(RankingPdfService);
+  readonly rules = inject(RallyRulesService);
 
   ngOnInit(): void {
     this.load();
@@ -112,6 +115,12 @@ export class RankingComponent implements OnInit {
 
   get totalPoints(): number {
     return this.ranking.reduce((sum, e) => sum + e.total_points, 0);
+  }
+
+  /** "Corte de puntos: 15 dic 2026" o, ya pasado el corte, "Rally cerrado el 15 dic 2026" */
+  get cutoffText(): string {
+    const date = mediumDate(this.rules.cutoff());
+    return this.rules.closed() ? `Rally cerrado el ${date}` : `Corte de puntos: ${date}`;
   }
 
   onSearch(event: Event): void {
