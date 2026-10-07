@@ -8,6 +8,7 @@ entorno; en Cloud Run se inyectan desde Secret Manager) y el token se firma con 
 """
 import hmac
 import json
+import re
 import threading
 import time
 from datetime import datetime, timedelta, timezone
@@ -19,6 +20,12 @@ TOKEN_MAX_AGE = 8 * 60 * 60  # 8 horas
 SALT = 'rally-admin-session'
 WRITE_METHODS = {'POST', 'PUT', 'PATCH', 'DELETE'}
 LOGIN_PATH = '/api/auth/login'
+
+# Pantallas sólo para el administrador: Consultores y todos los catálogos. Su lectura (GET) exige sesión de
+# administrador. NO incluye /api/consultants/<id>/statement, que es el estado de cuenta público.
+ADMIN_ONLY_READ = re.compile(
+    r'^/api/(consultants|teams|consulting-firms|certification-types|certifications|'
+    r'consultant-certifications|extra-point-reason-types)(/\d+)?/?$')
 
 # Datos que el perfil público no debe recibir (correos, contacto y todo lo de reembolsos)
 SENSITIVE_KEYS = {
@@ -132,7 +139,9 @@ def authenticate_request():
         else:
             g.token_problem = problem
 
-    if request.method in WRITE_METHODS and request.path != LOGIN_PATH and not g.is_admin:
+    needs_admin = (request.method in WRITE_METHODS and request.path != LOGIN_PATH) or (
+        request.method == 'GET' and ADMIN_ONLY_READ.match(request.path))
+    if needs_admin and not g.is_admin:
         if g.token_problem == 'expired':
             return jsonify({'error': 'session expired', 'code': 'token_expired'}), 401
         return jsonify({'error': 'authentication required', 'code': 'auth_required'}), 401

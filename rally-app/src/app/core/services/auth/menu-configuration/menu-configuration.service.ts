@@ -1,110 +1,65 @@
-// ANGULAR
-import { Injectable } from '@angular/core';
-// LIBS
-import { BehaviorSubject, Observable, of } from 'rxjs';
-// MODELS
+import { Injectable, effect, inject } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Section } from '@models/section/Section';
+import { AdminSessionService } from '@services/admin-session/admin-session.service';
 
+type MenuItem = { id: number; name: string; icon: string; route: string; inMenu: number; children: MenuItem[] };
+
+const item = (id: number, name: string, icon: string, route: string, children: MenuItem[] = []): MenuItem =>
+  ({ id, name, icon, route, inMenu: 1, children });
+
+/**
+ * Menú de la aplicación según el perfil.
+ *  - Público: sólo lectura de los resultados (inicio, detalle, cursos y puntos extra).
+ *  - Administrador: además Consultores y todos los catálogos.
+ * El menú se recalcula solo cuando el perfil cambia (inicio o cierre de sesión).
+ */
 @Injectable({
-        providedIn: 'root'
+  providedIn: 'root'
 })
 export class MenuConfigurationService {
-        constructor() {
-        }
+  private admin = inject(AdminSessionService);
+  private readonly menu$ = new BehaviorSubject<Section[]>(this.build(this.admin.isAdmin()));
 
-        startConfiguration(sections: Section[]) {
-        }
+  constructor() {
+    effect(() => this.menu$.next(this.build(this.admin.isAdmin())));
+  }
 
-        resetConfiguration() {
-        }
+  startConfiguration(sections: Section[]) {
+  }
 
-        getMenu(): Observable<Section[]> {
-                return of([
-                        {
-                                id: 1,
-                                name: 'Inicio',
-                                icon: 'home',
-                                route: 'home',
-                                inMenu: 1,
-                                children: []
-                        },
-                        {
-                                id: 11,
-                                name: 'Detalle',
-                                icon: 'receipt_long',
-                                route: 'detail',
-                                inMenu: 1,
-                                children: []
-                        },
-                        {
-                                id: 2,
-                                name: 'Consultores',
-                                icon: 'people',
-                                route: 'consultants',
-                                inMenu: 1,
-                                children: []
-                        },
-                        {
-                                id: 5,
-                                name: 'Cursos',
-                                icon: 'school',
-                                route: 'course-sessions',
-                                inMenu: 1,
-                                children: []
-                        },
-                        {
-                                id: 6,
-                                name: 'Puntos Extra',
-                                icon: 'stars',
-                                route: 'extra-points',
-                                inMenu: 1,
-                                children: []
-                        },
-                        {
-                                id: 10,
-                                name: 'Catálogos',
-                                icon: 'library_books',
-                                route: '',
-                                inMenu: 1,
-                                children: [
-                                        {
-                                                id: 8,
-                                                name: 'Equipos',
-                                                icon: 'groups',
-                                                route: 'teams',
-                                                inMenu: 1,
-                                                children: []
-                                        },
-                                        {
-                                                id: 9,
-                                                name: 'Consultoras',
-                                                icon: 'business',
-                                                route: 'consulting-firms',
-                                                inMenu: 1,
-                                                children: []
-                                        },
-                                        {
-                                                id: 3,
-                                                name: 'Tipos de certificación',
-                                                icon: 'category',
-                                                route: 'certification-types',
-                                                inMenu: 1,
-                                                children: []
-                                        },
-                                        {
-                                                id: 4,
-                                                name: 'Certificaciones',
-                                                icon: 'workspace_premium',
-                                                route: 'certifications',
-                                                inMenu: 1,
-                                                children: []
-                                        }
-                                ]
-                        }
-                ] as unknown as Section[]);
-        }
+  resetConfiguration() {
+  }
 
-        get validatePermissions() {
-                return false;
-        }
+  getMenu(): Observable<Section[]> {
+    return this.menu$.asObservable();
+  }
+
+  get validatePermissions() {
+    return false;
+  }
+
+  private build(isAdmin: boolean): Section[] {
+    const inicio = item(1, 'Inicio', 'home', 'home');
+    const detalle = item(11, 'Detalle', 'receipt_long', 'detail');
+    const cursos = item(5, 'Cursos', 'school', 'course-sessions');
+    const puntosExtra = item(6, 'Puntos Extra', 'stars', 'extra-points');
+
+    const menu = isAdmin
+      ? [
+        inicio,
+        detalle,
+        item(2, 'Consultores', 'people', 'consultants'),
+        cursos,
+        puntosExtra,
+        item(10, 'Catálogos', 'library_books', '', [
+          item(8, 'Equipos', 'groups', 'teams'),
+          item(9, 'Consultoras', 'business', 'consulting-firms'),
+          item(3, 'Tipos de certificación', 'category', 'certification-types'),
+          item(4, 'Certificaciones', 'workspace_premium', 'certifications')
+        ])
+      ]
+      : [inicio, detalle, cursos, puntosExtra];
+    return menu as unknown as Section[];
+  }
 }

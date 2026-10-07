@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, effect, untracked } from '@angular/core';
 
 // SERVICES
 import { MenuConfigurationService } from '@services/auth/menu-configuration/menu-configuration.service';
@@ -12,6 +12,7 @@ import { Menu } from '@models/menu/Menu';
 import { Router } from '@angular/router';
 import { MenuFilter } from '@utils/filters';
 import { AdminSessionService } from '@services/admin-session/admin-session.service';
+import { isAdminOnlyUrl } from '@constants/AdminOnlyPaths';
 
 @Component({
 	selector: 'app-sidenav',
@@ -37,7 +38,12 @@ export class SidenavComponent implements AfterViewInit {
 		private filter: MenuFilter,
 		public admin: AdminSessionService
 	) {
-
+		// Al salir del perfil administrador (cierre de sesión o sesión vencida) no se puede seguir en sus pantallas
+		effect(() => {
+			if (!this.admin.isAdmin() && untracked(() => isAdminOnlyUrl(this.router.url))) {
+				this.router.navigateByUrl('/app/home');
+			}
+		});
 	}
 
 	ngAfterViewInit() {

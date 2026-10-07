@@ -78,6 +78,11 @@ export class AdminSessionService {
     this._notice.set(message);
   }
 
+  /** Deja un aviso para el usuario sin cambiar de perfil (p. ej. al negarle una pantalla de administrador) */
+  notify(message: string): void {
+    this._notice.set(message);
+  }
+
   clearNotice(): void {
     this._notice.set(null);
   }

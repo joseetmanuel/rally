@@ -7,6 +7,7 @@ import { ROUTES_COURSE_SESSIONS } from './course-sessions/course-sessions.routes
 import { ROUTES_EXTRA_POINTS } from './extra-points/extra-points.routes';
 import { ROUTES_RANKING } from './ranking/ranking.routes';
 import { ROUTES_DETAIL } from './detail/detail.routes';
+import { adminGuard } from '../core/guards/admin/admin.guard';
 import { ROUTES_TEAMS } from './teams/teams.routes';
 import { ROUTES_CONSULTING_FIRMS } from './consulting-firms/consulting-firms.routes';
 
@@ -34,16 +35,19 @@ export const ROUTES: Routes = [
 			},
 			{
 				path: 'consultants',
+				canActivate: [adminGuard],
 				data: { breadcrumb: 'Consultores' },
 				loadChildren: () => ROUTES_CONSULTANTS
 			},
 			{
 				path: 'certifications',
+				canActivate: [adminGuard],
 				data: { breadcrumb: 'Certificaciones' },
 				loadChildren: () => ROUTES_CERTIFICATIONS
 			},
 			{
 				path: 'certification-types',
+				canActivate: [adminGuard],
 				data: { breadcrumb: 'Tipos de Certificación' },
 				loadChildren: () => ROUTES_CERTIFICATION_TYPES
 			},
@@ -54,11 +58,13 @@ export const ROUTES: Routes = [
 			},
 			{
 				path: 'teams',
+				canActivate: [adminGuard],
 				data: { breadcrumb: 'Equipos' },
 				loadChildren: () => ROUTES_TEAMS
 			},
 			{
 				path: 'consulting-firms',
+				canActivate: [adminGuard],
 				data: { breadcrumb: 'Consultoras' },
 				loadChildren: () => ROUTES_CONSULTING_FIRMS
 			},

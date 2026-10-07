@@ -25,6 +25,7 @@ export function createAdminSessionMock(isAdmin = false, user = 'Etmanuel') {
     logout: jest.fn(),
     expire: jest.fn(),
     clearNotice: jest.fn(),
+    notify: jest.fn(),
     restore: jest.fn(),
     setAdmin: (value: boolean) => {
       admin.set(value);

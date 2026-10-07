@@ -7,9 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConsultantExtraPointService } from '../../../core/services/consultant-extra-points/consultant-extra-point.service';
-import { ConsultantService } from '../../../core/services/consultants/consultant.service';
 import { ConsultantExtraPoint } from '../../../core/models/consultant-extra-points/consultant-extra-point';
-import { Consultant } from '../../../core/models/consultants/consultant';
 import { CaptureExtraPointComponent } from '../capture-extra-point/capture-extra-point.component';
 import { ConfirmationService } from '../../../core/services/confirmation/confirmation.service';
 import { AdminSessionService } from '../../../core/services/admin-session/admin-session.service';
@@ -32,7 +30,17 @@ import { AdminSessionService } from '../../../core/services/admin-session/admin-
 export class ListExtraPointsComponent implements OnInit {
   extraPoints: ConsultantExtraPoint[] = [];
   filteredPoints: ConsultantExtraPoint[] = [];
-  consultants: Consultant[] = [];
+  /**
+   * Opciones del filtro: las personas que aparecen en los puntos cargados. Se obtienen de aquí y no del
+   * catálogo de consultores porque ese catálogo es sólo para el administrador (esta pantalla es pública).
+   */
+  get consultants(): { id: number; full_name: string }[] {
+    const people = new Map<number, string>();
+    for (const point of this.extraPoints) {
+      people.set(point.consultant_id, point.consultant?.full_name ?? `ID: ${point.consultant_id}`);
+    }
+    return [...people].map(([id, full_name]) => ({ id, full_name })).sort((a, b) => a.full_name.localeCompare(b.full_name, 'es'));
+  }
   selectedConsultantId: number | null = null;
   get displayedColumns(): string[] {
     return this.admin.isAdmin()
@@ -42,20 +50,11 @@ export class ListExtraPointsComponent implements OnInit {
 
   readonly admin = inject(AdminSessionService);
   private extraPointService = inject(ConsultantExtraPointService);
-  private consultantService = inject(ConsultantService);
   private dialog = inject(MatDialog);
   private confirmationService = inject(ConfirmationService);
 
   ngOnInit(): void {
-    this.loadConsultants();
     this.loadExtraPoints();
-  }
-
-  loadConsultants(): void {
-    this.consultantService.getConsultants().subscribe({
-      next: (data) => this.consultants = data,
-      error: (err) => console.error('Error loading consultants', err)
-    });
   }
 
   loadExtraPoints(): void {

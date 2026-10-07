@@ -150,16 +150,49 @@ def test_a_login_token_from_the_login_endpoint_can_write(public_client):
     assert public_client.post('/api/teams', json={'name': name}, headers=bearer(token)).status_code == 201
 
 
-def test_public_can_read_everything(public_client):
-    for path in ('/api/teams', '/api/consulting-firms', '/api/consultants', '/api/certifications',
-                 '/api/certification-types', '/api/course-sessions', '/api/course-attendances',
-                 '/api/consultant-certifications', '/api/consultant-extra-points', '/api/extra-point-reason-types',
-                 '/api/ranking', '/api/ranking?detail=1'):
-        assert public_client.get(path).status_code == 200, path
+PUBLIC_READS = [
+    '/api/ranking', '/api/ranking?detail=1', '/api/rules', '/api/course-sessions', '/api/course-attendances',
+    '/api/consultant-extra-points']
+# Consultores y todos los catálogos: sólo el administrador
+ADMIN_ONLY_READS = [
+    '/api/consultants', '/api/consultants/1', '/api/teams', '/api/teams/1', '/api/consulting-firms',
+    '/api/certification-types', '/api/certifications', '/api/consultant-certifications',
+    '/api/consultant-certifications/1', '/api/extra-point-reason-types']
 
 
-def test_an_invalid_token_on_a_read_is_just_the_public_view(public_client):
-    assert public_client.get('/api/teams', headers=bearer('basura')).status_code == 200
+@pytest.mark.parametrize('path', PUBLIC_READS)
+def test_public_can_read_the_public_screens(public_client, path):
+    assert public_client.get(path).status_code == 200, path
+
+
+@pytest.mark.parametrize('path', ADMIN_ONLY_READS)
+def test_public_cannot_read_consultants_or_catalogs(public_client, path):
+    response = public_client.get(path)
+    assert response.status_code == 401 and response.get_json()['code'] == 'auth_required', path
+
+
+@pytest.mark.parametrize('path', [p for p in ADMIN_ONLY_READS if not p.endswith('/1')])
+def test_admin_can_read_consultants_and_catalogs(client, path):
+    assert client.get(path).status_code == 200, path
+
+
+def test_the_public_statement_is_still_public(public_client, client):
+    consultant_id = client.post('/api/consultants', json={
+        'full_name': f'Publico {uuid.uuid4().hex[:6]}', 'participant_type': 'INTERNO',
+        'team_id': api_team_id(client)}).get_json()['id']
+    assert public_client.get(f'/api/consultants/{consultant_id}/statement').status_code == 200
+    assert public_client.get(f'/api/consultants/{consultant_id}').status_code == 401
+
+
+def test_an_expired_token_on_an_admin_only_read_says_so(public_client, monkeypatch):
+    token = login(public_client).get_json()['token']
+    monkeypatch.setattr(auth, 'TOKEN_MAX_AGE', -1)
+    response = public_client.get('/api/consultants', headers=bearer(token))
+    assert response.status_code == 401 and response.get_json()['code'] == 'token_expired'
+
+
+def test_an_invalid_token_on_a_public_read_is_just_the_public_view(public_client):
+    assert public_client.get('/api/ranking', headers=bearer('basura')).status_code == 200
 
 
 def test_preflight_requests_do_not_need_a_session(public_client):
@@ -186,33 +219,30 @@ def make_consultant_with_certification(client):
     return consultant, record
 
 
-def test_public_does_not_receive_emails_or_contact(public_client, client):
-    consultant, _ = make_consultant_with_certification(client)
+def test_public_never_gets_the_consultants_that_hold_emails(public_client, client):
+    consultant, record = make_consultant_with_certification(client)
+    for path in (f"/api/consultants/{consultant['id']}", '/api/consultants',
+                 f"/api/consultant-certifications/{record['id']}", '/api/consultant-certifications'):
+        response = public_client.get(path)
+        assert response.status_code == 401 and consultant['email'] not in response.get_data(as_text=True), path
 
-    listing = {c['id']: c for c in public_client.get('/api/consultants').get_json()}[consultant['id']]
-    detail = public_client.get(f"/api/consultants/{consultant['id']}").get_json()
-    for view in (listing, detail):
-        assert 'email' not in view and 'teams_contact' not in view
-        assert view['full_name'] == consultant['full_name']  # el resto sí viaja
 
+def test_admin_still_sees_emails_contact_and_reimbursements(client):
+    consultant, record = make_consultant_with_certification(client)
     admin_view = client.get(f"/api/consultants/{consultant['id']}").get_json()
     assert admin_view['email'] == consultant['email'] and admin_view['teams_contact'] == consultant['teams_contact']
-
-
-def test_public_does_not_receive_reimbursement_data(public_client, client):
-    consultant, record = make_consultant_with_certification(client)
-    hidden = {'reimbursement_amount', 'paid_with_own_resources', 'reimbursement_registered',
-              'reimbursement_registered_at', 'notes'}
-
-    public_rows = [r for r in public_client.get('/api/consultant-certifications').get_json() if r['id'] == record['id']]
-    public_one = public_client.get(f"/api/consultant-certifications/{record['id']}").get_json()
-    for row in public_rows + [public_one]:
-        assert not hidden & set(row)
-        assert row['obtained_at'] == '2026-02-01'  # lo demás sí
-
     admin_row = client.get(f"/api/consultant-certifications/{record['id']}").get_json()
     assert admin_row['reimbursement_amount'] == 1234.5 and admin_row['paid_with_own_resources'] is True
     assert admin_row['notes'] == 'pagó con tarjeta personal'
+
+
+def test_the_redaction_safety_net_strips_private_fields_if_a_route_is_ever_opened():
+    """Red de seguridad: aunque algún día se abra una lectura al público, no viajan datos privados."""
+    sample = {'full_name': 'Ana', 'email': 'a@x.com', 'teams_contact': 'ana', 'nested': [{'reimbursement_amount': 5,
+              'paid_with_own_resources': True, 'obtained_at': '2026-02-01', 'notes': 'privado'}]}
+    stripped = auth._strip(sample, hide_notes=True)
+    assert stripped == {'full_name': 'Ana', 'nested': [{'obtained_at': '2026-02-01'}]}
+    assert auth._strip(sample, hide_notes=False)['nested'][0]['notes'] == 'privado'
 
 
 def test_notes_of_other_records_stay_visible_to_the_public(public_client, client):

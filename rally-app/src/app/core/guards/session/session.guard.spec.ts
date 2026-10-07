@@ -6,6 +6,7 @@ import { MenuConfigurationService } from '@services/auth/menu-configuration/menu
 import { Router } from '@angular/router';
 import { AuthenticationConfigurationService } from '@services/auth/authentication-configuration/authentication-configuration-service.service';
 import { of } from 'rxjs';
+import { provideAdminSession } from '../../testing/admin-session.mock';
 import { Section } from '@models/section/Section';
 import { Menu } from '@models/menu/Menu';
 import { LoginItem } from '@models/authentication/LoginComparrnet';
@@ -48,7 +49,7 @@ describe('NavigationGuard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      providers: [SessionGuard],
+      providers: [SessionGuard, provideAdminSession(false)],
     });
     guard = TestBed.inject(SessionGuard);
     router = TestBed.inject(Router);

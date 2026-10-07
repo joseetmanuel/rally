@@ -107,6 +107,11 @@ def seed_catalogs():
                 "code": "DINAMICA_ESPECIAL",
                 "name": "Dinámica especial",
                 "description": "Puntos obtenidos en dinámicas especiales del evento"
+            },
+            {
+                "code": "PRIMERA_CERT_FEB",
+                "name": "Puntos por 1ra Cert Feb",
+                "description": "Punto por la primera certificación obtenida en febrero"
             }
         ]
 
