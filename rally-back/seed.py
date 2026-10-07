@@ -112,6 +112,11 @@ def seed_catalogs():
                 "code": "PRIMERA_CERT_FEB",
                 "name": "Puntos por 1ra Cert Feb",
                 "description": "Punto por la primera certificación obtenida en febrero"
+            },
+            {
+                "code": "PRIMERA_CERT_ABR_MAY",
+                "name": "Puntos por 1ra Cert Abril-Mayo",
+                "description": "Punto por la primera certificación obtenida en abril-mayo"
             }
         ]
 
