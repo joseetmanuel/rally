@@ -12,6 +12,10 @@ from config import Config
 class TestConfig(Config):
     """Configuración específica para pruebas."""
     TESTING = True
+    # Credenciales de prueba: no dependen del .env ni se parecen a las reales
+    ADMIN_USER = 'AdminPrueba'
+    ADMIN_PASSWORD = 'clave-de-prueba-123'
+    SECRET_KEY = 'clave-de-firma-solo-para-pruebas'
     # Usar una base de datos de pruebas independiente
     db_name = os.getenv('DB_NAME_TEST', os.getenv('DB_NAME', 'rally_db') + '_test')
     
@@ -62,9 +66,33 @@ def app():
         db.session.remove()
         db.drop_all()
 
+@pytest.fixture(autouse=True)
+def _reset_login_limiter():
+    """El límite de intentos de login es global (en memoria): se limpia entre pruebas."""
+    from auth import limiter
+    limiter.reset()
+    yield
+    limiter.reset()
+
+
 @pytest.fixture
-def client(app):
-    """Fixture que provee un cliente de pruebas de Flask."""
+def admin_token(app):
+    from auth import issue_token
+    with app.app_context():
+        return issue_token(app.config['ADMIN_USER'])[0]
+
+
+@pytest.fixture
+def client(app, admin_token):
+    """Cliente de pruebas con sesión de ADMINISTRADOR (las pruebas de datos pueden escribir)."""
+    test_client = app.test_client()
+    test_client.environ_base['HTTP_AUTHORIZATION'] = f'Bearer {admin_token}'
+    return test_client
+
+
+@pytest.fixture
+def public_client(app):
+    """Cliente de pruebas del perfil PÚBLICO: sin sesión."""
     return app.test_client()
 
 @pytest.fixture
