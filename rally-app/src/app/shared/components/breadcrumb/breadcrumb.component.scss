@@ -1,3 +1,4 @@
+@use "sass:color" as sass-color;
 @use "colors" as color;
 
 .breadcrumb {
@@ -63,5 +64,5 @@
 }
 
 .active {
-  color: lighten(color.$accent-color, 10%) !important;
+  color: sass-color.adjust(color.$accent-color, $lightness: 10%) !important;
 }

@@ -41,7 +41,15 @@
             "stylePreprocessorOptions": {
               "includePaths": [
                 "src/styles/base"
-              ]
+              ],
+              "sass": {
+                "silenceDeprecations": [
+                  "import",
+                  "global-builtin",
+                  "color-functions",
+                  "mixed-decls"
+                ]
+              }
             },
             "scripts": [],
             "browser": "src/main.ts"

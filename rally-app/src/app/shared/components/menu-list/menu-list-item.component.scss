@@ -1,5 +1,5 @@
 // @import '../theme';
-@import '../../../../styles/base/colors';
+@use '../../../../styles/base/colors' as *;
 
 :host {
 	display: flex;
