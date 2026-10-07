@@ -36,8 +36,9 @@ def upgrade():
 
     # Conservar datos: las consultoras en texto libre pasan al catálogo y los consultores
     # existentes quedan en el equipo 'N/A' (el número de equipo anterior no tiene equivalente).
-    op.execute("INSERT INTO teams (name) VALUES ('N/A')")
-    op.execute("UPDATE consultants SET team_id = (SELECT id FROM teams WHERE name = 'N/A')")
+    # 'N/A' sólo se crea si hay consultores que migrar; en una base nueva no se crea ningún equipo
+    op.execute("INSERT INTO teams (name) SELECT 'N/A' WHERE EXISTS (SELECT 1 FROM consultants)")
+    op.execute("UPDATE consultants SET team_id = (SELECT id FROM teams WHERE name = 'N/A')")  # no-op sin filas
     op.execute("""
         INSERT INTO consulting_firms (name)
         SELECT DISTINCT TRIM(consulting_firm_name) FROM consultants
