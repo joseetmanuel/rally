@@ -2,11 +2,42 @@ from app import create_app
 from database import db
 from models.certification_type import CertificationType
 from models.extra_point_reason_type import ExtraPointReasonType
+from models.certification import Certification
 from models.team import Team
 from models.consulting_firm import ConsultingFirm
 
 TEAMS = ['Elastic', 'LC/GR', 'Call', 'SI+', 'NBM', 'Gerente', 'Equipo Cross']
 CONSULTING_FIRMS = ['Antal', 'Corus', 'Wayssen', 'Qualtop', 'MaterSys', 'Inetum', 'POSITIVO S+']
+
+# Catálogo de certificaciones del Rally 2026 (lámina "Participa en el rally de certificaciones").
+# (proveedor, nombre, tipo). El tipo sale de la etiqueta de cada insignia en la lámina.
+CERTIFICATIONS = [
+    # Ruta AWS
+    ('AWS', 'Cloud Practitioner', 'FUNDACIONAL'),
+    ('AWS', 'Developer Associate', 'PROFESIONAL'),
+    ('AWS', 'Solutions Architect Associate', 'EXPERTO'),
+    ('AWS', 'SysOps Administrator Associate', 'EXPERTO'),
+    ('AWS', 'DevOps Engineer Professional', 'OPCIONAL'),
+    # Ruta Azure
+    ('Microsoft', 'Azure Fundamentals', 'FUNDACIONAL'),
+    ('Microsoft', 'Azure AI Fundamentals', 'FUNDACIONAL'),
+    ('Microsoft', 'Azure Administrator Associate', 'PROFESIONAL'),
+    ('Microsoft', 'Azure Developer Associate', 'EXPERTO'),
+    ('Microsoft', 'Azure Solutions Architect Expert', 'OPCIONAL'),
+    ('Microsoft', 'Azure DevOps Engineer Expert', 'OPCIONAL'),
+    # Ruta GCP
+    ('Google Cloud', 'Cloud Digital Leader', 'FUNDACIONAL'),
+    ('Google Cloud', 'Generative AI Leader', 'FUNDACIONAL'),
+    ('Google Cloud', 'Associate Cloud Engineer', 'PROFESIONAL'),
+    ('Google Cloud', 'Professional Cloud Architect', 'OPCIONAL'),
+    ('Google Cloud', 'Professional Cloud DevOps Engineer', 'OPCIONAL'),
+    ('Google Cloud', 'Professional Cloud Developer', 'EXPERTO'),
+    # Ruta Python
+    ('Python Institute', 'PCEP - Certified Entry-Level Python Programmer', 'FUNDACIONAL'),
+    ('Python Institute', 'PCAP - Certified Associate Python Programmer', 'PROFESIONAL'),
+    ('Python Institute', 'PCPP1 - Certified Professional in Python Programming 1', 'EXPERTO'),
+    ('Python Institute', 'PCPP2 - Certified Professional in Python Programming 2', 'OPCIONAL'),
+]
 
 def seed_catalogs():
     app = create_app()
@@ -95,6 +126,14 @@ def seed_catalogs():
             for name in names:
                 if not model.query.filter_by(name=name).first():
                     db.session.add(model(name=name))
+
+        # 4. Certificaciones (necesita los tipos ya insertados; sólo se agregan las que faltan)
+        print("Seeding Certifications...")
+        db.session.flush()
+        type_ids = {t.code: t.id for t in CertificationType.query.all()}
+        for vendor, name, type_code in CERTIFICATIONS:
+            if not Certification.query.filter_by(vendor=vendor, name=name).first():
+                db.session.add(Certification(vendor=vendor, name=name, certification_type_id=type_ids[type_code]))
 
         db.session.commit()
         print("Seed completed successfully!")
