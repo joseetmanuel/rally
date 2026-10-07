@@ -199,3 +199,25 @@ def test_statement_without_activity_is_empty(client, app):
 
 def test_statement_of_an_unknown_consultant_is_404(client):
     assert client.get('/api/consultants/999999/statement').status_code == 404
+
+
+# ---- /api/ranking?detail=1: el ranking con los movimientos de cada participante ----
+def test_ranking_does_not_include_entries_by_default(client, app):
+    build_scenario(app)
+    assert all('entries' not in row for row in client.get('/api/ranking').get_json())
+
+
+def test_ranking_with_detail_includes_each_participants_entries(client, app):
+    ids = build_scenario(app)
+    rows = {r['consultant_id']: r for r in client.get('/api/ranking?detail=1').get_json()}
+    a = rows[ids['a']]
+    assert [(e['kind'], e['points'], e['balance']) for e in a['entries']] == [
+        ('certification', 30, 30), ('student_bonus', 6, 36), ('extra', 5, 41)]
+    assert rows[ids['c']]['entries'] == []
+
+
+def test_detail_entries_match_the_individual_statement(client, app):
+    build_scenario(app)
+    for row in client.get('/api/ranking?detail=1').get_json():
+        assert row['entries'] == get_statement(client, row['consultant_id'])['entries']
+        assert sum(e['points'] for e in row['entries']) == row['total_points']

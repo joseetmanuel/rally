@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from services.ranking_service import RankingService
 
 ranking_bp = Blueprint('ranking', __name__)
@@ -6,7 +6,9 @@ ranking_bp = Blueprint('ranking', __name__)
 
 @ranking_bp.route('/ranking', methods=['GET'])
 def get_ranking():
-    return jsonify(RankingService.calculate_ranking()), 200
+    # ?detail=1 agrega a cada participante sus movimientos de puntos (lo usa el PDF)
+    include_entries = request.args.get('detail', '').lower() in ('1', 'true', 'yes')
+    return jsonify(RankingService.calculate_ranking(include_entries)), 200
 
 
 @ranking_bp.route('/consultants/<int:id>/statement', methods=['GET'])

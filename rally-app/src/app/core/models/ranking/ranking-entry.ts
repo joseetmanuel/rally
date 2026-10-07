@@ -1,3 +1,5 @@
+import type { StatementEntry } from '../statement/statement';
+
 export interface RankingBreakdown {
   certifications: number;
   courses_given: number;
@@ -17,4 +19,6 @@ export interface RankingEntry {
   total_points: number;
   last_certification_date: string | null;
   breakdown: RankingBreakdown;
+  /** Movimientos de puntos; sólo viene con getRanking(true) */
+  entries?: StatementEntry[];
 }

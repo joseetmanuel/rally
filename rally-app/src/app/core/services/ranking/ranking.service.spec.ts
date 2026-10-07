@@ -16,6 +16,20 @@ describe('RankingService', () => {
 
   afterEach(() => http.verify());
 
+  it('can ask for the ranking with the movements of each participant', () => {
+    service.getRanking(true).subscribe();
+    const req = http.expectOne((r) => r.url === `${environment.api_url}/ranking`);
+    expect(req.request.params.get('detail')).toBe('1');
+    req.flush([]);
+  });
+
+  it('does not ask for the movements by default', () => {
+    service.getRanking().subscribe();
+    const req = http.expectOne(`${environment.api_url}/ranking`);
+    expect(req.request.params.has('detail')).toBe(false);
+    req.flush([]);
+  });
+
   it('requests the ranking with GET', () => {
     service.getRanking().subscribe((r) => expect(r.length).toBe(1));
     const req = http.expectOne(`${environment.api_url}/ranking`);

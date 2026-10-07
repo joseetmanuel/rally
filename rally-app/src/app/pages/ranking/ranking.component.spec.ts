@@ -200,12 +200,15 @@ describe('RankingComponent', () => {
       await setup();
       component.onSearch({ target: { value: 'ana' } } as unknown as Event);
       await component.exportPdf();
+      // pide el ranking con los movimientos de cada participante y exporta eso
+      expect(service.getRanking).toHaveBeenLastCalledWith(true);
       expect(pdf.export).toHaveBeenCalledWith(DATA);
     });
 
     it('exports when the button is clicked', async () => {
       await setup();
       pdfButton().click();
+      await fixture.whenStable();
       expect(pdf.export).toHaveBeenCalledTimes(1);
     });
 
@@ -225,6 +228,7 @@ describe('RankingComponent', () => {
       fixture.detectChanges();
       expect(pdfButton().textContent).toContain('Generando');
       await component.exportPdf();
+      await new Promise((resolve) => setTimeout(resolve));
       expect(pdf.export).toHaveBeenCalledTimes(1);
       finish('ok');
       await first;

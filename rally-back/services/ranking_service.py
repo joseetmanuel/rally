@@ -138,12 +138,26 @@ class RankingService:
         return ranking
 
     @staticmethod
-    def calculate_ranking():
-        stats, _ = RankingService._compute()
+    def _with_balance(entries):
+        """Ordena los movimientos cronológicamente y les agrega el saldo acumulado."""
+        ordered = sorted(entries, key=lambda e: (e['date'], KIND_ORDER.index(e['kind'])))
+        balance = 0
+        result = []
+        for entry in ordered:
+            balance += entry['points']
+            result.append({**entry, 'balance': balance, 'date': entry['date'].isoformat()})
+        return result
+
+    @staticmethod
+    def calculate_ranking(include_entries=False):
+        """Ranking completo. Con `include_entries` cada participante trae sus movimientos de puntos."""
+        stats, ledger = RankingService._compute()
         ranking = RankingService._rank(stats)
         for s in ranking:
             last = s['last_certification_date']
             s['last_certification_date'] = last.isoformat() if last else None
+            if include_entries:
+                s['entries'] = RankingService._with_balance(ledger[s['consultant_id']])
         return ranking
 
     @staticmethod
@@ -160,12 +174,7 @@ class RankingService:
         RankingService._rank(stats)
         s = stats[consultant_id]
 
-        entries = sorted(ledger[consultant_id], key=lambda e: (e['date'], KIND_ORDER.index(e['kind'])))
-        balance = 0
-        for entry in entries:
-            balance += entry['points']
-            entry['balance'] = balance
-            entry['date'] = entry['date'].isoformat()
+        entries = RankingService._with_balance(ledger[consultant_id])
 
         last = s['last_certification_date']
         return {

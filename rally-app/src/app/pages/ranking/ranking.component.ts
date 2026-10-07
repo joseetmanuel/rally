@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -63,13 +64,15 @@ export class RankingComponent implements OnInit {
     });
   }
 
-  /** Descarga todo el ranking (sin aplicar el filtro de búsqueda) como PDF */
+  /** Descarga todo el ranking (sin aplicar el filtro de búsqueda) como PDF, con el detalle de cada participante */
   async exportPdf(): Promise<void> {
     if (this.exporting || this.ranking.length === 0) return;
     this.exporting = true;
     this.exportError = false;
     try {
-      await this.pdfService.export(this.ranking);
+      // Se piden los movimientos de todos y de paso se exportan datos frescos, no los de la pantalla
+      const detailed = await firstValueFrom(this.rankingService.getRanking(true));
+      await this.pdfService.export(detailed);
     } catch (err) {
       console.error('Error exporting ranking to PDF', err);
       this.exportError = true;

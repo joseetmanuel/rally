@@ -10,8 +10,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RankingService } from '../../core/services/ranking/ranking.service';
 import { StatementService } from '../../core/services/statement/statement.service';
 import { RankingEntry } from '../../core/models/ranking/ranking-entry';
-import { Statement, StatementEntry, StatementKind } from '../../core/models/statement/statement';
+import { KIND_LABELS, Statement, StatementEntry, StatementKind } from '../../core/models/statement/statement';
 import { initials } from '../../core/utils/initials';
+import { MONTH_NAMES, shortDate } from '../../core/utils/dates';
 import { BREAKDOWN_SEGMENTS } from '../ranking/ranking.component';
 
 export interface KindMeta {
@@ -23,11 +24,11 @@ export interface KindMeta {
 /** Etiqueta, icono y color de cada tipo de movimiento. Los colores son versiones más oscuras de la paleta
  *  del ranking para que el icono blanco tenga contraste suficiente. */
 export const KIND_META: Record<StatementKind, KindMeta> = {
-  certification: { label: 'Certificación', icon: 'workspace_premium', color: 'var(--dt-cert)' },
-  course_given: { label: 'Curso impartido', icon: 'school', color: 'var(--dt-given)' },
-  student_bonus: { label: 'Bono de alumno', icon: 'redeem', color: 'var(--dt-student)' },
-  instructor_bonus: { label: 'Bono de expositor', icon: 'record_voice_over', color: 'var(--dt-instructor)' },
-  extra: { label: 'Punto extra', icon: 'stars', color: 'var(--dt-extra)' }
+  certification: { label: KIND_LABELS.certification, icon: 'workspace_premium', color: 'var(--dt-cert)' },
+  course_given: { label: KIND_LABELS.course_given, icon: 'school', color: 'var(--dt-given)' },
+  student_bonus: { label: KIND_LABELS.student_bonus, icon: 'redeem', color: 'var(--dt-student)' },
+  instructor_bonus: { label: KIND_LABELS.instructor_bonus, icon: 'record_voice_over', color: 'var(--dt-instructor)' },
+  extra: { label: KIND_LABELS.extra, icon: 'stars', color: 'var(--dt-extra)' }
 };
 
 export interface MonthGroup {
@@ -36,9 +37,6 @@ export interface MonthGroup {
   points: number;
   entries: StatementEntry[];
 }
-
-const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
-  'Noviembre', 'Diciembre'];
 
 @Component({
   selector: 'app-detail',
@@ -166,13 +164,11 @@ export class DetailComponent implements OnInit {
 
   monthLabel(key: string): string {
     const [year, month] = key.split('-').map(Number);
-    return `${MONTHS[month - 1]} ${year}`;
+    return `${MONTH_NAMES[month - 1]} ${year}`;
   }
 
-  /** "2026-02-19" -> "19 feb" (sin pasar por Date para evitar corrimientos de zona horaria) */
   shortDate(iso: string): string {
-    const [, month, day] = iso.split('-').map(Number);
-    return `${day} ${MONTHS[month - 1].substring(0, 3).toLowerCase()}`;
+    return shortDate(iso);
   }
 
   /** Ancho (%) de un componente dentro de la barra de desglose */

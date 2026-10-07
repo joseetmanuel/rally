@@ -2,6 +2,15 @@ import { RankingBreakdown } from '../ranking/ranking-entry';
 
 export type StatementKind = 'certification' | 'course_given' | 'student_bonus' | 'instructor_bonus' | 'extra';
 
+/** Nombre legible de cada tipo de movimiento */
+export const KIND_LABELS: Record<StatementKind, string> = {
+  certification: 'Certificación',
+  course_given: 'Curso impartido',
+  student_bonus: 'Bono de alumno',
+  instructor_bonus: 'Bono de expositor',
+  extra: 'Punto extra'
+};
+
 /** Un movimiento del estado de cuenta: de dónde salieron unos puntos */
 export interface StatementEntry {
   date: string;

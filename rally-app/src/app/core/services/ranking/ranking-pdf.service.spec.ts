@@ -23,8 +23,13 @@ function entry(position: number, name: string, total: number, extra: Partial<Ran
 }
 
 const DATA: RankingEntry[] = [
-  entry(1, 'Ana García', 100),
-  entry(2, 'Luis Pérez', 80, { team: null }),
+  entry(1, 'Ana García', 100, {
+    entries: [
+      { date: '2026-02-19', kind: 'certification', points: 90, title: 'PCAP', detail: 'Python Institute · Profesional', balance: 90 },
+      { date: '2026-03-02', kind: 'extra', points: 10, title: 'Punto extra', detail: 'Apoyo en el rally', balance: 100 }
+    ]
+  }),
+  entry(2, 'Luis Pérez', 80, { team: null, entries: [] }),
   entry(3, 'Carlos Ruiz', 60)
 ];
 
@@ -51,6 +56,36 @@ describe('RankingPdfService', () => {
 
   it('summarises participants, certifications and points', () => {
     expect(service.summary(DATA)).toBe('3 participantes · 3 certificaciones · 240 puntos en juego');
+  });
+
+  it('adds a sub-row for every movement under its participant', () => {
+    const { body, mainRows } = service.bodyRows(DATA);
+    // Ana + 2 movimientos, Luis, Carlos
+    expect(body.length).toBe(5);
+    expect([...mainRows.entries()]).toEqual([[0, 1], [3, 2], [4, 3]]);
+  });
+
+  it('writes a movement as date, type, subject, detail and points in the 7 columns of the table', () => {
+    const row = service.subRow(DATA[0].entries![0]) as any[];
+    expect(row.length).toBe(4);
+    expect(row[1].content).toBe('19 feb · Certificación: PCAP');
+    expect(row[2]).toEqual({ content: 'Python Institute · Profesional', colSpan: 4 });
+    expect(row[3].content).toBe('+90');
+    // 1 + 1 + 4 + 1 columnas
+    expect(1 + 1 + row[2].colSpan + 1).toBe(7);
+  });
+
+  it('keeps participants without movements as a single row', () => {
+    const { body } = service.bodyRows([DATA[1], DATA[2]]);
+    expect(body.length).toBe(2);
+  });
+
+  it('prints the movements in the PDF', async () => {
+    const content = (await service.build(DATA)).output();
+    expect(content).toContain('Certificación: PCAP');
+    expect(content).toContain('Python Institute');
+    expect(content).toContain('Apoyo en el rally');
+    expect(content).toContain('+90');
   });
 
   it('builds a real A4 document with the ranking', async () => {

@@ -11,7 +11,8 @@ export class RankingService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.api_url}/ranking`;
 
-  getRanking(): Observable<RankingEntry[]> {
-    return this.http.get<RankingEntry[]>(this.apiUrl);
+  /** Con `withDetail` cada participante trae además sus movimientos de puntos (para el PDF) */
+  getRanking(withDetail = false): Observable<RankingEntry[]> {
+    return this.http.get<RankingEntry[]>(this.apiUrl, withDetail ? { params: { detail: '1' } } : {});
   }
 }
