@@ -107,3 +107,33 @@ def test_cloud_sql_socket_uri():
     assert url.host is None  # no hay host TCP
     assert url.query['host'] == '/cloudsql/proyecto:us-east1:rally-db'
     assert url.database == 'rally_db' and url.password == 'clave/rara:1'
+
+
+# ------------------------------------------------------------------ secretos con saltos de línea
+def test_secrets_are_trimmed_so_a_trailing_newline_does_not_break_the_login(monkeypatch):
+    import importlib
+
+    import config as config_module
+    monkeypatch.setenv('ADMIN_USER', ' Etmanuel\n')
+    monkeypatch.setenv('ADMIN_PASSWORD', 'mi-clave-segura\r\n')
+    monkeypatch.setenv('SECRET_KEY', 'firma\n')
+    try:
+        reloaded = importlib.reload(config_module)
+        assert reloaded.Config.ADMIN_USER == 'Etmanuel'
+        assert reloaded.Config.ADMIN_PASSWORD == 'mi-clave-segura'
+        assert reloaded.Config.SECRET_KEY == 'firma'
+    finally:
+        monkeypatch.undo()
+        importlib.reload(config_module)
+
+
+def test_a_blank_password_means_login_disabled(monkeypatch):
+    import importlib
+
+    import config as config_module
+    monkeypatch.setenv('ADMIN_PASSWORD', '  \n')
+    try:
+        assert importlib.reload(config_module).Config.ADMIN_PASSWORD is None
+    finally:
+        monkeypatch.undo()
+        importlib.reload(config_module)

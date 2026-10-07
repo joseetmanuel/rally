@@ -9,9 +9,10 @@ load_dotenv()
 
 
 # --- Perfil administrador (los valores reales viven en variables de entorno / Secret Manager) ---
-ADMIN_USER = os.getenv('ADMIN_USER', 'Etmanuel')
-ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')  # sin valor por defecto: si falta, el login queda deshabilitado
-_secret_key = os.getenv('SECRET_KEY')
+# Se limpian espacios y saltos de línea: al guardar un secreto desde una terminal suele quedar un salto de línea al final
+ADMIN_USER = (os.getenv('ADMIN_USER') or 'Etmanuel').strip()
+ADMIN_PASSWORD = (os.getenv('ADMIN_PASSWORD') or '').strip() or None  # sin valor: el login queda deshabilitado
+_secret_key = (os.getenv('SECRET_KEY') or '').strip()
 if not _secret_key:
     # Sin SECRET_KEY los tokens se firman con una clave aleatoria de este proceso: las sesiones de
     # administrador se pierden al reiniciar (y no valen entre varias instancias). Aceptable sólo en desarrollo.
