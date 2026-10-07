@@ -6,6 +6,7 @@ import { ROUTES_CERTIFICATION_TYPES } from './certification-types/certification-
 import { ROUTES_COURSE_SESSIONS } from './course-sessions/course-sessions.routes';
 import { ROUTES_EXTRA_POINTS } from './extra-points/extra-points.routes';
 import { ROUTES_RANKING } from './ranking/ranking.routes';
+import { ROUTES_DETAIL } from './detail/detail.routes';
 import { ROUTES_TEAMS } from './teams/teams.routes';
 import { ROUTES_CONSULTING_FIRMS } from './consulting-firms/consulting-firms.routes';
 
@@ -20,6 +21,11 @@ export const ROUTES: Routes = [
 				path: 'home',
 				data: { breadcrumb: 'Inicio' },
 				loadChildren: () => ROUTES_RANKING
+			},
+			{
+				path: 'detail',
+				data: { breadcrumb: 'Detalle' },
+				loadChildren: () => ROUTES_DETAIL
 			},
 			{
 				path: 'ranking',

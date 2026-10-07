@@ -29,6 +29,14 @@ export class MenuConfigurationService {
                                 children: []
                         },
                         {
+                                id: 11,
+                                name: 'Detalle',
+                                icon: 'receipt_long',
+                                route: 'detail',
+                                inMenu: 1,
+                                children: []
+                        },
+                        {
                                 id: 2,
                                 name: 'Consultores',
                                 icon: 'people',

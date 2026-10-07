@@ -128,3 +128,74 @@ def test_ranking_without_activity_has_zero_points(client, app):
     rows = {r['consultant_id']: r for r in client.get('/api/ranking').json}
     assert rows[cid]['total_points'] == 0
     assert rows[cid]['certifications'] == 0
+
+
+# ---- Estado de cuenta: de dónde sale cada punto ----
+def get_statement(client, consultant_id):
+    response = client.get(f'/api/consultants/{consultant_id}/statement')
+    assert response.status_code == 200
+    return response.get_json()
+
+
+def test_statement_lists_every_movement_with_running_balance(client, app):
+    ids = build_scenario(app)
+    st = get_statement(client, ids['a'])
+
+    assert [(e['date'], e['kind'], e['points'], e['balance']) for e in st['entries']] == [
+        ('2026-02-01', 'certification', 30, 30),
+        ('2026-02-01', 'student_bonus', 6, 36),
+        ('2026-04-01', 'extra', 5, 41),
+    ]
+    assert st['total_points'] == 41
+    assert st['entries'][-1]['balance'] == st['total_points']
+    assert 'Big' in st['entries'][0]['title']
+
+
+def test_statement_for_an_instructor_shows_course_and_expositor_bonus(client, app):
+    ids = build_scenario(app)
+    st = get_statement(client, ids['i'])
+
+    assert [(e['date'], e['kind'], e['points']) for e in st['entries']] == [
+        ('2026-01-10', 'course_given', 15),
+        ('2026-02-01', 'instructor_bonus', 3),
+    ]
+    assert '1 asistente' in st['entries'][0]['detail'] or '3 asistentes' in st['entries'][0]['detail']
+    assert 'A ' in st['entries'][1]['detail']  # el alumno que se certificó
+    assert st['courses_given'] == 1
+
+
+def test_statement_totals_always_match_the_ranking(client, app):
+    build_scenario(app)
+    ranking = client.get('/api/ranking').get_json()
+    for row in ranking:
+        st = get_statement(client, row['consultant_id'])
+        assert sum(e['points'] for e in st['entries']) == row['total_points'] == st['total_points']
+        assert st['breakdown'] == row['breakdown']
+        assert st['position'] == row['position']
+        dates = [e['date'] for e in st['entries']]
+        assert dates == sorted(dates)
+
+
+def test_statement_header_has_the_participant_data(client, app):
+    ids = build_scenario(app)
+    st = get_statement(client, ids['b'])
+    assert st['consultant']['id'] == ids['b']
+    assert st['consultant']['team'] == 'Equipo Test'
+    assert st['consultant']['participant_type'] == 'INTERNO'
+    assert st['participants'] >= 6
+    assert st['certifications'] == 1 and st['courses_taken'] == 1
+
+
+def test_statement_without_activity_is_empty(client, app):
+    with app.app_context():
+        u = uuid.uuid4().hex[:8]
+        c = Consultant(full_name=f"Vacio {u}", participant_type="INTERNO", team_id=default_team_id(), email=f"vacio{u}@test.com")
+        db.session.add(c)
+        db.session.commit()
+        cid = c.id
+    st = get_statement(client, cid)
+    assert st['entries'] == [] and st['total_points'] == 0
+
+
+def test_statement_of_an_unknown_consultant_is_404(client):
+    assert client.get('/api/consultants/999999/statement').status_code == 404

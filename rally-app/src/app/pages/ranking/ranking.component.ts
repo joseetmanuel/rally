@@ -1,11 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RankingService } from '../../core/services/ranking/ranking.service';
 import { RankingPdfService } from '../../core/services/ranking/ranking-pdf.service';
 import { RankingEntry } from '../../core/models/ranking/ranking-entry';
+import { initials as toInitials } from '../../core/utils/initials';
 
 export interface BreakdownSegment {
   key: keyof RankingEntry['breakdown'];
@@ -25,7 +27,7 @@ export const BREAKDOWN_SEGMENTS: BreakdownSegment[] = [
 @Component({
   selector: 'app-ranking',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule],
+  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, MatProgressSpinnerModule],
   templateUrl: './ranking.component.html',
   styleUrls: ['./ranking.component.scss']
 })
@@ -114,10 +116,7 @@ export class RankingComponent implements OnInit {
   }
 
   initials(name: string): string {
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return '?';
-    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    return toInitials(name);
   }
 
   /** Ancho de la barra de una fila respecto al líder (mínimo visible si tiene puntos) */

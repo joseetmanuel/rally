@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { RankingComponent } from './ranking.component';
 import { RankingService } from '../../core/services/ranking/ranking.service';
@@ -41,6 +42,7 @@ describe('RankingComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RankingComponent, NoopAnimationsModule],
       providers: [
+        provideRouter([]),
         { provide: RankingService, useValue: service },
         { provide: RankingPdfService, useValue: pdf }
       ]
@@ -167,6 +169,21 @@ describe('RankingComponent', () => {
       expect(component.hasPoints).toBe(true);
       expect(component.podium.length).toBe(3);
       expect(el().querySelector('.notice')).toBeNull();
+    });
+  });
+
+  describe('link to the statement', () => {
+    it('opens the statement of a participant from the list rows', async () => {
+      await setup();
+      const links = Array.from(el().querySelectorAll('a.row__link')) as HTMLAnchorElement[];
+      expect(links.map((a) => a.getAttribute('href'))).toEqual(['/app/detail/4', '/app/detail/5']);
+      expect(links[0].getAttribute('aria-label')).toBe('Ver el detalle de María Soto');
+    });
+
+    it('opens the statement from the podium', async () => {
+      await setup();
+      const links = Array.from(el().querySelectorAll('a.podium__link')) as HTMLAnchorElement[];
+      expect(links.map((a) => a.getAttribute('href'))).toEqual(['/app/detail/2', '/app/detail/1', '/app/detail/3']);
     });
   });
 

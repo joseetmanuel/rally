@@ -1,0 +1,156 @@
+<section class="detail" aria-labelledby="detail-title">
+
+  <!-- Barra superior: volver al ranking + selector de participante -->
+  <div class="bar">
+    <a class="bar__back" routerLink="/app/home">
+      <mat-icon aria-hidden="true">arrow_back</mat-icon> Ranking
+    </a>
+
+    @if (participants.length > 0) {
+      <mat-form-field class="picker" appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Participante</mat-label>
+        <mat-select [value]="selectedId" (selectionChange)="select($event.value)" aria-label="Elegir participante">
+          @for (p of participants; track p.consultant_id) {
+            <mat-option [value]="p.consultant_id">{{ p.position }}. {{ p.full_name }} · {{ p.total_points }} pts</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+  </div>
+
+  @if (loading) {
+    <div class="state" role="status">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Cargando el estado de cuenta…</p>
+    </div>
+  } @else if (error) {
+    <div class="state state--error" role="alert">
+      <mat-icon>cloud_off</mat-icon>
+      <p>No se pudo cargar el estado de cuenta. Verifica que el servidor esté activo.</p>
+      <button mat-flat-button (click)="retry()">Reintentar</button>
+    </div>
+  } @else if (notFound) {
+    <div class="state" role="alert">
+      <mat-icon>person_off</mat-icon>
+      <p>No encontramos a ese participante.</p>
+      <a mat-flat-button routerLink="/app/home">Volver al ranking</a>
+    </div>
+  } @else if (!statement) {
+    <div class="state">
+      <mat-icon>groups</mat-icon>
+      <p>Aún no hay participantes registrados.</p>
+    </div>
+  } @else {
+
+    <!-- Cabecera de la persona -->
+    <header class="hero">
+      <div class="avatar" aria-hidden="true">{{ initials(statement.consultant.full_name) }}</div>
+
+      <div class="hero__who">
+        <h1 id="detail-title">{{ statement.consultant.full_name }}</h1>
+        <ul class="chips">
+          <li class="chip chip--rank">
+            <mat-icon aria-hidden="true">emoji_events</mat-icon>
+            Lugar {{ statement.position }} de {{ statement.participants }}
+          </li>
+          @if (statement.consultant.team) {
+            <li class="chip"><mat-icon aria-hidden="true">groups</mat-icon>{{ statement.consultant.team }}</li>
+          }
+          <li class="chip">
+            <mat-icon aria-hidden="true">badge</mat-icon>
+            {{ statement.consultant.participant_type === 'EXTERNO' ? 'Externo' : 'Interno' }}
+            @if (statement.consultant.consulting_firm) { · {{ statement.consultant.consulting_firm }} }
+          </li>
+        </ul>
+      </div>
+
+      <p class="hero__total" aria-label="Puntos totales">
+        <span class="hero__total-value">{{ statement.total_points }}</span>
+        <span class="hero__total-unit">puntos</span>
+      </p>
+
+      <dl class="kpis">
+        <div class="kpi"><dt>Certificaciones</dt><dd>{{ statement.certifications }}</dd></div>
+        <div class="kpi"><dt>Cursos impartidos</dt><dd>{{ statement.courses_given }}</dd></div>
+        <div class="kpi"><dt>Cursos tomados</dt><dd>{{ statement.courses_taken }}</dd></div>
+      </dl>
+    </header>
+
+    <!-- De qué se compone el puntaje -->
+    <section class="card" aria-labelledby="breakdown-title">
+      <h2 id="breakdown-title">¿De dónde vienen los puntos?</h2>
+
+      @if (hasPoints) {
+        <div class="bar-stack" role="img" aria-label="Composición del puntaje">
+          @for (s of segments; track s.key) {
+            <span class="bar-stack__seg" [style.background]="segmentColor[s.key]"
+                  [style.width.%]="segmentWidth(s.key)"></span>
+          }
+        </div>
+      }
+
+      <ul class="breakdown">
+        @for (s of segments; track s.key) {
+          <li [class.breakdown__item--zero]="statement.breakdown[s.key] === 0">
+            <span class="breakdown__dot"
+                  [style.background]="segmentColor[s.key]"
+                  ></span>
+            <span class="breakdown__label">{{ s.label }}</span>
+            <strong class="breakdown__value">{{ statement.breakdown[s.key] }}</strong>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <!-- Estado de cuenta -->
+    <section class="card" aria-labelledby="ledger-title">
+      <h2 id="ledger-title">Estado de cuenta</h2>
+
+      @if (groups.length === 0) {
+        <p class="empty">
+          <mat-icon aria-hidden="true">hourglass_empty</mat-icon>
+          Aún no suma puntos. Aparecerán aquí cuando registre una certificación, imparta un curso o reciba puntos extra.
+        </p>
+      } @else {
+        <ol class="months">
+          @for (g of groups; track g.key) {
+            <li class="month">
+              <div class="month__head">
+                <h3>{{ g.label }}</h3>
+                <span class="month__sum">+{{ g.points }} pts</span>
+              </div>
+
+              <ul class="moves">
+                @for (e of g.entries; track trackEntry($index, e)) {
+                  <li class="move">
+                    <span class="move__icon" [style.background]="kinds[e.kind].color" aria-hidden="true">
+                      <mat-icon>{{ kinds[e.kind].icon }}</mat-icon>
+                    </span>
+
+                    <div class="move__main">
+                      <p class="move__title">{{ e.title }}</p>
+                      <p class="move__meta">
+                        <span class="move__kind">{{ kinds[e.kind].label }}</span>
+                        @if (e.detail) { · {{ e.detail }} }
+                      </p>
+                    </div>
+
+                    <time class="move__date" [attr.datetime]="e.date">{{ shortDate(e.date) }}</time>
+
+                    <p class="move__points">+{{ e.points }}<small>pts</small></p>
+                    <p class="move__balance"><small>Saldo</small>{{ e.balance }}</p>
+                  </li>
+                }
+              </ul>
+            </li>
+          }
+        </ol>
+
+        <div class="total-row">
+          <span>Total acumulado</span>
+          <strong>{{ statement.total_points }} pts</strong>
+        </div>
+      }
+    </section>
+  }
+</section>

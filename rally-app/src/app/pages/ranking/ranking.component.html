@@ -71,6 +71,8 @@
       <ol class="podium" aria-label="Los tres primeros lugares">
         @for (entry of podium; track entry.consultant_id) {
           <li class="podium__place podium__place--{{ entry.position }}">
+            <a class="podium__link" [routerLink]="['/app/detail', entry.consultant_id]"
+               [attr.aria-label]="'Ver el detalle de ' + entry.full_name">
             <div class="podium__medal" aria-hidden="true">
               <mat-icon>{{ entry.position === 1 ? 'emoji_events' : 'military_tech' }}</mat-icon>
             </div>
@@ -86,6 +88,7 @@
             <div class="podium__block" [attr.aria-label]="'Lugar ' + entry.position">
               <span>{{ entry.position }}</span>
             </div>
+            </a>
           </li>
         }
       </ol>
@@ -116,6 +119,8 @@
         <ol class="rows">
           @for (entry of rows; track entry.consultant_id) {
             <li class="row">
+              <a class="row__link" [routerLink]="['/app/detail', entry.consultant_id]"
+                 [attr.aria-label]="'Ver el detalle de ' + entry.full_name">
               <span class="row__position" [class.row__position--top]="entry.position <= 3">{{ entry.position }}</span>
               <div class="avatar">{{ initials(entry.full_name) }}</div>
 
@@ -138,6 +143,7 @@
               </dl>
 
               <p class="row__points"><strong>{{ entry.total_points }}</strong><span>pts</span></p>
+              </a>
             </li>
           }
         </ol>
