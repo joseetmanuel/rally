@@ -80,6 +80,16 @@ describe('RankingPdfService', () => {
     expect(body.length).toBe(2);
   });
 
+  it('prints the rally disclaimer on every page', async () => {
+    const many = Array.from({ length: 80 }, (_, i) => entry(i + 1, `Consultor ${i + 1}`, 100 - i));
+    const doc = await service.build(many);
+    const content = doc.output();
+    expect(doc.getNumberOfPages()).toBeGreaterThan(1);
+    // el texto se parte en renglones: se busca el inicio y el final del aviso
+    expect(content.split('Esta dinámica es exclusiva').length - 1).toBe(doc.getNumberOfPages());
+    expect(content).toContain('completamente opcional');
+  });
+
   it('prints the movements in the PDF', async () => {
     const content = (await service.build(DATA)).output();
     expect(content).toContain('Certificación: PCAP');

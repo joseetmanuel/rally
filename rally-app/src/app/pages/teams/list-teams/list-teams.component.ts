@@ -8,6 +8,7 @@ import { TeamService } from '../../../core/services/teams/team.service';
 import { Team } from '../../../core/models/teams/team';
 import { CaptureTeamComponent } from '../capture-team/capture-team.component';
 import { ConfirmationService } from '../../../core/services/confirmation/confirmation.service';
+import { AdminSessionService } from '../../../core/services/admin-session/admin-session.service';
 
 @Component({
   selector: 'app-list-teams',
@@ -18,9 +19,14 @@ import { ConfirmationService } from '../../../core/services/confirmation/confirm
 })
 export class ListTeamsComponent implements OnInit {
   teams: Team[] = [];
-  displayedColumns: string[] = ['name', 'actions'];
+  get displayedColumns(): string[] {
+    return this.admin.isAdmin()
+      ? ['name', 'actions']
+      : ['name'];
+  }
   errorMessage = '';
 
+  readonly admin = inject(AdminSessionService);
   private teamService = inject(TeamService);
   private dialog = inject(MatDialog);
   private confirmationService = inject(ConfirmationService);
@@ -41,6 +47,7 @@ export class ListTeamsComponent implements OnInit {
   }
 
   openCaptureDialog(team?: Team): void {
+    if (!this.admin.isAdmin()) return;
     const dialogRef = this.dialog.open(CaptureTeamComponent, {
       width: '400px',
       data: team || null,
@@ -55,6 +62,7 @@ export class ListTeamsComponent implements OnInit {
   }
 
   deleteTeam(team: Team): void {
+    if (!this.admin.isAdmin()) return;
     if (!team.id) return;
 
     this.confirmationService.openDeleteConfirmation().subscribe(result => {

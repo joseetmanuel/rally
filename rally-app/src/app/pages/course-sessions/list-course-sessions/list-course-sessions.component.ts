@@ -9,6 +9,7 @@ import { CourseSession } from '../../../core/models/course-sessions/course-sessi
 import { CaptureCourseSessionComponent } from '../capture-course-session/capture-course-session.component';
 import { ConfirmationService } from '../../../core/services/confirmation/confirmation.service';
 import { ListCourseAttendancesComponent } from '../dialogs/list-course-attendances/list-course-attendances.component';
+import { AdminSessionService } from '../../../core/services/admin-session/admin-session.service';
 
 @Component({
   selector: 'app-list-course-sessions',
@@ -19,8 +20,11 @@ import { ListCourseAttendancesComponent } from '../dialogs/list-course-attendanc
 })
 export class ListCourseSessionsComponent implements OnInit {
   sessions: CourseSession[] = [];
-  displayedColumns: string[] = ['title', 'certification', 'instructor', 'date', 'actions'];
+  get displayedColumns(): string[] {
+    return ['title', 'certification', 'instructor', 'date', 'actions'];
+  }
   
+  readonly admin = inject(AdminSessionService);
   private sessionService = inject(CourseSessionService);
   private dialog = inject(MatDialog);
   private confirmationService = inject(ConfirmationService);
@@ -37,6 +41,7 @@ export class ListCourseSessionsComponent implements OnInit {
   }
 
   openCaptureDialog(session?: CourseSession): void {
+    if (!this.admin.isAdmin()) return;
     const dialogRef = this.dialog.open(CaptureCourseSessionComponent, {
       width: '500px',
       data: session || null,
@@ -58,6 +63,7 @@ export class ListCourseSessionsComponent implements OnInit {
   }
 
   deleteSession(session: CourseSession): void {
+    if (!this.admin.isAdmin()) return;
     if(!session.id) return;
     
     this.confirmationService.openDeleteConfirmation().subscribe(result => {

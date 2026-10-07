@@ -1,9 +1,11 @@
 <div class="page-container mat-elevation-z2">
   <div class="header-actions">
     <h2>Consultores</h2>
-    <button mat-flat-button color="primary" (click)="openCaptureDialog()">
-      <mat-icon>add</mat-icon> Nuevo Consultor
-    </button>
+    @if (admin.isAdmin()) {
+      <button mat-flat-button color="primary" (click)="openCaptureDialog()">
+        <mat-icon>add</mat-icon> Nuevo Consultor
+      </button>
+    }
   </div>
 
   <table mat-table [dataSource]="consultants" class="full-width-table">
@@ -37,12 +39,16 @@
         <button mat-icon-button color="accent" title="Ver Certificaciones" (click)="openCertificationsDialog(element)">
           <mat-icon>workspace_premium</mat-icon>
         </button>
-        <button mat-icon-button color="primary" title="Editar" (click)="openCaptureDialog(element)">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" title="Eliminar" (click)="deleteConsultant(element)">
-          <mat-icon>delete</mat-icon>
-        </button>
+        @if (admin.isAdmin()) {
+          <button mat-icon-button color="primary" title="Editar" (click)="openCaptureDialog(element)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        }
+        @if (admin.isAdmin()) {
+          <button mat-icon-button color="warn" title="Eliminar" (click)="deleteConsultant(element)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
       </td>
     </ng-container>
 

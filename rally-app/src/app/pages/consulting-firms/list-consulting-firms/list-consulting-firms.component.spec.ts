@@ -4,6 +4,8 @@ import { of, throwError } from 'rxjs';
 import { ListConsultingFirmsComponent } from './list-consulting-firms.component';
 import { ConsultingFirmService } from '../../../core/services/consulting-firms/consulting-firm.service';
 import { ConfirmationService } from '../../../core/services/confirmation/confirmation.service';
+import { provideAdminSession, createAdminSessionMock } from '../../../core/testing/admin-session.mock';
+import { AdminSessionService } from '../../../core/services/admin-session/admin-session.service';
 
 describe('ListConsultingFirmsComponent', () => {
   let fixture: ComponentFixture<ListConsultingFirmsComponent>;
@@ -19,6 +21,7 @@ describe('ListConsultingFirmsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ListConsultingFirmsComponent, NoopAnimationsModule],
       providers: [
+        provideAdminSession(true),
         { provide: ConsultingFirmService, useValue: service },
         { provide: ConfirmationService, useValue: confirmation }
       ]
@@ -99,5 +102,96 @@ describe('ListConsultingFirmsComponent', () => {
     expect(component.errorMessage).not.toBe('');
     component.loadConsultingFirms();
     expect(component.errorMessage).toBe('');
+  });
+});
+
+// --- Perfil público vs administrador ---
+describe('ListConsultingFirmsComponent según el perfil', () => {
+  const items: any[] = [{ id: 1, name: "Alfa" }, { id: 2, name: "Beta" }];
+  const svc0: any = { getConsultingFirms: jest.fn(), deleteConsultingFirm: jest.fn() };
+  const confirmation = { openDeleteConfirmation: jest.fn() };
+  let mock: ReturnType<typeof createAdminSessionMock>;
+  let fixture: ComponentFixture<ListConsultingFirmsComponent>;
+  let component: any;
+
+  async function setup(isAdmin: boolean) {
+    jest.clearAllMocks();
+    svc0.getConsultingFirms.mockReturnValue(of(items));
+    svc0.deleteConsultingFirm.mockReturnValue(of(undefined));
+    mock = createAdminSessionMock(isAdmin);
+    await TestBed.configureTestingModule({
+      imports: [ListConsultingFirmsComponent, NoopAnimationsModule],
+      providers: [
+        { provide: AdminSessionService, useValue: mock },
+        { provide: ConsultingFirmService, useValue: svc0 },
+        { provide: ConfirmationService, useValue: confirmation }
+      ]
+    }).compileComponents();
+    fixture = TestBed.createComponent(ListConsultingFirmsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
+  const el = () => fixture.nativeElement as HTMLElement;
+  const addButton = () => Array.from(el().querySelectorAll('button')).find(b => (b.textContent || '').includes('Nueva Consultora'));
+
+  describe('perfil público', () => {
+    beforeEach(() => setup(false));
+
+    it('no muestra el botón de alta', () => {
+      expect(addButton()).toBeUndefined();
+    });
+
+    it('no muestra botones de escritura', () => {
+      expect(el().querySelector('button[title="Editar"]')).toBeNull();
+      expect(el().querySelector('button[title="Eliminar"]')).toBeNull();
+    });
+
+    it('sigue mostrando los registros', () => {
+      expect(el().querySelectorAll('tr.mat-mdc-row').length).toBe(items.length);
+    });
+
+    it('quita la columna de acciones', () => {
+      expect(component.displayedColumns).not.toContain('actions');
+      expect(el().querySelector('th.mat-column-actions')).toBeNull();
+    });
+
+    it('los métodos de escritura no abren diálogo ni llaman al servicio', () => {
+      const open = jest.spyOn(component.dialog, 'open');
+      const loads = svc0.getConsultingFirms.mock.calls.length;
+      component.openCaptureDialog();
+      component.openCaptureDialog(items[0]);
+      component.deleteConsultingFirm(items[0]);
+      expect(open).not.toHaveBeenCalled();
+      expect(confirmation.openDeleteConfirmation).not.toHaveBeenCalled();
+      expect(svc0.deleteConsultingFirm).not.toHaveBeenCalled();
+      expect(svc0.getConsultingFirms.mock.calls.length).toBe(loads);
+    });
+
+    it('al cambiar a administrador aparecen las acciones', () => {
+      mock.setAdmin(true);
+      fixture.detectChanges();
+      expect(addButton()).toBeDefined();
+      expect(el().querySelector('button[title="Editar"]')).not.toBeNull();
+      expect(el().querySelector('button[title="Eliminar"]')).not.toBeNull();
+    });
+  });
+
+  describe('perfil administrador', () => {
+    beforeEach(() => setup(true));
+
+    it('muestra alta, edición y eliminación', () => {
+      expect(addButton()).toBeDefined();
+      expect(el().querySelector('button[title="Editar"]')).not.toBeNull();
+      expect(el().querySelector('button[title="Eliminar"]')).not.toBeNull();
+      expect(el().querySelector('th.mat-column-actions')).not.toBeNull();
+    });
+
+    it('al volver al perfil público se ocultan las acciones', () => {
+      mock.setAdmin(false);
+      fixture.detectChanges();
+      expect(addButton()).toBeUndefined();
+      expect(el().querySelector('button[title="Eliminar"]')).toBeNull();
+    });
   });
 });

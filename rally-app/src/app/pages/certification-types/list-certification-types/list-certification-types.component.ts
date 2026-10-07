@@ -8,6 +8,7 @@ import { CertificationTypeService } from '../../../core/services/certification-t
 import { CertificationType } from '../../../core/models/certification-types/certification-type';
 import { CaptureCertificationTypeComponent } from '../capture-certification-type/capture-certification-type.component';
 import { ConfirmationService } from '../../../core/services/confirmation/confirmation.service';
+import { AdminSessionService } from '../../../core/services/admin-session/admin-session.service';
 
 @Component({
   selector: 'app-list-certification-types',
@@ -18,8 +19,13 @@ import { ConfirmationService } from '../../../core/services/confirmation/confirm
 })
 export class ListCertificationTypesComponent implements OnInit {
   certificationTypes: CertificationType[] = [];
-  displayedColumns: string[] = ['code', 'points_base', 'points_for_course', 'points_for_instructor', 'points_for_student', 'actions'];
+  get displayedColumns(): string[] {
+    return this.admin.isAdmin()
+      ? ['code', 'points_base', 'points_for_course', 'points_for_instructor', 'points_for_student', 'actions']
+      : ['code', 'points_base', 'points_for_course', 'points_for_instructor', 'points_for_student'];
+  }
   
+  readonly admin = inject(AdminSessionService);
   private certificationTypeService = inject(CertificationTypeService);
   private dialog = inject(MatDialog);
   private confirmationService = inject(ConfirmationService);
@@ -36,6 +42,7 @@ export class ListCertificationTypesComponent implements OnInit {
   }
 
   openCaptureDialog(certificationType?: CertificationType): void {
+    if (!this.admin.isAdmin()) return;
     const dialogRef = this.dialog.open(CaptureCertificationTypeComponent, {
       width: '400px',
       data: certificationType || null,
@@ -50,6 +57,7 @@ export class ListCertificationTypesComponent implements OnInit {
   }
 
   deleteCertificationType(certificationType: CertificationType): void {
+    if (!this.admin.isAdmin()) return;
     if(!certificationType.id) return;
     
     this.confirmationService.openDeleteConfirmation().subscribe(result => {

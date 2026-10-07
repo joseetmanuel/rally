@@ -39,15 +39,35 @@
     </ul>
   </div>
   <span class="example-spacer"></span>
-  <div>
-    <button mat-button [matMenuTriggerFor]="beforeMenu" matBadgeColor="warn">
-      <mat-icon>person</mat-icon>
-      <span class="username">{{ user }}</span>
-    </button>
-    <mat-menu #beforeMenu="matMenu" xPosition="before">
-      <button mat-menu-item (click)="closeSession()">
-        <mat-icon>login</mat-icon>Cerrar Sesión
+  <div class="user-area">
+    @if (admin.isAdmin()) {
+      <button
+        mat-button
+        class="user-btn admin-btn"
+        [matMenuTriggerFor]="adminMenu"
+        aria-label="Menú de administrador"
+      >
+        <mat-icon>admin_panel_settings</mat-icon>
+        <span class="admin-chip">Admin</span>
+        <span class="username">{{ admin.user() }}</span>
       </button>
-    </mat-menu>
+      <mat-menu #adminMenu="matMenu" xPosition="before">
+        <div class="admin-menu-header" role="presentation">Administrador · {{ admin.user() }}</div>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar sesión</span>
+        </button>
+      </mat-menu>
+    } @else {
+      <button
+        mat-icon-button
+        class="user-btn login-btn"
+        aria-label="Acceso de administrador"
+        matTooltip="Acceso de administrador"
+        (click)="openLogin()"
+      >
+        <mat-icon>person_outline</mat-icon>
+      </button>
+    }
   </div>
 </mat-toolbar>

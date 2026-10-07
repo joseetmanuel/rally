@@ -1,0 +1,124 @@
+:host {
+  display: block;
+  --rk-primary: #006990;
+  --rk-on-primary: #ffffff;
+  --rk-primary-container: #c7e7ff;
+  --rk-on-primary-container: #001e2e;
+  --rk-on-surface: #171c1f;
+  --rk-on-surface-variant: #40484d;
+  --rk-error: #ba1a1a;
+  --rk-error-container: #ffdad6;
+  --rk-on-error-container: #410002;
+  --rk-warning-container: #ffe9a8;
+  --rk-on-warning-container: #3b2f00;
+}
+
+.login-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px 24px 0;
+}
+
+.login-badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--rk-primary-container);
+  color: var(--rk-on-primary-container);
+
+  mat-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 28px;
+  }
+}
+
+.login-heading {
+  min-width: 0;
+
+  h2 {
+    margin: 0;
+    padding: 0;
+    color: var(--rk-on-surface);
+    font-weight: 600;
+  }
+}
+
+.login-subtitle {
+  margin: 4px 0 0;
+  color: var(--rk-on-surface-variant);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.login-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 20px !important;
+  min-width: min(360px, 78vw);
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.login-alert-slot {
+  min-height: 0;
+}
+
+.login-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--rk-error-container);
+  color: var(--rk-on-error-container);
+  font-size: 14px;
+  line-height: 1.4;
+
+  mat-icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}
+
+.login-actions {
+  padding: 8px 24px 20px;
+  gap: 8px;
+}
+
+.submit-btn {
+  --mdc-filled-button-container-color: var(--rk-primary);
+  --mdc-filled-button-label-text-color: var(--rk-on-primary);
+  --mat-button-filled-container-color: var(--rk-primary);
+  --mat-button-filled-label-text-color: var(--rk-on-primary);
+  border-radius: 20px;
+  min-width: 140px;
+
+  mat-progress-spinner {
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+    --mdc-circular-progress-active-indicator-color: var(--rk-on-primary);
+    --mat-progress-spinner-active-indicator-color: var(--rk-on-primary);
+  }
+}
+
+.cancel-btn {
+  border-radius: 20px;
+  color: var(--rk-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-alert {
+    transition: none;
+  }
+}

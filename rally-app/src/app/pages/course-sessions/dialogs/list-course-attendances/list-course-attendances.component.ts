@@ -10,6 +10,7 @@ import { CourseAttendance } from '../../../../core/models/course-attendances/cou
 import { CourseSession } from '../../../../core/models/course-sessions/course-session';
 import { CaptureCourseAttendanceComponent } from '../capture-course-attendance/capture-course-attendance.component';
 import { ConfirmationService } from '../../../../core/services/confirmation/confirmation.service';
+import { AdminSessionService } from '../../../../core/services/admin-session/admin-session.service';
 
 @Component({
   selector: 'app-list-course-attendances',
@@ -20,8 +21,13 @@ import { ConfirmationService } from '../../../../core/services/confirmation/conf
 })
 export class ListCourseAttendancesComponent implements OnInit {
   attendances: CourseAttendance[] = [];
-  displayedColumns: string[] = ['consultant', 'points', 'actions'];
+  get displayedColumns(): string[] {
+    return this.admin.isAdmin()
+      ? ['consultant', 'points', 'actions']
+      : ['consultant', 'points'];
+  }
   
+  readonly admin = inject(AdminSessionService);
   private attendanceService = inject(CourseAttendanceService);
   private dialog = inject(MatDialog);
   private confirmationService = inject(ConfirmationService);
@@ -43,6 +49,7 @@ export class ListCourseAttendancesComponent implements OnInit {
   }
 
   openCaptureDialog(): void {
+    if (!this.admin.isAdmin()) return;
     const dialogRef = this.dialog.open(CaptureCourseAttendanceComponent, {
       width: '500px',
       data: this.session,
@@ -57,6 +64,7 @@ export class ListCourseAttendancesComponent implements OnInit {
   }
 
   deleteAttendance(attendance: CourseAttendance): void {
+    if (!this.admin.isAdmin()) return;
     if(!attendance.id) return;
 
     this.confirmationService.openDeleteConfirmation().subscribe(result => {

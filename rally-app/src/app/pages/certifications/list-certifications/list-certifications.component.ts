@@ -8,6 +8,7 @@ import { CertificationService } from '../../../core/services/certifications/cert
 import { Certification } from '../../../core/models/certifications/certification';
 import { CaptureCertificationComponent } from '../capture-certification/capture-certification.component';
 import { ConfirmationService } from '../../../core/services/confirmation/confirmation.service';
+import { AdminSessionService } from '../../../core/services/admin-session/admin-session.service';
 
 @Component({
   selector: 'app-list-certifications',
@@ -18,8 +19,13 @@ import { ConfirmationService } from '../../../core/services/confirmation/confirm
 })
 export class ListCertificationsComponent implements OnInit {
   certifications: Certification[] = [];
-  displayedColumns: string[] = ['vendor', 'name', 'type', 'actions'];
+  get displayedColumns(): string[] {
+    return this.admin.isAdmin()
+      ? ['vendor', 'name', 'type', 'actions']
+      : ['vendor', 'name', 'type'];
+  }
   
+  readonly admin = inject(AdminSessionService);
   private certificationService = inject(CertificationService);
   private dialog = inject(MatDialog);
   private confirmationService = inject(ConfirmationService);
@@ -36,6 +42,7 @@ export class ListCertificationsComponent implements OnInit {
   }
 
   openCaptureDialog(certification?: Certification): void {
+    if (!this.admin.isAdmin()) return;
     const dialogRef = this.dialog.open(CaptureCertificationComponent, {
       width: '400px',
       data: certification || null,
@@ -50,6 +57,7 @@ export class ListCertificationsComponent implements OnInit {
   }
 
   deleteCertification(certification: Certification): void {
+    if (!this.admin.isAdmin()) return;
     if(!certification.id) return;
     
     this.confirmationService.openDeleteConfirmation().subscribe(result => {

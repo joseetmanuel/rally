@@ -4,6 +4,7 @@ import type { RowInput } from 'jspdf-autotable';
 import { RankingEntry } from '../../models/ranking/ranking-entry';
 import { KIND_LABELS } from '../../models/statement/statement';
 import { shortDate } from '../../utils/dates';
+import { RALLY_DISCLAIMER } from '../../constants/Disclaimer';
 
 type Rgb = [number, number, number];
 
@@ -129,7 +130,7 @@ export class RankingPdfService {
         5: { halign: 'center', cellWidth: 20 },
         6: { halign: 'right', cellWidth: 20 }
       },
-      margin: { left: 14, right: 14, bottom: 16 },
+      margin: { left: 14, right: 14, bottom: 26 },
       rowPageBreak: 'avoid',
       didParseCell: (data) => {
         if (data.section !== 'body') return;
@@ -155,8 +156,11 @@ export class RankingPdfService {
     const pageHeight = doc.internal.pageSize.getHeight();
     for (let page = 1; page <= pages; page++) {
       doc.setPage(page);
-      doc.setFontSize(8);
+      // Aviso de las bases del Rally, ajustado al ancho útil de la página
+      doc.setFontSize(6.5);
       doc.setTextColor(120, 130, 136);
+      doc.text(doc.splitTextToSize(RALLY_DISCLAIMER, pageWidth - 28), 14, pageHeight - 18);
+      doc.setFontSize(8);
       doc.text('Rally de Certificaciones', 14, pageHeight - 8);
       doc.text(`Página ${page} de ${pages}`, pageWidth - 14, pageHeight - 8, { align: 'right' });
     }

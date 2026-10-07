@@ -1,9 +1,11 @@
 <div class="page-container mat-elevation-z2">
   <div class="header-actions">
     <h2>Cursos Impartidos (Sesiones)</h2>
-    <button mat-flat-button color="primary" (click)="openCaptureDialog()">
-      <mat-icon>add</mat-icon> Nueva Sesión
-    </button>
+    @if (admin.isAdmin()) {
+      <button mat-flat-button color="primary" (click)="openCaptureDialog()">
+        <mat-icon>add</mat-icon> Nueva Sesión
+      </button>
+    }
   </div>
 
   <table mat-table [dataSource]="sessions" class="full-width-table">
@@ -34,12 +36,16 @@
         <button mat-icon-button color="accent" title="Lista de Asistencia" (click)="openAttendancesDialog(element)">
           <mat-icon>checklist</mat-icon>
         </button>
-        <button mat-icon-button color="primary" title="Editar" (click)="openCaptureDialog(element)">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" title="Eliminar" (click)="deleteSession(element)">
-          <mat-icon>delete</mat-icon>
-        </button>
+        @if (admin.isAdmin()) {
+          <button mat-icon-button color="primary" title="Editar" (click)="openCaptureDialog(element)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        }
+        @if (admin.isAdmin()) {
+          <button mat-icon-button color="warn" title="Eliminar" (click)="deleteSession(element)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
       </td>
     </ng-container>
 

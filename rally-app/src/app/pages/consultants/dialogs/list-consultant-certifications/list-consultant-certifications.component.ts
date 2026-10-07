@@ -8,6 +8,7 @@ import { ConsultantCertificationService } from '../../../../core/services/consul
 import { ConsultantCertification } from '../../../../core/models/consultant-certifications/consultant-certification';
 import { Consultant } from '../../../../core/models/consultants/consultant';
 import { CaptureConsultantCertificationComponent } from '../capture-consultant-certification/capture-consultant-certification.component';
+import { AdminSessionService } from '../../../../core/services/admin-session/admin-session.service';
 
 @Component({
   selector: 'app-list-consultant-certifications',
@@ -18,8 +19,13 @@ import { CaptureConsultantCertificationComponent } from '../capture-consultant-c
 })
 export class ListConsultantCertificationsComponent implements OnInit {
   certifications: ConsultantCertification[] = [];
-  displayedColumns: string[] = ['certification', 'obtained_at', 'paid_with_own_resources'];
+  get displayedColumns(): string[] {
+    return this.admin.isAdmin()
+      ? ['certification', 'obtained_at', 'paid_with_own_resources']
+      : ['certification', 'obtained_at'];
+  }
   
+  readonly admin = inject(AdminSessionService);
   private service = inject(ConsultantCertificationService);
   private dialog = inject(MatDialog);
 
@@ -40,6 +46,7 @@ export class ListConsultantCertificationsComponent implements OnInit {
   }
 
   openCaptureDialog(): void {
+    if (!this.admin.isAdmin()) return;
     const dialogRef = this.dialog.open(CaptureConsultantCertificationComponent, {
       width: '500px',
       data: this.consultant,

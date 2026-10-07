@@ -1,9 +1,11 @@
 <div class="page-container mat-elevation-z2">
   <div class="header-actions">
     <h2>Equipos</h2>
-    <button mat-flat-button color="primary" (click)="openCaptureDialog()">
-      <mat-icon>add</mat-icon> Nuevo Equipo
-    </button>
+    @if (admin.isAdmin()) {
+      <button mat-flat-button color="primary" (click)="openCaptureDialog()">
+        <mat-icon>add</mat-icon> Nuevo Equipo
+      </button>
+    }
   </div>
 
   <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
@@ -18,12 +20,16 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef class="action-column"> Acciones </th>
       <td mat-cell *matCellDef="let element" class="action-column">
-        <button mat-icon-button color="primary" (click)="openCaptureDialog(element)">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" (click)="deleteTeam(element)">
-          <mat-icon>delete</mat-icon>
-        </button>
+        @if (admin.isAdmin()) {
+          <button mat-icon-button title="Editar" color="primary" (click)="openCaptureDialog(element)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        }
+        @if (admin.isAdmin()) {
+          <button mat-icon-button title="Eliminar" color="warn" (click)="deleteTeam(element)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
       </td>
     </ng-container>
 

@@ -12,6 +12,14 @@
   }
 }
 
+.welcome-disclaimer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+}
+
 .title {
   font-size: 3rem;
   margin: 1rem 0;

@@ -1,17 +1,18 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 // LIBS
 import { Subscription } from 'rxjs';
 import { MatDrawer } from '@angular/material/sidenav';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 // SERVICES
-import { SweetAlertService } from '@services/sweet/sweet-alert.service';
 import { Menu } from '@models/menu/Menu';
 import { MenuConfigurationService } from '@services/auth/menu-configuration/menu-configuration.service';
-import { LocalStorageService } from '@services/storage/localstorage/localstorage.service';
 import { Section } from '@models/section/Section';
 import { SharedModule } from '@shared/shared.module';
-import { ConfigurationCenterService } from '@services/auth/configuration-center.service/configuration-center.service';
 import { SidenavService } from '@services/sidenav/sidenav.service';
+import { AdminSessionService } from '@services/admin-session/admin-session.service';
+import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 
 @Component({
     selector: 'app-toolbar',
@@ -21,22 +22,31 @@ import { SidenavService } from '@services/sidenav/sidenav.service';
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
 	collapse: boolean = false;
-	user = '';
 	subscription = new Subscription();
 	menu: Menu = { items: [] };
 	@ViewChild('drawer', { static: false }) sidenav!: MatDrawer;
 
+	readonly admin = inject(AdminSessionService);
+	private readonly dialog = inject(MatDialog);
+	private readonly snackBar = inject(MatSnackBar);
+
 	constructor(
-		private configCenterServ: ConfigurationCenterService,
 		private menuConfiguartionServ: MenuConfigurationService,
 		private sidenavServ: SidenavService,
-		private sweetAlertServ: SweetAlertService,
-		private local: LocalStorageService,
 		private router: Router
-	) {}
+	) {
+		// Avisa cuando la sesión terminó sola (p. ej. venció) y limpia el aviso al cerrarse.
+		effect(() => {
+			const message = this.admin.notice();
+			if (!message) return;
+			this.snackBar
+				.open(message, 'Entendido', { duration: 8000 })
+				.afterDismissed()
+				.subscribe(() => this.admin.clearNotice());
+		});
+	}
 
 	ngOnInit(): void {
-		this.user = this.local.getObject('auth')?.name;
 		this.menuConfiguartionServ.getMenu().subscribe({
 			next: (x: Section[]) => {
 				this.menu.items = x;
@@ -53,14 +63,17 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 		this.collapse = !this.collapse;
 	}
 
-	async closeSession() {
-		const data = {
-			title: 'Cerrar sesión',
-			text: '¿Desea cerrar la sesión?'
-		};
-		if (await this.sweetAlertServ.showActionConfirmationAlert(data)) {
-			this.configCenterServ.closeSesion();
-		}
+	openLogin() {
+		this.dialog.open(LoginDialogComponent, {
+			width: '440px',
+			maxWidth: '92vw',
+			autoFocus: 'input',
+			ariaLabelledBy: 'login-title'
+		});
+	}
+
+	logout() {
+		this.admin.logout();
 	}
 
 	goHome() {

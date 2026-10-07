@@ -12,6 +12,7 @@ import { ConsultantExtraPoint } from '../../../core/models/consultant-extra-poin
 import { Consultant } from '../../../core/models/consultants/consultant';
 import { CaptureExtraPointComponent } from '../capture-extra-point/capture-extra-point.component';
 import { ConfirmationService } from '../../../core/services/confirmation/confirmation.service';
+import { AdminSessionService } from '../../../core/services/admin-session/admin-session.service';
 
 @Component({
   selector: 'app-list-extra-points',
@@ -33,8 +34,13 @@ export class ListExtraPointsComponent implements OnInit {
   filteredPoints: ConsultantExtraPoint[] = [];
   consultants: Consultant[] = [];
   selectedConsultantId: number | null = null;
-  displayedColumns: string[] = ['consultant', 'reason', 'points', 'date', 'notes', 'actions'];
+  get displayedColumns(): string[] {
+    return this.admin.isAdmin()
+      ? ['consultant', 'reason', 'points', 'date', 'notes', 'actions']
+      : ['consultant', 'reason', 'points', 'date', 'notes'];
+  }
 
+  readonly admin = inject(AdminSessionService);
   private extraPointService = inject(ConsultantExtraPointService);
   private consultantService = inject(ConsultantService);
   private dialog = inject(MatDialog);
@@ -78,6 +84,7 @@ export class ListExtraPointsComponent implements OnInit {
   }
 
   openCaptureDialog(): void {
+    if (!this.admin.isAdmin()) return;
     const dialogRef = this.dialog.open(CaptureExtraPointComponent, {
       width: '500px',
       disableClose: true
@@ -91,6 +98,7 @@ export class ListExtraPointsComponent implements OnInit {
   }
 
   deleteExtraPoint(point: ConsultantExtraPoint): void {
+    if (!this.admin.isAdmin()) return;
     if (!point.id) return;
 
     this.confirmationService.openDeleteConfirmation().subscribe(result => {

@@ -195,3 +195,35 @@ a {
 		display: none;
 	}
 }
+
+.user-area {
+	display: flex;
+	align-items: center;
+}
+
+.admin-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.admin-chip {
+	padding: 2px 8px;
+	border-radius: 999px;
+	background: #c7e7ff;
+	color: #001e2e;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	line-height: 18px;
+}
+
+.admin-menu-header {
+	padding: 10px 16px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #40484d;
+	border-bottom: 1px solid #c0c7cd;
+	cursor: default;
+	pointer-events: none;
+}

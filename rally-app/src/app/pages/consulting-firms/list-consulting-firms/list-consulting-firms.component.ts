@@ -8,6 +8,7 @@ import { ConsultingFirmService } from '../../../core/services/consulting-firms/c
 import { ConsultingFirm } from '../../../core/models/consulting-firms/consulting-firm';
 import { CaptureConsultingFirmComponent } from '../capture-consulting-firm/capture-consulting-firm.component';
 import { ConfirmationService } from '../../../core/services/confirmation/confirmation.service';
+import { AdminSessionService } from '../../../core/services/admin-session/admin-session.service';
 
 @Component({
   selector: 'app-list-consulting-firms',
@@ -18,9 +19,14 @@ import { ConfirmationService } from '../../../core/services/confirmation/confirm
 })
 export class ListConsultingFirmsComponent implements OnInit {
   consultingFirms: ConsultingFirm[] = [];
-  displayedColumns: string[] = ['name', 'actions'];
+  get displayedColumns(): string[] {
+    return this.admin.isAdmin()
+      ? ['name', 'actions']
+      : ['name'];
+  }
   errorMessage = '';
 
+  readonly admin = inject(AdminSessionService);
   private consultingFirmService = inject(ConsultingFirmService);
   private dialog = inject(MatDialog);
   private confirmationService = inject(ConfirmationService);
@@ -41,6 +47,7 @@ export class ListConsultingFirmsComponent implements OnInit {
   }
 
   openCaptureDialog(consultingFirm?: ConsultingFirm): void {
+    if (!this.admin.isAdmin()) return;
     const dialogRef = this.dialog.open(CaptureConsultingFirmComponent, {
       width: '400px',
       data: consultingFirm || null,
@@ -55,6 +62,7 @@ export class ListConsultingFirmsComponent implements OnInit {
   }
 
   deleteConsultingFirm(consultingFirm: ConsultingFirm): void {
+    if (!this.admin.isAdmin()) return;
     if (!consultingFirm.id) return;
 
     this.confirmationService.openDeleteConfirmation().subscribe(result => {

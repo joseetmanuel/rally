@@ -6,10 +6,12 @@ import { SharedModule } from '@shared/shared.module';
 import { SidenavService } from '@services/sidenav/sidenav.service';
 import { ToolbarComponent } from '../toolbar/toolbar.component';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
+import { DisclaimerComponent } from '../disclaimer/disclaimer.component';
 import { Section } from '@models/section/Section';
 import { Menu } from '@models/menu/Menu';
 import { Router } from '@angular/router';
 import { MenuFilter } from '@utils/filters';
+import { AdminSessionService } from '@services/admin-session/admin-session.service';
 
 @Component({
 	selector: 'app-sidenav',
@@ -19,7 +21,8 @@ import { MenuFilter } from '@utils/filters';
 	imports: [
 		SharedModule,
 		ToolbarComponent,
-		BreadcrumbComponent
+		BreadcrumbComponent,
+		DisclaimerComponent
 	]
 })
 export class SidenavComponent implements AfterViewInit {
@@ -31,7 +34,8 @@ export class SidenavComponent implements AfterViewInit {
 		private navServ: SidenavService,
 		private menuServ: MenuConfigurationService,
 		public router: Router,
-		private filter: MenuFilter
+		private filter: MenuFilter,
+		public admin: AdminSessionService
 	) {
 
 	}
