@@ -1,0 +1,25 @@
+# Nada de esto debe entrar a la imagen ni viajar a Cloud Build
+.git
+.gitignore
+.gemini
+.claude
+CONTEXT_CHECKPOINT.md
+rally_api_collection.json
+start-project.*
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules
+rally-app/dist
+rally-app/.angular
+rally-app/coverage
+rally-app/.scannerwork
+rally-app/test-report.xml
+rally-app/scanner.bat
+rally-app/sonar-project.properties
+rally-back/venv
+rally-back/tests
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/*.log

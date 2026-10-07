@@ -5,6 +5,7 @@ from config import Config
 from database import db
 from routes import register_routes
 import auth
+from frontend import register_frontend
 
 # Importar modelos para que Flask-Migrate los detecte
 import models.team
@@ -33,6 +34,9 @@ def create_app(config_object=Config):
     register_routes(app)
     app.before_request(auth.authenticate_request)
     app.after_request(auth.public_view)
+
+    # 3b. Frontend compilado y cabeceras de seguridad (en producción es un solo servicio)
+    register_frontend(app)
 
     # 4. CORS: el navegador exige estas cabeceras para que Angular (otro origen) llame a la API
     allowed_origins = {
