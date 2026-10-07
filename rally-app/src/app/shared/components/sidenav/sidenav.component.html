@@ -4,23 +4,18 @@
       <ul>
         @for (item of menu.items; track item.name) {
           <li>
-            <a routerLink="." (click)="onItemSelected(item)">
-              <i></i>
-              <span>{{ item.name }}</span>
-            </a>
             @if (item.children && item.children.length > 0) {
-              <ul class="nav-flyout">
+              <!-- Grupo (p. ej. Catálogos): no es un destino; sus opciones se ven desplegadas -->
+              <span class="group-title">{{ item.name }}</span>
+              <ul class="sub-list">
                 @for (child of item.children; track child.name) {
-                  @if (child.inMenu === 1) {
-                    <li>
-                      <a routerLink="." (click)="onItemSelected(child)">
-                        <i class="ion-ios-color-filter-outline"></i>
-                        {{ child.name }}
-                      </a>
-                    </li>
-                  }
+                  <li>
+                    <a [routerLink]="['/app', child.route]" routerLinkActive="active" (click)="closeNav()">{{ child.name }}</a>
+                  </li>
                 }
               </ul>
+            } @else {
+              <a [routerLink]="['/app', item.route]" routerLinkActive="active" (click)="closeNav()">{{ item.name }}</a>
             }
           </li>
         }

@@ -101,45 +101,33 @@ Sidebar: icons
     }
   }
 
-/* -------------
-Chev elements aqui icono
-----------------*/
-  & > ul > li > a:after {
-    content: '\276F';
-    // font-family: ionicons;
-    font-size: 1em;
-    width: 5px;
-    color: #fff;
-    position: absolute;
-    right: 0.75em;
-    top: 35%;
-  }
-/* -------------
-Nav-Flyout
-----------------*/
-  & .nav-flyout {
-    position: absolute;
-    background-color: #2d2d2d;
-    z-index: 9;
-    left: 2.5em;
-    top: 0;
-    height: 100vh;
-    transform: translateX(100%);
-    transition: all 0.5s ease;
-
-    a:hover{
-    //   background-color: rgba(255,255,255, 0.05)
-      background-color: rgba(255, 255, 255, 0.05)
-    }
-  }
+}
 
 /* -------------
-Hover
+Grupos del cajón (Catálogos...) y opción activa
 ----------------*/
-  & ul > li:hover{
-      .nav-flyout{
-      transform: translateX(0);
-      transition: all 0.5s ease;
-    }
-  }
+.sidebar-nav .group-title {
+  display: block;
+  padding: 1.1em 1.3em 0.4em;
+  font-size: 0.7em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sidebar-nav .sub-list {
+  width: 100%;
+
+  a { padding-left: 2.6em; }
+}
+
+.sidebar-nav a.active {
+  background-color: rgba(0, 0, 0, 0.35);
+  box-shadow: inset 4px 0 0 #c7e7ff;
+}
+
+/* El contenido nunca debe ser más ancho que la pantalla: sin barra horizontal ni cuadro blanco al deslizar */
+mat-sidenav-content {
+  overflow-x: hidden;
 }

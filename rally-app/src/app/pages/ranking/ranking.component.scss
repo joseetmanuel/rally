@@ -498,13 +498,25 @@
 // ---------------------------------------------------------------- Responsive
 @media (max-width: 839px) {
   .hero {
-    grid-template-columns: 1fr;
+    // minmax(0, 1fr): con 1fr la columna no baja del ancho de su contenido y el encabezado se sale de la pantalla
+    grid-template-columns: minmax(0, 1fr);
     padding: 20px;
 
+    > * { min-width: 0; }
     &__actions { flex-direction: row; flex-wrap: wrap; }
+    &__title { flex-wrap: wrap; }
+    &__cutoff { max-width: 100%; }
   }
 
-  .kpis .kpi { flex: 1; min-width: 0; }
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+
+    .kpi { min-width: 0; padding: 10px 6px; }
+    .kpi dt { font-size: 0.62rem; letter-spacing: 0.02em; }
+    .kpi dd { font-size: 1.35rem; }
+  }
 
   .row {
     &__link {

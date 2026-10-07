@@ -53,9 +53,8 @@ export class SidenavComponent implements AfterViewInit {
 			}
 		});
 	}
-	onItemSelected(item: Section) {
-			this.router.navigate([item.route]);
-			this.navServ.closeNav();
-
+	/** Cierra el cajón después de elegir una opción (la navegación la hace el routerLink) */
+	closeNav() {
+		this.navServ.closeNav();
 	}
 }

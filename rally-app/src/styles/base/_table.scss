@@ -236,3 +236,9 @@ table {
     }
   }
 }
+
+// En pantallas angostas la tabla se desliza dentro de su tarjeta; si no, ensancha toda la página
+.page-container {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
