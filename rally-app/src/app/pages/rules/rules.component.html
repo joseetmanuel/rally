@@ -44,6 +44,28 @@
     </p>
   </section>
 
+  @if (groups.length > 0) {
+    <section class="card" aria-labelledby="catalog-title">
+      <h2 id="catalog-title"><mat-icon aria-hidden="true">workspace_premium</mat-icon> Certificaciones por tipo</h2>
+      <p class="note note--top">Sólo cuentan las certificaciones de esta lista.</p>
+      @for (group of groups; track group.code) {
+        <div class="type" [attr.data-type]="group.code">
+          <h3>{{ group.label }} <span class="type__points">{{ group.points }} pts</span></h3>
+          @for (route of group.routes; track route.route) {
+            <div class="route">
+              <span class="route__name">{{ route.route }}</span>
+              <ul class="route__list">
+                @for (name of route.names; track name) {
+                  <li>{{ name }}</li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  }
+
   @for (section of sections; track section.id) {
     <section class="card" [attr.aria-labelledby]="section.id">
       <h2 [id]="section.id"><mat-icon aria-hidden="true">{{ section.icon }}</mat-icon> {{ section.title }}</h2>

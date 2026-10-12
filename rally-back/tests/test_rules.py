@@ -155,3 +155,15 @@ def test_a_course_outside_the_calendar_gives_no_points_and_no_bonus(client, cale
     assert rows()[student]['courses_taken'] == 0
     assert rows()[student]['breakdown']['student_bonus'] == 0
     assert rows()[student]['breakdown']['certifications'] == 10  # la certificación de abril sí cuenta
+
+
+def test_rules_certifications_lists_the_catalog_by_type_for_the_public(public_client, client):
+    from seed import CERTIFICATIONS
+    # el catálogo se siembra en la BD de pruebas; aquí basta con comprobar la forma y que no hay datos de personas
+    response = public_client.get('/api/rules/certifications')
+    assert response.status_code == 200
+    body = response.get_json()
+    for item in body:
+        assert set(item) == {'id', 'vendor', 'name', 'type', 'points'}
+        assert item['type'] in {'FUNDACIONAL', 'PROFESIONAL', 'EXPERTO', 'OPCIONAL'}
+    assert len(body) <= len(CERTIFICATIONS)

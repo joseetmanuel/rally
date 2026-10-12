@@ -211,6 +211,71 @@
   }
 }
 
+// ---------------------------------------------------------------- Certificaciones por tipo
+.note--top {
+  margin: -6px 0 12px;
+}
+
+.type {
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--rk-surface);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h3 {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0 0 10px;
+    font-size: 1.05rem;
+  }
+
+  &__points {
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--rk-primary-container);
+    color: var(--rk-on-primary-container);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+}
+
+.route {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  padding: 6px 0;
+
+  &__name {
+    min-width: 64px;
+    font-weight: 700;
+    color: var(--rk-primary);
+  }
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--rk-outline-variant);
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
+    }
+  }
+}
+
 // ---------------------------------------------------------------- Recursos
 .resources {
   margin: 0;

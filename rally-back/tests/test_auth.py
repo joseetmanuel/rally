@@ -151,7 +151,7 @@ def test_a_login_token_from_the_login_endpoint_can_write(public_client):
 
 
 PUBLIC_READS = [
-    '/api/ranking', '/api/ranking?detail=1', '/api/rules', '/api/course-sessions', '/api/course-attendances',
+    '/api/ranking', '/api/ranking?detail=1', '/api/rules', '/api/rules/certifications', '/api/course-sessions', '/api/course-attendances',
     '/api/consultant-extra-points']
 # Consultores y todos los catálogos: sólo el administrador
 ADMIN_ONLY_READS = [

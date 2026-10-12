@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { of, throwError } from 'rxjs';
+import { RallyRulesService } from '../../core/services/rally-rules/rally-rules.service';
 import { RulesComponent } from './rules.component';
 import { BASES_SECTIONS, BASES_TABLE } from '../../core/constants/RallyBases';
 
@@ -7,14 +9,46 @@ describe('RulesComponent (bases del Rally)', () => {
   let fixture: ComponentFixture<RulesComponent>;
   let text: string;
 
-  beforeEach(async () => {
+  const catalog = [
+    { id: 1, vendor: 'Python Institute', name: 'PCEP', type: 'FUNDACIONAL', points: 10 },
+    { id: 2, vendor: 'Google Cloud', name: 'Cloud Digital Leader', type: 'FUNDACIONAL', points: 10 },
+    { id: 3, vendor: 'Microsoft', name: 'Azure Fundamentals', type: 'FUNDACIONAL', points: 10 },
+    { id: 4, vendor: 'AWS', name: 'Developer Associate', type: 'PROFESIONAL', points: 30 },
+    { id: 5, vendor: 'Google Cloud', name: 'Professional Cloud Developer', type: 'EXPERTO', points: 60 },
+    { id: 6, vendor: 'AWS', name: 'DevOps Engineer Professional', type: 'OPCIONAL', points: 70 }
+  ];
+
+  const create = async (certifications: any) => {
     await TestBed.configureTestingModule({
       imports: [RulesComponent],
-      providers: [provideRouter([])]
+      providers: [provideRouter([]), { provide: RallyRulesService, useValue: {
+        rangeText: () => '1 ene 2026 – 15 dic 2026', cutoff: () => '2026-12-15', certifications: () => certifications } }]
     }).compileComponents();
     fixture = TestBed.createComponent(RulesComponent);
     fixture.detectChanges();
     text = fixture.nativeElement.textContent;
+  };
+
+  beforeEach(async () => {
+    await create(of(catalog));
+  });
+
+  it('lists the certifications of each type, grouped by route', () => {
+    const types = Array.from(fixture.nativeElement.querySelectorAll('.type')) as HTMLElement[];
+    expect(types.map((t) => t.getAttribute('data-type'))).toEqual(['FUNDACIONAL', 'PROFESIONAL', 'EXPERTO', 'OPCIONAL']);
+    const fundacional = types[0];
+    expect(fundacional.querySelector('.type__points')?.textContent).toContain('10 pts');
+    const routes = Array.from(fundacional.querySelectorAll('.route__name')).map((r) => r.textContent?.trim());
+    expect(routes).toEqual(['Python', 'Azure', 'GCP']);
+    expect(fundacional.textContent).toContain('Cloud Digital Leader');
+    expect(types[3].textContent).toContain('DevOps Engineer Professional');
+  });
+
+  it('hides the certification list when the server does not answer', async () => {
+    TestBed.resetTestingModule();
+    await create(throwError(() => new Error('down')));
+    expect(fixture.nativeElement.querySelector('.type')).toBeNull();
+    expect(text).toContain('Tabla de puntos');
   });
 
   it('shows the title, the calendar and the cutoff', () => {

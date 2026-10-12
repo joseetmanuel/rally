@@ -1,5 +1,6 @@
 import { Injectable, Injector, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { environment } from '@env/environment';
 import { mediumDate, todayIso } from '../../utils/dates';
@@ -9,6 +10,15 @@ export interface RallyRules {
   start: string;
   cutoff: string;
   closed: boolean;
+}
+
+/** Una certificación del catálogo del Rally (vista pública de las bases) */
+export interface RallyCertification {
+  id: number;
+  vendor: string;
+  name: string;
+  type: 'FUNDACIONAL' | 'PROFESIONAL' | 'EXPERTO' | 'OPCIONAL';
+  points: number;
 }
 
 /** Valores de las bases del Rally 2026; se usan mientras el servidor no responde (o si falla) */
@@ -33,6 +43,11 @@ export class RallyRulesService {
       next: (rules) => this._rules.set({ start: rules.start, cutoff: rules.cutoff, closed: !!rules.closed }),
       error: () => undefined
     });
+  }
+
+  /** Certificaciones que cuentan en el Rally, con su tipo (público; el catálogo de administración no lo es) */
+  certifications(): Observable<RallyCertification[]> {
+    return this.injector.get(HttpClient).get<RallyCertification[]>(`${environment.api_url}/rules/certifications`);
   }
 
   /** Última fecha que se puede registrar para algo que ya ocurrió: hoy, o el corte si ya pasó */

@@ -13,6 +13,19 @@ function dayFromToday(offset: number): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+describe('RallyRulesService.certifications', () => {
+  it('asks the public endpoint for the certifications that count in the rally', () => {
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    const service = TestBed.inject(RallyRulesService);
+    const http = TestBed.inject(HttpTestingController);
+    let result: any[] = [];
+    service.certifications().subscribe((r) => (result = r));
+    http.expectOne(`${environment.api_url}/rules/certifications`).flush([{ id: 1 }]);
+    expect(result).toEqual([{ id: 1 }]);
+    http.verify();
+  });
+});
+
 describe('RallyRulesService', () => {
   let service: RallyRulesService;
 

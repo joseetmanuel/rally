@@ -69,6 +69,23 @@ export const BASES_SECTIONS: BasesSection[] = [
   }
 ];
 
+/** Tipos de certificación en el orden de las bases, con su nombre para mostrar */
+export const CERTIFICATION_TYPES: { code: string; label: string }[] = [
+  { code: 'FUNDACIONAL', label: 'Fundacional' },
+  { code: 'PROFESIONAL', label: 'Profesional' },
+  { code: 'EXPERTO', label: 'Experto' },
+  { code: 'OPCIONAL', label: 'Opcional' }
+];
+
+/** Proveedor del catálogo -> ruta del rally, en el orden de las rutas de la lámina */
+export const ROUTE_BY_VENDOR: Record<string, string> = {
+  'Python Institute': 'Python',
+  'AWS': 'AWS',
+  'Microsoft': 'Azure',
+  'Google Cloud': 'GCP'
+};
+export const ROUTE_ORDER = ['Python', 'AWS', 'Azure', 'GCP'];
+
 export interface StudyResource {
   route: string;
   url: string;
