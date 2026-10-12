@@ -29,14 +29,14 @@ describe('MenuConfigurationService', () => {
   it('public profile only sees results: no Consultores and no catalogs', () => {
     const { service } = setup(false);
     const menu = current(service);
-    expect(menu.map((m) => m.name)).toEqual(['Inicio', 'Detalle', 'Cursos', 'Puntos Extra']);
+    expect(menu.map((m) => m.name)).toEqual(['Inicio', 'Detalle', 'Cursos', 'Puntos Extra', 'Bases']);
     for (const section of ADMIN_ONLY_SECTIONS) expect(routesOf(menu)).not.toContain(section);
   });
 
   it('admin profile adds Consultores and groups the catalogs in a submenu', () => {
     const { service } = setup(true);
     const menu = current(service);
-    expect(menu.map((m) => m.name)).toEqual(['Inicio', 'Detalle', 'Consultores', 'Cursos', 'Puntos Extra', 'Catálogos']);
+    expect(menu.map((m) => m.name)).toEqual(['Inicio', 'Detalle', 'Consultores', 'Cursos', 'Puntos Extra', 'Bases', 'Catálogos']);
     const catalogs = menu.find((m) => m.name === 'Catálogos');
     expect(catalogs.children.map((c: any) => c.route)).toEqual([
       'teams', 'consulting-firms', 'certification-types', 'certifications'
@@ -47,19 +47,19 @@ describe('MenuConfigurationService', () => {
     const routes = routesOf(current(setup(true).service));
     expect([...routes].sort()).toEqual([
       'certification-types', 'certifications', 'consultants', 'consulting-firms', 'course-sessions',
-      'detail', 'extra-points', 'home', 'teams'
+      'detail', 'extra-points', 'home', 'rules', 'teams'
     ]);
     expect(routes.filter((r) => ADMIN_ONLY_SECTIONS.includes(r)).sort()).toEqual([...ADMIN_ONLY_SECTIONS].sort());
   });
 
   it('rebuilds itself when the profile changes (login / logout)', () => {
     const { service, mock } = setup(false);
-    expect(current(service)).toHaveLength(4);
+    expect(current(service)).toHaveLength(5);
     mock.setAdmin(true);
     TestBed.tick();
-    expect(current(service)).toHaveLength(6);
+    expect(current(service)).toHaveLength(7);
     mock.setAdmin(false);
     TestBed.tick();
-    expect(current(service)).toHaveLength(4);
+    expect(current(service)).toHaveLength(5);
   });
 });

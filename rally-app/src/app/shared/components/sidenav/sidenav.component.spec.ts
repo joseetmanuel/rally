@@ -37,7 +37,7 @@ describe('SidenavComponent (cajón de navegación del móvil)', () => {
 
     it('lists every screen of the menu as a link', () => {
       const names = links().map((a) => a.textContent?.trim());
-      expect(names).toEqual(['Inicio', 'Detalle', 'Consultores', 'Cursos', 'Puntos Extra',
+      expect(names).toEqual(['Inicio', 'Detalle', 'Consultores', 'Cursos', 'Puntos Extra', 'Bases',
         'Equipos', 'Consultoras', 'Tipos de certificación', 'Certificaciones']);
     });
 
@@ -95,7 +95,7 @@ describe('SidenavComponent (cajón de navegación del móvil)', () => {
     });
 
     it('does not get Consultores nor the catalogs in the drawer', () => {
-      expect(links().map((a) => a.textContent?.trim())).toEqual(['Inicio', 'Detalle', 'Cursos', 'Puntos Extra']);
+      expect(links().map((a) => a.textContent?.trim())).toEqual(['Inicio', 'Detalle', 'Cursos', 'Puntos Extra', 'Bases']);
       expect(fixture.nativeElement.querySelector('.group-title')).toBeNull();
     });
   });

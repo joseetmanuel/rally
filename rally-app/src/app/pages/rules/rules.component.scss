@@ -1,0 +1,235 @@
+// Material 3: tokens tonales derivados del azul de marca #006990 (los mismos del ranking y del detalle).
+:host {
+  display: block;
+  --rk-primary: #006990;
+  --rk-on-primary: #ffffff;
+  --rk-primary-container: #c7e7ff;
+  --rk-on-primary-container: #001e2e;
+  --rk-surface: #f6fafe;
+  --rk-surface-container: #eaeff3;
+  --rk-on-surface: #171c1f;
+  --rk-on-surface-variant: #40484d;
+  --rk-outline-variant: #c0c7cd;
+}
+
+.rules {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px 16px 48px;
+  color: var(--rk-on-surface);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// ---------------------------------------------------------------- Encabezado
+.hero {
+  margin-bottom: 20px;
+  padding: 20px 20px 24px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, var(--rk-primary), #004e6c);
+  color: var(--rk-on-primary);
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px 6px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    color: inherit;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(255, 255, 255, 0.28);
+    }
+  }
+
+  h1 {
+    margin: 16px 0 8px;
+    font-size: clamp(1.5rem, 5vw, 2.25rem);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  &__lead {
+    margin: 0 0 12px;
+    line-height: 1.5;
+    opacity: 0.95;
+  }
+
+  &__dates {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+// ---------------------------------------------------------------- Tarjetas
+.card {
+  margin-bottom: 16px;
+  padding: 20px;
+  border-radius: 24px;
+  background: var(--rk-surface-container);
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 14px;
+    font-size: 1.25rem;
+    color: var(--rk-primary);
+  }
+}
+
+.items {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+
+  li {
+    position: relative;
+    margin-bottom: 12px;
+    padding-left: 44px;
+    line-height: 1.5;
+    counter-increment: base;
+    overflow-wrap: anywhere;
+
+    &::before {
+      content: attr(value);
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--rk-primary-container);
+      color: var(--rk-on-primary-container);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+  }
+}
+
+// ---------------------------------------------------------------- Tabla de puntos
+.table-scroll {
+  overflow-x: auto;
+}
+
+.points {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 12px 10px;
+    text-align: center;
+    border-bottom: 1px solid var(--rk-outline-variant);
+  }
+
+  thead th {
+    font-size: 0.8rem;
+    color: var(--rk-on-surface-variant);
+  }
+
+  tbody th {
+    text-align: left;
+
+    small {
+      display: block;
+      font-weight: 400;
+      color: var(--rk-on-surface-variant);
+    }
+  }
+
+  td {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--rk-primary);
+  }
+}
+
+.note {
+  margin: 12px 0 0;
+  color: var(--rk-on-surface-variant);
+  font-size: 0.9rem;
+}
+
+// En pantallas angostas cada tipo pasa a ser una tarjeta con sus cuatro valores etiquetados
+@media (max-width: 599px) {
+  .points {
+    thead {
+      display: none;
+    }
+
+    tr,
+    tbody th,
+    td {
+      display: block;
+    }
+
+    tr {
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 16px;
+      background: var(--rk-surface);
+    }
+
+    th,
+    td {
+      border-bottom: 0;
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 1.05rem;
+      text-align: right;
+
+      &::before {
+        content: attr(data-label);
+        font-size: 0.85rem;
+        font-weight: 400;
+        color: var(--rk-on-surface-variant);
+        text-align: left;
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------- Recursos
+.resources {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    padding: 8px 0;
+  }
+
+  strong {
+    min-width: 64px;
+  }
+
+  a {
+    color: var(--rk-primary);
+    overflow-wrap: anywhere;
+  }
+}

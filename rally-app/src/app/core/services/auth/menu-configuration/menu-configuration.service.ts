@@ -10,7 +10,7 @@ const item = (id: number, name: string, icon: string, route: string, children: M
 
 /**
  * Menú de la aplicación según el perfil.
- *  - Público: sólo lectura de los resultados (inicio, detalle, cursos y puntos extra).
+ *  - Público: sólo lectura de los resultados (inicio, detalle, cursos, puntos extra y las bases del rally).
  *  - Administrador: además Consultores y todos los catálogos.
  * El menú se recalcula solo cuando el perfil cambia (inicio o cierre de sesión).
  */
@@ -44,6 +44,7 @@ export class MenuConfigurationService {
     const detalle = item(11, 'Detalle', 'receipt_long', 'detail');
     const cursos = item(5, 'Cursos', 'school', 'course-sessions');
     const puntosExtra = item(6, 'Puntos Extra', 'stars', 'extra-points');
+    const bases = item(12, 'Bases', 'gavel', 'rules');
 
     const menu = isAdmin
       ? [
@@ -52,6 +53,7 @@ export class MenuConfigurationService {
         item(2, 'Consultores', 'people', 'consultants'),
         cursos,
         puntosExtra,
+        bases,
         item(10, 'Catálogos', 'library_books', '', [
           item(8, 'Equipos', 'groups', 'teams'),
           item(9, 'Consultoras', 'business', 'consulting-firms'),
@@ -59,7 +61,7 @@ export class MenuConfigurationService {
           item(4, 'Certificaciones', 'workspace_premium', 'certifications')
         ])
       ]
-      : [inicio, detalle, cursos, puntosExtra];
+      : [inicio, detalle, cursos, puntosExtra, bases];
     return menu as unknown as Section[];
   }
 }

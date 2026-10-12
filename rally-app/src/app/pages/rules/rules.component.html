@@ -1,0 +1,70 @@
+<article class="rules" aria-labelledby="rules-title">
+
+  <header class="hero">
+    <a class="hero__back" routerLink="/app/home">
+      <mat-icon aria-hidden="true">arrow_back</mat-icon> Ranking
+    </a>
+    <h1 id="rules-title">Bases del Rally 2026 de certificaciones</h1>
+    <p class="hero__lead">{{ disclaimer }}</p>
+    <p class="hero__dates">
+      <mat-icon aria-hidden="true">event</mat-icon>
+      Cuentan los hechos del {{ calendar }}. La calificación será el {{ cutoffText }}.
+    </p>
+  </header>
+
+  <section class="card" aria-labelledby="points-title">
+    <h2 id="points-title"><mat-icon aria-hidden="true">table_chart</mat-icon> Tabla de puntos</h2>
+    <div class="table-scroll">
+      <table class="points">
+        <caption class="sr-only">Puntos por tipo de certificación</caption>
+        <thead>
+          <tr>
+            <th scope="col">Tipo de certificación</th>
+            <th scope="col">Certificación</th>
+            <th scope="col">Curso (Expositor)</th>
+            <th scope="col">Bono Alumno</th>
+            <th scope="col">Bono Expositor</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of table; track row.type) {
+            <tr>
+              <th scope="row">{{ row.type }}<small>{{ row.detail }}</small></th>
+              <td data-label="Certificación">{{ row.certification }}</td>
+              <td data-label="Curso (Expositor)">{{ row.course }}</td>
+              <td data-label="Bono Alumno">{{ row.student }}</td>
+              <td data-label="Bono Expositor">{{ row.instructor }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="note">
+      Los bonos del Alumno y del Expositor se ganan cuando el Alumno obtiene la certificación del curso que tomó.
+    </p>
+  </section>
+
+  @for (section of sections; track section.id) {
+    <section class="card" [attr.aria-labelledby]="section.id">
+      <h2 [id]="section.id"><mat-icon aria-hidden="true">{{ section.icon }}</mat-icon> {{ section.title }}</h2>
+      <ol class="items">
+        @for (item of section.items; track item[0]) {
+          <li [value]="item[0]">{{ item[1] }}</li>
+        }
+      </ol>
+    </section>
+  }
+
+  <section class="card" aria-labelledby="resources-title">
+    <h2 id="resources-title"><mat-icon aria-hidden="true">menu_book</mat-icon> Recursos de estudio</h2>
+    <ul class="resources">
+      @for (resource of resources; track resource.route) {
+        <li>
+          <strong>{{ resource.route }}</strong>
+          <a [href]="resource.url" target="_blank" rel="noopener noreferrer">{{ resource.url }}</a>
+        </li>
+      }
+    </ul>
+  </section>
+
+</article>
