@@ -11,6 +11,7 @@ from routes.course_attendances import course_attendances_bp
 from routes.extra_point_reason_types import extra_point_reason_types_bp
 from routes.consultant_extra_points import consultant_extra_points_bp
 from routes.ranking import ranking_bp
+from routes.org_structure import org_structure_bp
 
 def register_routes(app):
     app.register_blueprint(health_bp)
@@ -26,3 +27,4 @@ def register_routes(app):
     app.register_blueprint(extra_point_reason_types_bp, url_prefix='/api')
     app.register_blueprint(consultant_extra_points_bp, url_prefix='/api')
     app.register_blueprint(ranking_bp, url_prefix='/api')
+    app.register_blueprint(org_structure_bp, url_prefix='/api')

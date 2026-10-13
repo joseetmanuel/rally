@@ -3,9 +3,17 @@ from database import db
 from models.consultant import Consultant
 from models.team import Team
 from models.consulting_firm import ConsultingFirm
+from models.org_structure import Management
 from sqlalchemy.exc import IntegrityError
 
 consultants_bp = Blueprint('consultants', __name__)
+
+
+def validate_management(management_id):
+    """La gerencia es opcional en la API; si viene debe existir."""
+    if management_id is not None and not db.session.get(Management, management_id):
+        return "management_id does not exist"
+    return None
 
 
 def validate_catalogs(participant_type, team_id, firm_id):
@@ -38,7 +46,8 @@ def create_consultant():
         return jsonify({"error": "full_name is required"}), 400
     if data.get('participant_type') not in ['INTERNO', 'EXTERNO']:
         return jsonify({"error": "participant_type must be INTERNO or EXTERNO"}), 400
-    error = validate_catalogs(data.get('participant_type'), data.get('team_id'), data.get('consulting_firm_id'))
+    error = validate_catalogs(data.get('participant_type'), data.get('team_id'), data.get('consulting_firm_id')) \
+        or validate_management(data.get('management_id'))
     if error:
         return jsonify({"error": error}), 400
 
@@ -48,6 +57,7 @@ def create_consultant():
             participant_type=data.get('participant_type'),
             team_id=data.get('team_id'),
             consulting_firm_id=data.get('consulting_firm_id'),
+            management_id=data.get('management_id'),
             email=data.get('email'),
             teams_contact=data.get('teams_contact')
         )
@@ -72,7 +82,8 @@ def update_consultant(id):
     error = validate_catalogs(
         data.get('participant_type', consultant.participant_type),
         data.get('team_id', consultant.team_id),
-        data.get('consulting_firm_id', consultant.consulting_firm_id))
+        data.get('consulting_firm_id', consultant.consulting_firm_id)) \
+        or (validate_management(data['management_id']) if 'management_id' in data else None)
     if error:
         return jsonify({"error": error}), 400
 
@@ -81,6 +92,7 @@ def update_consultant(id):
         if 'participant_type' in data: consultant.participant_type = data.get('participant_type')
         if 'team_id' in data: consultant.team_id = data.get('team_id')
         if 'consulting_firm_id' in data: consultant.consulting_firm_id = data.get('consulting_firm_id')
+        if 'management_id' in data: consultant.management_id = data.get('management_id')
         if 'email' in data: consultant.email = data.get('email')
         if 'teams_contact' in data: consultant.teams_contact = data.get('teams_contact')
         

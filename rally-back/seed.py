@@ -5,6 +5,8 @@ from models.extra_point_reason_type import ExtraPointReasonType
 from models.certification import Certification
 from models.team import Team
 from models.consulting_firm import ConsultingFirm
+from models.consultant import Consultant
+from models.org_structure import Cto, Direction, Subdirection, Management
 
 TEAMS = ['Elastic', 'LC/GR', 'Call', 'SI+', 'NBM', 'Gerente', 'Equipo Cross']
 CONSULTING_FIRMS = ['Antal', 'Corus', 'Wayssen', 'Qualtop', 'MaterSys', 'Inetum', 'POSITIVO S+']
@@ -38,6 +40,22 @@ CERTIFICATIONS = [
     ('Python Institute', 'PCPP1 - Certified Professional in Python Programming 1', 'EXPERTO'),
     ('Python Institute', 'PCPP2 - Certified Professional in Python Programming 2', 'OPCIONAL'),
 ]
+
+def seed_org_structure():
+    """Estructura inicial: CTO Tecnología > Dirección Core Bancario > Subdirección Ingeniería de Software >
+    Gerencia Reingeniería de Software. Sólo se crea si todavía no hay ningún CTO (nunca pisa lo que se editó
+    desde la pantalla de administración); en ese momento los participantes sin gerencia pasan a la inicial."""
+    if Cto.query.first():
+        return
+    print("Seeding org structure...")
+    cto = Cto(name='Tecnología', head_name='Óscar')
+    direction = Direction(name='Core Bancario', head_name='Karla', cto=cto)
+    subdirection = Subdirection(name='Ingeniería de Software', head_name='Teodoro', direction=direction)
+    management = Management(name='Reingeniería de Software', head_name='José', subdirection=subdirection)
+    db.session.add_all([cto, direction, subdirection, management])
+    db.session.flush()
+    Consultant.query.filter(Consultant.management_id.is_(None)).update({'management_id': management.id})
+
 
 def seed_catalogs():
     app = create_app()
@@ -144,6 +162,9 @@ def seed_catalogs():
         for vendor, name, type_code in CERTIFICATIONS:
             if not Certification.query.filter_by(vendor=vendor, name=name).first():
                 db.session.add(Certification(vendor=vendor, name=name, certification_type_id=type_ids[type_code]))
+
+        # 5. Estructura jerárquica inicial (sólo si no existe)
+        seed_org_structure()
 
         db.session.commit()
         print("Seed completed successfully!")

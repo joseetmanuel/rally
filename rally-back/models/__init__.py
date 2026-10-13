@@ -1,5 +1,6 @@
 from models.team import Team
 from models.consulting_firm import ConsultingFirm
+from models.org_structure import Cto, Direction, Subdirection, Management
 from models.consultant import Consultant
 from models.certification_type import CertificationType
 from models.certification import Certification

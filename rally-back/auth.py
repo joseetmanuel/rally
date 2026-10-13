@@ -25,7 +25,8 @@ LOGIN_PATH = '/api/auth/login'
 # administrador. NO incluye /api/consultants/<id>/statement, que es el estado de cuenta público.
 ADMIN_ONLY_READ = re.compile(
     r'^/api/(consultants|teams|consulting-firms|certification-types|certifications|'
-    r'consultant-certifications|extra-point-reason-types)(/\d+)?/?$')
+    r'consultant-certifications|extra-point-reason-types|ctos|directions|subdirections|managements)(/\d+)?/?$|'
+    r'^/api/org-structure/?$')
 
 # Datos que el perfil público no debe recibir (correos, contacto y todo lo de reembolsos)
 SENSITIVE_KEYS = {

@@ -158,12 +158,18 @@ def test_a_course_outside_the_calendar_gives_no_points_and_no_bonus(client, cale
 
 
 def test_rules_certifications_lists_the_catalog_by_type_for_the_public(public_client, client):
-    from seed import CERTIFICATIONS
-    # el catálogo se siembra en la BD de pruebas; aquí basta con comprobar la forma y que no hay datos de personas
+    import uuid
+    code = 'RT' + uuid.uuid4().hex[:6]
+    type_id = client.post('/api/certification-types', json={'code': code, 'points_base': 15}).get_json()['id']
+    cert = client.post('/api/certifications', json={
+        'vendor': 'Proveedor Prueba', 'name': 'Cert de prueba ' + code, 'certification_type_id': type_id}).get_json()
+
     response = public_client.get('/api/rules/certifications')
     assert response.status_code == 200
     body = response.get_json()
     for item in body:
+        # sólo catálogo: nada de personas
         assert set(item) == {'id', 'vendor', 'name', 'type', 'points'}
-        assert item['type'] in {'FUNDACIONAL', 'PROFESIONAL', 'EXPERTO', 'OPCIONAL'}
-    assert len(body) <= len(CERTIFICATIONS)
+    mine = next(item for item in body if item['id'] == cert['id'])
+    assert mine == {'id': cert['id'], 'vendor': 'Proveedor Prueba', 'name': 'Cert de prueba ' + code,
+                    'type': code, 'points': 15}

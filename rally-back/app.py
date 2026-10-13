@@ -10,6 +10,7 @@ from frontend import register_frontend
 # Importar modelos para que Flask-Migrate los detecte
 import models.team
 import models.consulting_firm
+import models.org_structure
 import models.consultant
 import models.certification_type
 import models.certification

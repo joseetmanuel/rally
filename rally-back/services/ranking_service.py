@@ -161,9 +161,12 @@ class RankingService:
         return result
 
     @staticmethod
-    def calculate_ranking(include_entries=False):
+    def calculate_ranking(include_entries=False, consultant_ids=None):
         """Ranking completo. Con `include_entries` cada participante trae sus movimientos de puntos."""
         stats, ledger = RankingService._compute()
+        if consultant_ids is not None:
+            # Ranking de un grupo (dirección, subdirección, gerencia): las posiciones se recalculan dentro del grupo
+            stats = {cid: s for cid, s in stats.items() if cid in consultant_ids}
         ranking = RankingService._rank(stats)
         for s in ranking:
             last = s['last_certification_date']
