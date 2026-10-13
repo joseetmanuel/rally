@@ -8,6 +8,7 @@ import { ROUTES_EXTRA_POINTS } from './extra-points/extra-points.routes';
 import { ROUTES_RANKING } from './ranking/ranking.routes';
 import { ROUTES_DETAIL } from './detail/detail.routes';
 import { ROUTES_RULES } from './rules/rules.routes';
+import { ROUTES_ORG_STRUCTURE } from './org-structure/org-structure.routes';
 import { adminGuard } from '../core/guards/admin/admin.guard';
 import { ROUTES_TEAMS } from './teams/teams.routes';
 import { ROUTES_CONSULTING_FIRMS } from './consulting-firms/consulting-firms.routes';
@@ -33,6 +34,12 @@ export const ROUTES: Routes = [
 				path: 'rules',
 				data: { breadcrumb: 'Bases' },
 				loadChildren: () => ROUTES_RULES
+			},
+			{
+				path: 'org-structure',
+				canActivate: [adminGuard],
+				data: { breadcrumb: 'Estructura' },
+				loadChildren: () => ROUTES_ORG_STRUCTURE
 			},
 			{
 				path: 'ranking',

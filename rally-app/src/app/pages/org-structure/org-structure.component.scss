@@ -1,0 +1,109 @@
+.page-container {
+  padding: 20px;
+  margin: 20px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.header-actions h2 {
+  margin: 0 0 8px;
+  color: #333;
+}
+
+.intro,
+.state {
+  margin: 0 0 16px;
+  color: #555;
+}
+
+.error-message {
+  margin: 0 0 12px;
+  color: #b71c1c;
+}
+
+.tree {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.node {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  border-left: 4px solid #006990;
+  border-radius: 12px;
+  background: #eaeff3;
+
+  &--direction { border-left-color: #007a70; }
+  &--subdirection { border-left-color: #652d89; }
+  &--management { border-left-color: #b85800; }
+
+  &__level {
+    flex: 0 0 auto;
+    min-width: 92px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #40484d;
+  }
+
+  &__text {
+    flex: 1 1 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 12px;
+    min-width: 0;
+  }
+
+  &__name {
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  &__head {
+    color: #40484d;
+
+    &::before {
+      content: '· ';
+    }
+  }
+
+  &__count {
+    font-size: 0.85rem;
+    color: #40484d;
+  }
+
+  &__actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+  }
+}
+
+// En móvil la fila pasa a dos líneas: etiqueta y nombre arriba, acciones abajo; la sangría se reduce
+@media (max-width: 599px) {
+  .page-container {
+    margin: 12px;
+    padding: 14px;
+  }
+
+  .node {
+    flex-wrap: wrap;
+    margin-left: 0 !important;
+
+    &__level {
+      min-width: 0;
+      flex-basis: 100%;
+    }
+
+    &__actions {
+      flex-basis: 100%;
+      justify-content: flex-end;
+    }
+  }
+}

@@ -40,6 +40,49 @@
     </div>
   </header>
 
+  @if (session.isAdmin()) {
+    <!-- Filtros por estructura (sólo administrador) -->
+    <form class="filters" aria-label="Filtrar el ranking por estructura" (submit)="$event.preventDefault()">
+      <label class="filters__field">
+        <span>Dirección</span>
+        <select (change)="onDirectionChange($event)">
+          <option value="" [selected]="directionId === null">Todas</option>
+          @for (d of directions; track d.id) {
+            <option [value]="d.id" [selected]="d.id === directionId">{{ d.name }}</option>
+          }
+        </select>
+      </label>
+      <label class="filters__field">
+        <span>Subdirección</span>
+        <select (change)="onSubdirectionChange($event)">
+          <option value="" [selected]="subdirectionId === null">Todas</option>
+          @for (s of subdirectionOptions; track s.id) {
+            <option [value]="s.id" [selected]="s.id === subdirectionId">{{ s.name }}</option>
+          }
+        </select>
+      </label>
+      <label class="filters__field">
+        <span>Gerencia</span>
+        <select (change)="onManagementChange($event)">
+          <option value="" [selected]="managementId === null">Todas</option>
+          @for (m of managementOptions; track m.id) {
+            <option [value]="m.id" [selected]="m.id === managementId">{{ m.name }}</option>
+          }
+        </select>
+      </label>
+      @if (hasFilter) {
+        <button type="button" class="filters__clear" (click)="clearFilters()">
+          <mat-icon aria-hidden="true">filter_alt_off</mat-icon> Limpiar filtros
+        </button>
+      }
+    </form>
+    @if (hasFilter && !loading && !error) {
+      <p class="filters__summary" role="status">
+        Mostrando: {{ filterLabel }} · {{ ranking.length }} {{ ranking.length === 1 ? 'participante' : 'participantes' }}
+      </p>
+    }
+  }
+
   @if (exportError) {
     <p class="export-error" role="alert">No se pudo generar el PDF. Intenta de nuevo.</p>
   }
@@ -54,6 +97,12 @@
       <mat-icon>cloud_off</mat-icon>
       <p>No se pudo cargar el ranking. Verifica que el servidor esté activo.</p>
       <button mat-flat-button (click)="load()">Reintentar</button>
+    </div>
+  } @else if (ranking.length === 0 && hasFilter) {
+    <div class="state state--filtered">
+      <mat-icon>filter_alt_off</mat-icon>
+      <p>Ningún participante pertenece a este filtro.</p>
+      <button mat-flat-button (click)="clearFilters()">Limpiar filtros</button>
     </div>
   } @else if (ranking.length === 0) {
     <div class="state">

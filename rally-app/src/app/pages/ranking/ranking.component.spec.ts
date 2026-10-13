@@ -6,6 +6,9 @@ import { RankingComponent } from './ranking.component';
 import { RankingService } from '../../core/services/ranking/ranking.service';
 import { RankingPdfService } from '../../core/services/ranking/ranking-pdf.service';
 import { RankingEntry } from '../../core/models/ranking/ranking-entry';
+import { OrgStructureService } from '../../core/services/org-structure/org-structure.service';
+import { AdminSessionService } from '../../core/services/admin-session/admin-session.service';
+import { createAdminSessionMock } from '../../core/testing/admin-session.mock';
 
 function entry(position: number, name: string, total: number, extra: Partial<RankingEntry> = {}): RankingEntry {
   return {
@@ -31,20 +34,41 @@ const DATA: RankingEntry[] = [
   entry(5, 'Pedro Gil', 0)
 ];
 
+const unit = { head_name: '', head_consultant_id: null, cto_id: 1 };
+const DIRECTIONS = [
+  { id: 1, name: 'Dir A', ...unit },
+  { id: 2, name: 'Dir B', ...unit }
+];
+const SUBDIRECTIONS = [
+  { id: 10, name: 'Sub A1', direction_id: 1, ...unit },
+  { id: 11, name: 'Sub A2', direction_id: 1, ...unit },
+  { id: 20, name: 'Sub B1', direction_id: 2, ...unit }
+];
+const MANAGEMENTS = [
+  { id: 100, name: 'Ger A1a', subdirection_id: 10, direction_id: 1, ...unit },
+  { id: 110, name: 'Ger A2a', subdirection_id: 11, direction_id: 1, ...unit },
+  { id: 200, name: 'Ger B1a', subdirection_id: 20, direction_id: 2, ...unit }
+];
+
 describe('RankingComponent', () => {
   let fixture: ComponentFixture<RankingComponent>;
   let component: RankingComponent;
   const service = { getRanking: jest.fn() };
   const pdf = { export: jest.fn() };
+  const org = { getDirections: jest.fn(), getSubdirections: jest.fn(), getManagements: jest.fn() };
+  let session: ReturnType<typeof createAdminSessionMock>;
 
-  async function setup(result: any = of(DATA)) {
+  async function setup(result: any = of(DATA), admin = false) {
     service.getRanking.mockReturnValue(result);
+    session = createAdminSessionMock(admin);
     await TestBed.configureTestingModule({
       imports: [RankingComponent, NoopAnimationsModule],
       providers: [
         provideRouter([]),
         { provide: RankingService, useValue: service },
-        { provide: RankingPdfService, useValue: pdf }
+        { provide: RankingPdfService, useValue: pdf },
+        { provide: OrgStructureService, useValue: org },
+        { provide: AdminSessionService, useValue: session }
       ]
     }).compileComponents();
     fixture = TestBed.createComponent(RankingComponent);
@@ -57,6 +81,9 @@ describe('RankingComponent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     pdf.export.mockResolvedValue('ranking-rally.pdf');
+    org.getDirections.mockReturnValue(of(DIRECTIONS));
+    org.getSubdirections.mockReturnValue(of(SUBDIRECTIONS));
+    org.getManagements.mockReturnValue(of(MANAGEMENTS));
   });
 
   it('should create and load the ranking on init', async () => {
@@ -200,6 +227,118 @@ describe('RankingComponent', () => {
       await setup();
       const links = Array.from(el().querySelectorAll('a.podium__link')) as HTMLAnchorElement[];
       expect(links.map((a) => a.getAttribute('href'))).toEqual(['/app/detail/2', '/app/detail/1', '/app/detail/3']);
+    });
+  });
+
+  describe('structure filters', () => {
+    const selects = () => Array.from(el().querySelectorAll('.filters select')) as HTMLSelectElement[];
+    const optionTexts = (i: number) => Array.from(selects()[i].options).map((o) => o.textContent?.trim());
+    function choose(i: number, value: string) {
+      selects()[i].value = value;
+      selects()[i].dispatchEvent(new Event('change'));
+      fixture.detectChanges();
+    }
+
+    it('hides the bar from the public and never asks for the options', async () => {
+      await setup(of(DATA), false);
+      expect(el().querySelector('.filters')).toBeNull();
+      expect(org.getDirections).not.toHaveBeenCalled();
+      expect(org.getSubdirections).not.toHaveBeenCalled();
+      expect(org.getManagements).not.toHaveBeenCalled();
+    });
+
+    it('shows the bar to the admin, with labelled selects and all the options', async () => {
+      await setup(of(DATA), true);
+      expect(selects().length).toBe(3);
+      expect(Array.from(el().querySelectorAll('.filters__field span')).map((s) => s.textContent)).toEqual(['Dirección', 'Subdirección', 'Gerencia']);
+      expect(optionTexts(0)).toEqual(['Todas', 'Dir A', 'Dir B']);
+      expect(optionTexts(1)).toEqual(['Todas', 'Sub A1', 'Sub A2', 'Sub B1']);
+      expect(optionTexts(2)).toEqual(['Todas', 'Ger A1a', 'Ger A2a', 'Ger B1a']);
+      expect(el().querySelector('.filters__clear')).toBeNull();
+    });
+
+    it('cascades: a direction narrows subdirections and managements, and resets the lower levels', async () => {
+      await setup(of(DATA), true);
+      choose(0, '1');
+      expect(optionTexts(1)).toEqual(['Todas', 'Sub A1', 'Sub A2']);
+      expect(optionTexts(2)).toEqual(['Todas', 'Ger A1a', 'Ger A2a']);
+      choose(1, '10');
+      expect(optionTexts(2)).toEqual(['Todas', 'Ger A1a']);
+      choose(2, '100');
+      expect(component.managementId).toBe(100);
+      choose(0, '2');
+      expect(component.subdirectionId).toBeNull();
+      expect(component.managementId).toBeNull();
+      expect(optionTexts(1)).toEqual(['Todas', 'Sub B1']);
+    });
+
+    it('asks for the ranking again with the right filter at each change', async () => {
+      await setup(of(DATA), true);
+      choose(0, '1');
+      expect(service.getRanking).toHaveBeenLastCalledWith(false, { direction_id: 1, subdirection_id: null, management_id: null });
+      choose(1, '10');
+      expect(service.getRanking).toHaveBeenLastCalledWith(false, { direction_id: 1, subdirection_id: 10, management_id: null });
+      choose(2, '100');
+      expect(service.getRanking).toHaveBeenLastCalledWith(false, { direction_id: 1, subdirection_id: 10, management_id: 100 });
+    });
+
+    it('describes the active filter and the number of participants', async () => {
+      await setup(of(DATA), true);
+      choose(0, '1');
+      choose(1, '10');
+      expect(el().querySelector('.filters__summary')?.textContent).toContain('Mostrando: Subdirección Sub A1 · 5 participantes');
+    });
+
+    it('clears the filters and reloads the full ranking', async () => {
+      await setup(of(DATA), true);
+      choose(0, '1');
+      (el().querySelector('.filters__clear') as HTMLButtonElement).click();
+      fixture.detectChanges();
+      expect(component.directionId).toBeNull();
+      expect(service.getRanking).toHaveBeenLastCalledWith();
+      expect(el().querySelector('.filters__clear')).toBeNull();
+      expect(el().querySelector('.filters__summary')).toBeNull();
+    });
+
+    it('exports the PDF with the same filter', async () => {
+      await setup(of(DATA), true);
+      choose(0, '1');
+      choose(1, '10');
+      await component.exportPdf();
+      expect(service.getRanking).toHaveBeenLastCalledWith(true, { direction_id: 1, subdirection_id: 10, management_id: null });
+    });
+
+    it('shows a clear empty state when the filter matches nobody', async () => {
+      await setup(of(DATA), true);
+      service.getRanking.mockReturnValue(of([]));
+      choose(0, '2');
+      expect(el().querySelector('.state--filtered')?.textContent).toContain('Ningún participante pertenece a este filtro');
+      (el().querySelector('.state--filtered button') as HTMLButtonElement).click();
+      fixture.detectChanges();
+      expect(component.hasFilter).toBe(false);
+    });
+
+    it('clears the filter and reloads everything when the profile becomes public', async () => {
+      await setup(of(DATA), true);
+      choose(0, '1');
+      service.getRanking.mockClear();
+      session.setAdmin(false);
+      fixture.detectChanges();
+      expect(el().querySelector('.filters')).toBeNull();
+      expect(component.directionId).toBeNull();
+      expect(service.getRanking).toHaveBeenCalledTimes(1);
+      expect(service.getRanking).toHaveBeenCalledWith();
+    });
+
+    it('reloads and loads the options when the profile becomes admin', async () => {
+      await setup(of(DATA), false);
+      service.getRanking.mockClear();
+      session.setAdmin(true);
+      fixture.detectChanges();
+      expect(org.getDirections).toHaveBeenCalledTimes(1);
+      expect(service.getRanking).toHaveBeenCalledTimes(1);
+      expect(el().querySelector('.filters')).toBeTruthy();
+      expect(optionTexts(0)).toEqual(['Todas', 'Dir A', 'Dir B']);
     });
   });
 

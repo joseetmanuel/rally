@@ -39,7 +39,7 @@ describe('MenuConfigurationService', () => {
     expect(menu.map((m) => m.name)).toEqual(['Inicio', 'Detalle', 'Consultores', 'Cursos', 'Puntos Extra', 'Bases', 'Catálogos']);
     const catalogs = menu.find((m) => m.name === 'Catálogos');
     expect(catalogs.children.map((c: any) => c.route)).toEqual([
-      'teams', 'consulting-firms', 'certification-types', 'certifications'
+      'org-structure', 'teams', 'consulting-firms', 'certification-types', 'certifications'
     ]);
   });
 
@@ -47,7 +47,7 @@ describe('MenuConfigurationService', () => {
     const routes = routesOf(current(setup(true).service));
     expect([...routes].sort()).toEqual([
       'certification-types', 'certifications', 'consultants', 'consulting-firms', 'course-sessions',
-      'detail', 'extra-points', 'home', 'rules', 'teams'
+      'detail', 'extra-points', 'home', 'org-structure', 'rules', 'teams'
     ]);
     expect(routes.filter((r) => ADMIN_ONLY_SECTIONS.includes(r)).sort()).toEqual([...ADMIN_ONLY_SECTIONS].sort());
   });

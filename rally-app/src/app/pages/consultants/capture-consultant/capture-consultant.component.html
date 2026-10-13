@@ -32,6 +32,22 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Subdirección</mat-label>
+      <mat-select formControlName="subdirection_id" required>
+        <mat-option *ngFor="let s of subdirections" [value]="s.id">{{ unitLabel(s) }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('subdirection_id')?.hasError('required')">La subdirección es obligatoria</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Gerencia</mat-label>
+      <mat-select formControlName="management_id" required>
+        <mat-option *ngFor="let m of filteredManagements" [value]="m.id">{{ unitLabel(m) }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('management_id')?.hasError('required')">La gerencia es obligatoria</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
       <mat-label>Correo Electrónico (Opcional)</mat-label>
       <input matInput formControlName="email" type="email" placeholder="Ej. ana@mail.com">
       <mat-error *ngIf="form.get('email')?.hasError('email')">Debe ser un correo válido</mat-error>

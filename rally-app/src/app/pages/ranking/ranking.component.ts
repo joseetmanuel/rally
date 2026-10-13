@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, effect, inject, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -11,6 +11,9 @@ import { RankingEntry } from '../../core/models/ranking/ranking-entry';
 import { initials as toInitials } from '../../core/utils/initials';
 import { RallyRulesService } from '../../core/services/rally-rules/rally-rules.service';
 import { mediumDate } from '../../core/utils/dates';
+import { AdminSessionService } from '../../core/services/admin-session/admin-session.service';
+import { OrgStructureService } from '../../core/services/org-structure/org-structure.service';
+import { Direction, Management, Subdirection, OrgFilter } from '../../core/models/org-structure/org-structure';
 
 export interface BreakdownSegment {
   key: keyof RankingEntry['breakdown'];
@@ -46,20 +49,149 @@ export class RankingComponent implements OnInit {
   private rankingService = inject(RankingService);
   private pdfService = inject(RankingPdfService);
   readonly rules = inject(RallyRulesService);
+  private orgService = inject(OrgStructureService);
+  readonly session = inject(AdminSessionService);
+
+  // Filtros por estructura (sólo administrador); null = "Todas"
+  directions: Direction[] = [];
+  subdirections: Subdirection[] = [];
+  managements: Management[] = [];
+  directionId: number | null = null;
+  subdirectionId: number | null = null;
+  managementId: number | null = null;
+
+  /** Perfil visto por última vez, para reaccionar sólo a cambios reales (el primer valor lo carga ngOnInit) */
+  private lastAdmin: boolean | null = null;
+  /** Descarta respuestas de peticiones viejas cuando el filtro cambia rápido */
+  private requestSeq = 0;
+
+  constructor() {
+    effect(() => {
+      const admin = this.session.isAdmin();
+      untracked(() => this.onProfileChange(admin));
+    });
+  }
 
   ngOnInit(): void {
+    this.lastAdmin = this.session.isAdmin();
+    if (this.lastAdmin) this.loadOptions();
+    this.load();
+  }
+
+  /** Al volverse público se limpia el filtro y se recarga completo; al volverse admin se cargan las opciones */
+  private onProfileChange(admin: boolean): void {
+    if (this.lastAdmin === null || this.lastAdmin === admin) return;
+    this.lastAdmin = admin;
+    if (admin) {
+      this.loadOptions();
+    } else {
+      this.directions = [];
+      this.subdirections = [];
+      this.managements = [];
+      this.directionId = this.subdirectionId = this.managementId = null;
+    }
+    this.load();
+  }
+
+  /** Opciones de los selects: sólo se piden siendo administrador (para el público esos endpoints dan 401) */
+  private loadOptions(): void {
+    this.orgService.getDirections().subscribe({
+      next: (d) => (this.directions = d),
+      error: (err) => console.error('Error loading directions', err)
+    });
+    this.orgService.getSubdirections().subscribe({
+      next: (d) => (this.subdirections = d),
+      error: (err) => console.error('Error loading subdirections', err)
+    });
+    this.orgService.getManagements().subscribe({
+      next: (d) => (this.managements = d),
+      error: (err) => console.error('Error loading managements', err)
+    });
+  }
+
+  /** Filtro vigente; siempre vacío para el público */
+  get filter(): OrgFilter {
+    if (!this.session.isAdmin()) return {};
+    return {
+      direction_id: this.directionId,
+      subdirection_id: this.subdirectionId,
+      management_id: this.managementId
+    };
+  }
+
+  get hasFilter(): boolean {
+    return this.session.isAdmin() && (this.directionId !== null || this.subdirectionId !== null || this.managementId !== null);
+  }
+
+  /** Subdirecciones de la dirección elegida (todas si no hay dirección) */
+  get subdirectionOptions(): Subdirection[] {
+    return this.directionId === null
+      ? this.subdirections
+      : this.subdirections.filter((s) => s.direction_id === this.directionId);
+  }
+
+  /** Gerencias de la subdirección elegida; si no hay, las de la dirección elegida; si tampoco, todas */
+  get managementOptions(): Management[] {
+    if (this.subdirectionId !== null) return this.managements.filter((m) => m.subdirection_id === this.subdirectionId);
+    if (this.directionId !== null) return this.managements.filter((m) => m.direction_id === this.directionId);
+    return this.managements;
+  }
+
+  /** "Subdirección Ingeniería de Software": el nivel más bajo elegido */
+  get filterLabel(): string {
+    if (this.managementId !== null) {
+      const m = this.managements.find((x) => x.id === this.managementId);
+      return `Gerencia ${m?.name ?? ''}`.trim();
+    }
+    if (this.subdirectionId !== null) {
+      const s = this.subdirections.find((x) => x.id === this.subdirectionId);
+      return `Subdirección ${s?.name ?? ''}`.trim();
+    }
+    const d = this.directions.find((x) => x.id === this.directionId);
+    return `Dirección ${d?.name ?? ''}`.trim();
+  }
+
+  private parseId(event: Event): number | null {
+    const value = (event.target as HTMLSelectElement).value;
+    return value === '' ? null : Number(value);
+  }
+
+  onDirectionChange(event: Event): void {
+    this.directionId = this.parseId(event);
+    this.subdirectionId = null;
+    this.managementId = null;
+    this.load();
+  }
+
+  onSubdirectionChange(event: Event): void {
+    this.subdirectionId = this.parseId(event);
+    this.managementId = null;
+    this.load();
+  }
+
+  onManagementChange(event: Event): void {
+    this.managementId = this.parseId(event);
+    this.load();
+  }
+
+  clearFilters(): void {
+    this.directionId = this.subdirectionId = this.managementId = null;
     this.load();
   }
 
   load(): void {
     this.loading = true;
     this.error = false;
-    this.rankingService.getRanking().subscribe({
+    const seq = ++this.requestSeq;
+    const request = this.hasFilter ? this.rankingService.getRanking(false, this.filter) : this.rankingService.getRanking();
+    request.subscribe({
       next: (data) => {
+        if (seq !== this.requestSeq) return;
         this.ranking = data;
         this.loading = false;
       },
       error: (err) => {
+        if (seq !== this.requestSeq) return;
         console.error('Error loading ranking', err);
         this.error = true;
         this.loading = false;
@@ -74,7 +206,10 @@ export class RankingComponent implements OnInit {
     this.exportError = false;
     try {
       // Se piden los movimientos de todos y de paso se exportan datos frescos, no los de la pantalla
-      const detailed = await firstValueFrom(this.rankingService.getRanking(true));
+      // Con filtro activo el PDF refleja el mismo grupo (el servicio de PDF no recibe el filtro: su título no lo indica)
+      const detailed = await firstValueFrom(
+        this.hasFilter ? this.rankingService.getRanking(true, this.filter) : this.rankingService.getRanking(true)
+      );
       await this.pdfService.export(detailed);
     } catch (err) {
       console.error('Error exporting ranking to PDF', err);

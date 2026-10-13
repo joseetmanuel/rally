@@ -23,6 +23,15 @@ describe('RankingService', () => {
     req.flush([]);
   });
 
+  it('sends the org filters that have a value (and none when there is no filter)', () => {
+    service.getRanking(false, { direction_id: 2, subdirection_id: null, management_id: 7 }).subscribe();
+    const req = http.expectOne((r) => r.url === `${environment.api_url}/ranking`);
+    expect(req.request.params.get('direction_id')).toBe('2');
+    expect(req.request.params.get('management_id')).toBe('7');
+    expect(req.request.params.has('subdirection_id')).toBe(false);
+    req.flush([]);
+  });
+
   it('does not ask for the movements by default', () => {
     service.getRanking().subscribe();
     const req = http.expectOne(`${environment.api_url}/ranking`);

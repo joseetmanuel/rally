@@ -55,6 +55,7 @@ export class MenuConfigurationService {
         puntosExtra,
         bases,
         item(10, 'Catálogos', 'library_books', '', [
+          item(13, 'Estructura', 'account_tree', 'org-structure'),
           item(8, 'Equipos', 'groups', 'teams'),
           item(9, 'Consultoras', 'business', 'consulting-firms'),
           item(3, 'Tipos de certificación', 'category', 'certification-types'),

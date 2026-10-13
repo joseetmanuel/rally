@@ -38,7 +38,7 @@ describe('SidenavComponent (cajón de navegación del móvil)', () => {
     it('lists every screen of the menu as a link', () => {
       const names = links().map((a) => a.textContent?.trim());
       expect(names).toEqual(['Inicio', 'Detalle', 'Consultores', 'Cursos', 'Puntos Extra', 'Bases',
-        'Equipos', 'Consultoras', 'Tipos de certificación', 'Certificaciones']);
+        'Estructura', 'Equipos', 'Consultoras', 'Tipos de certificación', 'Certificaciones']);
     });
 
     it('points every link inside the app (/app/...), never to a bare route', () => {
@@ -56,7 +56,7 @@ describe('SidenavComponent (cajón de navegación del móvil)', () => {
       expect(title.closest('a')).toBeNull();
       const group = Array.from(fixture.nativeElement.querySelectorAll('.sub-list a') as NodeListOf<HTMLAnchorElement>);
       expect(group.map((a) => a.getAttribute('href'))).toEqual([
-        '/app/teams', '/app/consulting-firms', '/app/certification-types', '/app/certifications']);
+        '/app/org-structure', '/app/teams', '/app/consulting-firms', '/app/certification-types', '/app/certifications']);
     });
 
     it('closes the drawer after choosing an option', () => {

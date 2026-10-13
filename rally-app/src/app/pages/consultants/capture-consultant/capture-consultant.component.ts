@@ -9,6 +9,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { ConsultantService } from '../../../core/services/consultants/consultant.service';
 import { TeamService } from '../../../core/services/teams/team.service';
 import { ConsultingFirmService } from '../../../core/services/consulting-firms/consulting-firm.service';
+import { OrgStructureService } from '../../../core/services/org-structure/org-structure.service';
+import { Management, Subdirection } from '../../../core/models/org-structure/org-structure';
 import { Consultant } from '../../../core/models/consultants/consultant';
 import { Team } from '../../../core/models/teams/team';
 import { ConsultingFirm } from '../../../core/models/consulting-firms/consulting-firm';
@@ -34,12 +36,15 @@ export class CaptureConsultantComponent implements OnInit {
   readonly participantTypes = ['INTERNO', 'EXTERNO'];
   teams: Team[] = [];
   consultingFirms: ConsultingFirm[] = [];
+  subdirections: Subdirection[] = [];
+  managements: Management[] = [];
   errorMessage = '';
-  
+
   private fb = inject(FormBuilder);
   private consultantService = inject(ConsultantService);
   private teamService = inject(TeamService);
   private consultingFirmService = inject(ConsultingFirmService);
+  private orgStructureService = inject(OrgStructureService);
   
   constructor(
     public dialogRef: MatDialogRef<CaptureConsultantComponent>,
@@ -51,8 +56,30 @@ export class CaptureConsultantComponent implements OnInit {
       team_id: [null, [Validators.required]],
       consulting_firm_id: [null],
       email: ['', [Validators.email, Validators.maxLength(150)]],
-      teams_contact: ['', [Validators.maxLength(255)]]
+      teams_contact: ['', [Validators.maxLength(255)]],
+      // Ubicación en la estructura: la subdirección sólo filtra las gerencias (no se envía)
+      subdirection_id: [null, [Validators.required]],
+      management_id: [{ value: null, disabled: true }, [Validators.required]]
     });
+
+    // Cascada: la gerencia sólo se habilita con subdirección y se limpia si ésta cambia
+    this.form.get('subdirection_id')!.valueChanges.subscribe((subdirectionId) => {
+      const management = this.form.get('management_id')!;
+      management.setValue(null);
+      if (subdirectionId) management.enable({ emitEvent: false });
+      else management.disable({ emitEvent: false });
+    });
+  }
+
+  /** Gerencias de la subdirección elegida */
+  get filteredManagements(): Management[] {
+    const subdirectionId = this.form.get('subdirection_id')?.value;
+    return this.managements.filter((m) => m.subdirection_id === subdirectionId);
+  }
+
+  /** Nombre de la unidad con su jefatura entre paréntesis */
+  unitLabel(unit: { name: string; head_name?: string | null }): string {
+    return unit.head_name ? `${unit.name} (${unit.head_name})` : unit.name;
   }
 
   ngOnInit(): void {
@@ -64,6 +91,14 @@ export class CaptureConsultantComponent implements OnInit {
       next: (data) => this.consultingFirms = data,
       error: (err) => console.error('Error loading consulting firms', err)
     });
+    this.orgStructureService.getSubdirections().subscribe({
+      next: (data) => this.subdirections = data,
+      error: (err) => console.error('Error loading subdirections', err)
+    });
+    this.orgStructureService.getManagements().subscribe({
+      next: (data) => this.managements = data,
+      error: (err) => console.error('Error loading managements', err)
+    });
 
     if (this.data) {
       this.isEditMode = true;
@@ -73,8 +108,13 @@ export class CaptureConsultantComponent implements OnInit {
         team_id: this.data.team_id,
         consulting_firm_id: this.data.consulting_firm_id ?? null,
         email: this.data.email,
-        teams_contact: this.data.teams_contact
+        teams_contact: this.data.teams_contact,
+        subdirection_id: this.data.subdirection_id ?? null
       });
+      // Sin gerencia (participante antiguo) queda pendiente y se exige al guardar
+      if (this.data.management_id) {
+        this.form.patchValue({ management_id: this.data.management_id });
+      }
     }
   }
 
@@ -82,7 +122,8 @@ export class CaptureConsultantComponent implements OnInit {
     if (this.form.invalid) return;
 
     // El correo es único en BD: un texto vacío debe viajar como null
-    const raw = this.form.value;
+    // subdirection_id no viaja: el servidor la deduce de la gerencia
+    const { subdirection_id, ...raw } = this.form.value;
     const consultantData: Consultant = {
       ...raw,
       // La consultora sólo aplica a participantes externos

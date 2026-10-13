@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Editar' : 'Agregar' }} {{ label }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="capture-form">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre de la unidad</mat-label>
+      <input matInput formControlName="name" required>
+      <mat-hint>Por ejemplo: Core Bancario</mat-hint>
+      @if (form.get('name')?.hasError('required')) {
+        <mat-error>El nombre es obligatorio</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Quién la encabeza</mat-label>
+      <input matInput formControlName="head_name">
+      <mat-hint>Nombre de la persona, por ejemplo: Karla</mat-hint>
+    </mat-form-field>
+
+    @if (errorMessage) {
+      <p class="error-message" role="alert">{{ errorMessage }}</p>
+    }
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">Guardar</button>
+</mat-dialog-actions>

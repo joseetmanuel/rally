@@ -1,0 +1,46 @@
+<div class="page-container mat-elevation-z2">
+  <div class="header-actions">
+    <h2>Estructura</h2>
+  </div>
+  <p class="intro">
+    CTO, direcciones, subdirecciones y gerencias. Edita el nombre de cada unidad y de quien la encabeza;
+    los participantes se asignan a su gerencia desde Consultores.
+  </p>
+
+  @if (errorMessage) {
+    <p class="error-message" role="alert">{{ errorMessage }}</p>
+  }
+
+  @if (loading) {
+    <p class="state" role="status">Cargando la estructura…</p>
+  } @else if (rows.length === 0 && !errorMessage) {
+    <p class="state">Todavía no hay estructura registrada.</p>
+  }
+
+  <ul class="tree">
+    @for (row of rows; track row.level + row.unit.id) {
+      <li class="node" [class]="'node--' + row.level" [style.margin-left.px]="row.depth * 20">
+        <span class="node__level">{{ row.label }}</span>
+        <div class="node__text">
+          <span class="node__name">{{ row.unit.name }}</span>
+          @if (row.unit.head_name) {
+            <span class="node__head">{{ row.unit.head_name }}</span>
+          }
+          @if (row.participants !== undefined) {
+            <span class="node__count">{{ row.participants }} {{ row.participants === 1 ? 'participante' : 'participantes' }}</span>
+          }
+        </div>
+        <div class="node__actions">
+          @if (row.addChild) {
+            <button mat-button class="node__add" (click)="add(row)">
+              <mat-icon>add</mat-icon> Agregar {{ row.addChild.label }}
+            </button>
+          }
+          <button mat-icon-button title="Editar" [attr.aria-label]="'Editar ' + row.unit.name" color="primary" (click)="edit(row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </li>
+    }
+  </ul>
+</div>
