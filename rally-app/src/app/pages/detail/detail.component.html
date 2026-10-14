@@ -44,7 +44,13 @@
 
     <!-- Cabecera de la persona -->
     <header class="hero">
-      <div class="avatar" aria-hidden="true">{{ initials(statement.consultant.full_name) }}</div>
+      <div class="avatar" aria-hidden="true">
+        @if (facePhoto(statement.consultant.full_name); as photo) {
+          <img class="avatar__photo" [src]="photo" alt="">
+        } @else {
+          {{ initials(statement.consultant.full_name) }}
+        }
+      </div>
 
       <div class="hero__who">
         <h1 id="detail-title">{{ statement.consultant.full_name }}</h1>

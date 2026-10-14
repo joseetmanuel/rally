@@ -12,6 +12,7 @@ import { StatementService } from '../../core/services/statement/statement.servic
 import { RankingEntry } from '../../core/models/ranking/ranking-entry';
 import { KIND_LABELS, Statement, StatementEntry, StatementKind } from '../../core/models/statement/statement';
 import { initials } from '../../core/utils/initials';
+import { facePhoto } from '../../core/utils/face-photo';
 import { MONTH_NAMES, shortDate } from '../../core/utils/dates';
 import { BREAKDOWN_SEGMENTS } from '../ranking/ranking.component';
 
@@ -67,6 +68,7 @@ export class DetailComponent implements OnInit {
   };
   readonly kinds = KIND_META;
   readonly initials = initials;
+  readonly facePhoto = facePhoto;
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);

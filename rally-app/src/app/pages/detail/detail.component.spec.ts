@@ -80,6 +80,13 @@ describe('DetailComponent', () => {
     expect(component.loading).toBe(false);
   });
 
+  it('shows the face of the participant when there is a photo', async () => {
+    await setup('10');
+    const avatar = el().querySelector('.avatar') as HTMLElement;
+    expect(avatar.querySelector('img')?.getAttribute('src')).toBe('assets/imgs/faces/silvino-martinez-soto.webp');
+    expect(avatar.querySelector('img')?.getAttribute('alt')).toBe('');
+  });
+
   it('shows who the participant is, the position and the total', async () => {
     await setup();
     expect(text('h1')).toBe('Silvino Martinez Soto');

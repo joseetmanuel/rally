@@ -12,6 +12,7 @@ import { initials as toInitials } from '../../core/utils/initials';
 import { RallyRulesService } from '../../core/services/rally-rules/rally-rules.service';
 import { mediumDate } from '../../core/utils/dates';
 import { AdminSessionService } from '../../core/services/admin-session/admin-session.service';
+import { facePhoto } from '../../core/utils/face-photo';
 import { OrgStructureService } from '../../core/services/org-structure/org-structure.service';
 import { Direction, Management, Subdirection, OrgFilter } from '../../core/models/org-structure/org-structure';
 
@@ -261,6 +262,8 @@ export class RankingComponent implements OnInit {
   onSearch(event: Event): void {
     this.search = (event.target as HTMLInputElement).value;
   }
+
+  readonly facePhoto = facePhoto;
 
   initials(name: string): string {
     return toInitials(name);

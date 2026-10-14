@@ -128,7 +128,13 @@
             <div class="podium__medal" aria-hidden="true">
               <mat-icon>{{ entry.position === 1 ? 'emoji_events' : 'military_tech' }}</mat-icon>
             </div>
-            <div class="avatar avatar--lg">{{ initials(entry.full_name) }}</div>
+            <div class="avatar avatar--lg">
+              @if (facePhoto(entry.full_name); as photo) {
+                <img class="avatar__photo" [src]="photo" alt="">
+              } @else {
+                {{ initials(entry.full_name) }}
+              }
+            </div>
             <h2 class="podium__name">{{ entry.full_name }}</h2>
             <div class="podium__block" [attr.aria-label]="'Lugar ' + entry.position">
               <p class="podium__points">
@@ -175,7 +181,13 @@
               <a class="row__link" [routerLink]="['/app/detail', entry.consultant_id]"
                  [attr.aria-label]="'Ver el detalle de ' + entry.full_name">
               <span class="row__position" [class.row__position--top]="entry.position <= 3">{{ entry.position }}</span>
-              <div class="avatar">{{ initials(entry.full_name) }}</div>
+              <div class="avatar">
+                @if (facePhoto(entry.full_name); as photo) {
+                  <img class="avatar__photo" [src]="photo" alt="">
+                } @else {
+                  {{ initials(entry.full_name) }}
+                }
+              </div>
 
               <div class="row__main">
                 <p class="row__name">{{ entry.full_name }}</p>

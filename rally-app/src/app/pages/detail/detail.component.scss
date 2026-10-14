@@ -154,6 +154,15 @@
   color: var(--rk-on-primary-container);
   background: var(--rk-primary-container);
   box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.35);
+  // Rostro recortado (sin fondo): se ve completo sobre el círculo de color, apoyado abajo
+  overflow: hidden;
+
+  &__photo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+  }
 }
 
 .chips {

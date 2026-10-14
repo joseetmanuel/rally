@@ -126,6 +126,28 @@ describe('RankingComponent', () => {
     expect(stats[0]).toContain('0 tomados');
   });
 
+  it('shows the face of who has a photo (podium and table) and the initials of who does not', async () => {
+    const withPhoto = [
+      entry(1, 'Silvino Martinez Soto', 100), entry(2, 'Marco Uriel Quintero Díaz', 80),
+      entry(3, 'Persona Sin Foto', 60), entry(4, 'Ángel César Gasca Martínez', 40), entry(5, 'Otra Sin Foto', 20)
+    ];
+    await setup(of(withPhoto));
+    const podium = Array.from(el().querySelectorAll('.podium__place .avatar')) as HTMLElement[];
+    // orden en pantalla: 2.º, 1.º, 3.º
+    expect(podium[0].querySelector('img')?.getAttribute('src')).toBe('assets/imgs/faces/marco-uriel-quintero-diaz.webp');
+    expect(podium[1].querySelector('img')?.getAttribute('src')).toBe('assets/imgs/faces/silvino-martinez-soto.webp');
+    expect(podium[1].textContent?.trim()).toBe('');
+    // la foto es decorativa: el nombre ya está al lado
+    expect(podium[1].querySelector('img')?.getAttribute('alt')).toBe('');
+    // sin foto: iniciales y ninguna imagen
+    expect(podium[2].querySelector('img')).toBeNull();
+    expect(podium[2].textContent?.trim()).toBe('PF');
+    const rows = Array.from(el().querySelectorAll('.row .avatar')) as HTMLElement[];
+    expect(rows[0].querySelector('img')?.getAttribute('src')).toBe('assets/imgs/faces/angel-cesar-gasca-martinez.webp');
+    expect(rows[1].querySelector('img')).toBeNull();
+    expect(rows[1].textContent?.trim()).toBe('OF');
+  });
+
   it('lists everyone after the podium', async () => {
     await setup();
     expect(component.rows.map((e) => e.position)).toEqual([4, 5]);
