@@ -4,12 +4,16 @@ En Cloud Run hay un solo servicio: Flask atiende /api y /health y entrega el Ang
 (carpeta STATIC_DIR). Sin esa carpeta (desarrollo local) esta parte no hace nada y el frontend se sirve
 con `ng serve`.
 """
+import mimetypes
 import os
 
 from flask import abort, request, send_from_directory
 from werkzeug.security import safe_join
 
 ONE_DAY = 24 * 60 * 60
+
+# Con X-Content-Type-Options: nosniff el tipo declarado manda; que no dependa de la tabla del sistema
+mimetypes.add_type('image/webp', '.webp')
 
 
 def add_security_headers(response):

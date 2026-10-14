@@ -13,6 +13,7 @@ def site(tmp_path):
     (tmp_path / 'index.html').write_text('<html><body>RALLY-APP</body></html>', encoding='utf-8')
     (tmp_path / 'main-ABC123.js').write_text('console.log("main")', encoding='utf-8')
     (tmp_path / 'assets' / 'fondo.png').write_bytes(b'\x89PNG')
+    (tmp_path / 'assets' / 'rostro.webp').write_bytes(b'RIFF....WEBP')
 
     class SiteConfig(Config):
         TESTING = True
@@ -42,6 +43,11 @@ def test_static_files_are_served_and_cached(site):
     assert js.status_code == 200 and js.data == b'console.log("main")'
     assert 'max-age' in js.headers['Cache-Control']
     assert site.get('/assets/fondo.png').data == b'\x89PNG'
+
+
+def test_webp_images_are_served_with_their_own_type(site):
+    response = site.get('/assets/rostro.webp')
+    assert response.status_code == 200 and response.headers['Content-Type'] == 'image/webp'
 
 
 def test_a_missing_file_is_a_real_404_not_the_app(site):
