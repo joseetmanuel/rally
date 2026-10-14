@@ -395,15 +395,6 @@
   font-weight: 700;
   color: var(--rk-on-primary-container);
   background: var(--rk-primary-container);
-  // Rostro recortado (sin fondo): se ve completo sobre el círculo de color, apoyado abajo
-  overflow: hidden;
-
-  &__photo {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center bottom;
-  }
 
   &--lg {
     width: 72px;
