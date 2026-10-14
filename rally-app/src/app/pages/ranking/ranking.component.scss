@@ -311,11 +311,13 @@
     word-break: break-word;
   }
 
+  // Los puntos y los conteos viven dentro del pedestal de cada lugar
   &__points {
     display: flex;
     align-items: baseline;
+    justify-content: center;
     gap: 4px;
-    margin: 4px 0 0;
+    margin: 0;
   }
 
   &__points-value {
@@ -332,27 +334,38 @@
   }
 
   &__stats {
-    margin: 6px 0 12px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 6px;
+    margin: 8px 0 0;
+    padding: 0 8px;
     font-size: 0.8rem;
-    color: var(--rk-on-surface-variant);
+    line-height: 1.4;
+    color: rgba(0, 0, 0, 0.62);
+
+    span + span::before {
+      content: '·';
+      margin-right: 6px;
+    }
   }
 
   &__block {
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     width: 100%;
-    padding-top: 10px;
+    margin-top: 12px;
+    padding-top: 14px;
     border-radius: 24px 24px 0 0;
-    font-size: 2.4rem;
-    font-weight: 800;
-    color: rgba(0, 0, 0, 0.55);
+    color: rgba(0, 0, 0, 0.78);
   }
 
   // Alturas del podio y color de medalla por lugar
-  &__place--1 .podium__block { height: 150px; background: linear-gradient(180deg, var(--rk-gold-container), #ffd45e); }
-  &__place--2 .podium__block { height: 110px; background: linear-gradient(180deg, var(--rk-silver-container), #c4ccd2); }
-  &__place--3 .podium__block { height: 84px;  background: linear-gradient(180deg, var(--rk-bronze-container), #e7b98b); }
+  &__place--1 .podium__block { height: 176px; background: linear-gradient(180deg, var(--rk-gold-container), #ffd45e); }
+  &__place--2 .podium__block { height: 136px; background: linear-gradient(180deg, var(--rk-silver-container), #c4ccd2); }
+  &__place--3 .podium__block { height: 116px; background: linear-gradient(180deg, var(--rk-bronze-container), #e7b98b); }
 
   &__place--1 .podium__medal mat-icon { color: var(--rk-gold); }
   &__place--2 .podium__medal mat-icon { color: var(--rk-silver); }
@@ -598,10 +611,19 @@
 
     &__name { font-size: 0.9rem; }
     &__points-value { font-size: 1.8rem; }
-    &__stats { display: none; }
-    &__place--1 .podium__block { height: 110px; }
-    &__place--2 .podium__block { height: 80px; }
-    &__place--3 .podium__block { height: 60px; }
+    // En móvil el pedestal es angosto: los conteos van uno por renglón y sin separadores
+    &__stats {
+      flex-direction: column;
+      align-items: center;
+      margin-top: 6px;
+      padding: 0 4px;
+      font-size: 0.72rem;
+
+      span + span::before { content: none; }
+    }
+    &__place--1 .podium__block { height: 156px; }
+    &__place--2 .podium__block { height: 132px; }
+    &__place--3 .podium__block { height: 120px; }
   }
 
   .avatar--lg { width: 56px; height: 56px; font-size: 1.2rem; }

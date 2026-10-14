@@ -130,15 +130,16 @@
             </div>
             <div class="avatar avatar--lg">{{ initials(entry.full_name) }}</div>
             <h2 class="podium__name">{{ entry.full_name }}</h2>
-            <p class="podium__points">
-              <span class="podium__points-value">{{ entry.total_points }}</span>
-              <span class="podium__points-unit">pts</span>
-            </p>
-            <p class="podium__stats">
-              {{ entry.certifications }} cert. · {{ entry.courses_given }} dados · {{ entry.courses_taken }} tomados
-            </p>
             <div class="podium__block" [attr.aria-label]="'Lugar ' + entry.position">
-              <span>{{ entry.position }}</span>
+              <p class="podium__points">
+                <span class="podium__points-value">{{ entry.total_points }}</span>
+                <span class="podium__points-unit">pts</span>
+              </p>
+              <p class="podium__stats">
+                <span>{{ entry.certifications }} cert.</span>&ngsp;
+                <span>{{ entry.courses_given }} {{ entry.courses_given === 1 ? 'impartido' : 'impartidos' }}</span>&ngsp;
+                <span>{{ entry.courses_taken }} {{ entry.courses_taken === 1 ? 'tomado' : 'tomados' }}</span>
+              </p>
             </div>
             </a>
           </li>

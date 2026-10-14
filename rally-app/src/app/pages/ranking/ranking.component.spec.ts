@@ -100,6 +100,32 @@ describe('RankingComponent', () => {
     expect(names).toEqual(['Luis Pérez', 'Ana García', 'Carlos Ruiz']);
   });
 
+  it('puts the points and the counts inside each pedestal, not the place number', async () => {
+    await setup();
+    const blocks = Array.from(el().querySelectorAll('.podium__block')) as HTMLElement[];
+    expect(blocks.length).toBe(3);
+    // orden en pantalla: 2.º, 1.º, 3.º
+    expect(blocks.map((b) => b.querySelector('.podium__points-value')?.textContent?.trim())).toEqual(['80', '100', '60']);
+    for (const block of blocks) {
+      expect(block.querySelector('.podium__points-unit')?.textContent?.trim()).toBe('pts');
+      expect(block.querySelector('.podium__stats')).not.toBeNull();
+    }
+    // arriba del pedestal sólo quedan medalla, avatar y nombre
+    for (const place of Array.from(el().querySelectorAll('.podium__place'))) {
+      expect(place.querySelector(':scope > .podium__link > .podium__points, :scope > .podium__link > .podium__stats')).toBeNull();
+    }
+  });
+
+  it('writes the counts as "impartido(s)" and "tomado(s)", never "dados", with the right plural', async () => {
+    await setup();
+    const stats = Array.from(el().querySelectorAll('.podium__stats')).map((s) => s.textContent?.replace(/\s+/g, ' ').trim());
+    expect(stats.join(' | ')).not.toContain('dados');
+    for (const text of stats) expect(text).toMatch(/^\d+ cert\. \d+ impartidos? \d+ tomados?$/);
+    // las bases traen ceros: 0 impartidos / 0 tomados (plural)
+    expect(stats[0]).toContain('0 impartidos');
+    expect(stats[0]).toContain('0 tomados');
+  });
+
   it('lists everyone after the podium', async () => {
     await setup();
     expect(component.rows.map((e) => e.position)).toEqual([4, 5]);
